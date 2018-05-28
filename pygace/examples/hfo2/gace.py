@@ -74,6 +74,11 @@ def transver_to_struct(element_lis):
         f.write(struct_str)
     return _str_out
 
+def _ind_to_elis(individual):
+    tmp_f = lambda x: 'Vac' if x < NB_VAC else 'O'
+    element_lis = [tmp_f(i) for i in individual]
+    return element_lis
+
 def evalEnergy(individual):
     """Evaluation function for the ground-state searching problem.
 
@@ -81,8 +86,7 @@ def evalEnergy(individual):
     on a crystalline structures such that the energy of crystalline
     structures can obtain minimum value.
     """
-    tmp_f = lambda x: 'Vac' if x < NB_VAC else 'O'
-    element_lis = [tmp_f(i) for i in individual]
+    element_lis = _ind_to_elis(individual)
     types_lis = [str(TYPES_DICT[i]) for i in element_lis]
     typeslis = ''.join(types_lis)
 
@@ -156,6 +160,7 @@ def single_run( mission_name, iter):
 
 def multiple_run(mission_name,iters):
     all_min = []
+    all_best_son = []
     for i in range(iters):
         print('No. {0}'.format(i))
         res = single_run(mission_name,i)
@@ -163,9 +168,20 @@ def multiple_run(mission_name,iters):
         sorted_population = sorted(population, key=lambda ind: ind.fitness.values)
         all_min.append(evalEnergy(sorted_population[0]))
 
+        all_best_son.append(_ind_to_elis(sorted_population[0]))
+
         if iters % 10 == 0:
             ENERGY_DICT = {}
     all_min = numpy.asarray(all_min)
+
+    min_idx = numpy.argmin(all_min)
+    # print(all_min[min_idx])
+    # print(min_idx, all_best_son[min_idx])
+
+    # types_lis = [str(TYPES_DICT[i]) for i in all_best_son[min_idx]]
+    # typeslis = ''.join(types_lis)
+    # CE.compare_crystal()
+
 
     s_fname = os.path.join(TEST_RES_DIR,'{0}.txt')
     numpy.savetxt(s_fname.format(mission_name), all_min, fmt='%.3f')
@@ -175,9 +191,10 @@ def multiple_run(mission_name,iters):
     # with open(energy_database_fname, 'wb') as db_file:
     #     pickle.dump(ENERGY_DICT, db_file)
 
+    return all_best_son[min_idx]
 
 
-if __name__ == "__main__":
+def main():
     pool = multiprocessing.Pool(processes=4)
     toolbox.register("map", pool.map)
 
@@ -190,22 +207,23 @@ if __name__ == "__main__":
 
     toolbox.unregister("mate")
     mission_name = 'final-hfo2-iter1-cm'
-    for cross_method in [1,2,3,4,5,6]:
+    ground_states = []
+    for cross_method in [1, 2, 3, 4, 5, 6]:
         _name = mission_name + str(cross_method)
         toolbox.register("mate", crossover, select=cross_method,
-                         cross_num= 8) # the best cross_num
-        multiple_run(_name, 50)
+                         cross_num=8)  # the best cross_num
+        ground_states.append(multiple_run(_name, 50))
         toolbox.unregister("mate")
     #
     # select = 2 or 3, cross_num = 6
-    #toolbox.register("mate",crossover, select =3,cross_num=8)
+    # toolbox.register("mate",crossover, select =3,cross_num=8)
     # mission_name = 'test-mutate'
     # for i, mutate in enumerate([0.015, 0.025, 0.035, 0.045]):
     #     _name = mission_name + str(i+1)
     #     toolbox.register("mutate", tools.mutShuffleIndexes, indpb=mutate)
     #     multiple_run(_name, 50)
     #
-    #toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.015)
+    # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=0.015)
     # mission_name = 'test-tournament'
     # for size in range(3,9):
     #     _name = mission_name + str(size)
@@ -215,8 +233,78 @@ if __name__ == "__main__":
 
     # mission_name = 'final-hfo2-cm3'
     # multiple_run(mission_name,50)
+
+    # print(ground_states)
+    checkpoint = 'ground_states.pkl'
+    with open(checkpoint, 'wb') as cp_file:
+        pickle.dump(ground_states, cp_file)
+
     pool.close()
 
+
+class ele_indv(object):
+
+    def __init__(self, ele_lis):
+        self.ele_lis = ele_lis
+
+    def __eq__(self, other):
+        types_lis1 = [str(TYPES_DICT[_i]) for _i in self.ele_lis]
+        typeslis1 = ''.join(types_lis1)
+
+        types_lis2 = [str(TYPES_DICT[_j]) for _j in other.ele_lis]
+        typeslis2 = ''.join(types_lis2)
+        return CE.compare_crystal(typeslis1, typeslis2)
+
+    @property
+    def ce_energy(self):
+        return float(HFO2_CE.get_total_energy(
+            transver_to_struct(self.ele_lis),is_corrdump=False))
+
+    def dft_energy(self):
+        raise NotImplementedError
+
+    def is_correct(self):
+        """
+        return whether are the dft energy and the ce energy of indv equivalent
+        :return: bool
+        """
+        raise NotImplementedError
+
+    def __str__(self):
+        return '_'.join(self.ele_lis)
+
+    def __repr__(self):
+        return self.__str__()
+
+def print_gs():
+    checkpoint = 'ground_states.pkl'
+    with open(checkpoint, 'r') as cp_file:
+        ground_states = pickle.load(cp_file)
+
+    # for i in range(len(ground_states)):
+    #     for j in range(i + 1, len(ground_states)):
+    #         types_lis1 = [str(TYPES_DICT[_i]) for _i in ground_states[i]]
+    #         typeslis1 = ''.join(types_lis1)
+    #
+    #         types_lis2 = [str(TYPES_DICT[_j]) for _j in ground_states[j]]
+    #         typeslis2 = ''.join(types_lis2)
+    #         print(i, j, CE.compare_crystal(typeslis1, typeslis2))
+    ele_indv_lis = [ele_indv(i) for i in ground_states]
+    new_ground = []
+    for i in ele_indv_lis:
+        if not i in new_ground:
+            new_ground.append(i)
+            print(i.ce_energy)
+
+
+
+if __name__ == "__main__":
+    #main()
+    print_gs()
+
+    test1 = ['Vac','O','O','O'] * 16
+    t1 = ele_indv(test1)
+    print(t1.ce_energy)
 
 
     #for i in range(10):
