@@ -1,45 +1,45 @@
 strain=
 1.00000 0.00000 0.00000 
-0.00000 1.00000 -0.00000 
+0.00000 1.00000 0.00000 
 0.00000 0.00000 1.00000 
 
 O atom at 0.44895 1.75734 1.47749 mapped onto lattice site at 0.44895 1.75734 1.47749 distance= 0.00001
 O atom at 0.44895 0.75734 1.47749 mapped onto lattice site at 0.44895 0.75734 1.47749 distance= 0.00001
 O atom at 1.44895 1.75734 0.47749 mapped onto lattice site at 1.44895 1.75734 0.47749 distance= 0.00001
-Vac atom at 1.55105 1.25734 0.02251 mapped onto lattice site at 1.55105 1.25734 0.02251 distance= 0.00001
+O atom at 1.55105 1.25734 0.02251 mapped onto lattice site at 1.55105 1.25734 0.02251 distance= 0.00001
 O atom at 1.55105 0.25734 0.02251 mapped onto lattice site at 1.55105 0.25734 0.02251 distance= 0.00001
 O atom at 1.44895 1.75734 1.47749 mapped onto lattice site at 1.44895 1.75734 1.47749 distance= 0.00001
-O atom at 1.44895 0.75734 1.47749 mapped onto lattice site at 1.44895 0.75734 1.47749 distance= 0.00001
-Vac atom at 0.44895 0.74266 1.97749 mapped onto lattice site at 0.44895 0.74266 1.97749 distance= 0.00001
+Vac atom at 1.44895 0.75734 1.47749 mapped onto lattice site at 1.44895 0.75734 1.47749 distance= 0.00001
+O atom at 0.44895 0.74266 1.97749 mapped onto lattice site at 0.44895 0.74266 1.97749 distance= 0.00001
 O atom at 0.44895 1.74266 0.97749 mapped onto lattice site at 0.44895 1.74266 0.97749 distance= 0.00001
 O atom at 0.44895 1.74266 1.97749 mapped onto lattice site at 0.44895 1.74266 1.97749 distance= 0.00001
 O atom at 1.44895 1.74266 0.97749 mapped onto lattice site at 1.44895 1.74266 0.97749 distance= 0.00001
 Vac atom at 1.44895 1.74266 1.97749 mapped onto lattice site at 1.44895 1.74266 1.97749 distance= 0.00001
 O atom at 0.44895 0.74266 0.97749 mapped onto lattice site at 0.44895 0.74266 0.97749 distance= 0.00001
 Vac atom at 0.55105 0.24266 1.52251 mapped onto lattice site at 0.55105 0.24266 1.52251 distance= 0.00001
-Vac atom at 0.44895 1.75734 0.47749 mapped onto lattice site at 0.44895 1.75734 0.47749 distance= 0.00001
-Vac atom at 0.55105 1.24266 1.52251 mapped onto lattice site at 0.55105 1.24266 1.52251 distance= 0.00001
-O atom at 1.44895 0.75734 0.47749 mapped onto lattice site at 1.44895 0.75734 0.47749 distance= 0.00001
+O atom at 0.44895 1.75734 0.47749 mapped onto lattice site at 0.44895 1.75734 0.47749 distance= 0.00001
+O atom at 0.55105 1.24266 1.52251 mapped onto lattice site at 0.55105 1.24266 1.52251 distance= 0.00001
+Vac atom at 1.44895 0.75734 0.47749 mapped onto lattice site at 1.44895 0.75734 0.47749 distance= 0.00001
 O atom at 1.55105 1.24266 1.52251 mapped onto lattice site at 1.55105 1.24266 1.52251 distance= 0.00001
 O atom at 1.55105 0.24266 1.52251 mapped onto lattice site at 1.55105 0.24266 1.52251 distance= 0.00001
-Vac atom at 0.44895 0.75734 0.47749 mapped onto lattice site at 0.44895 0.75734 0.47749 distance= 0.00001
+O atom at 0.44895 0.75734 0.47749 mapped onto lattice site at 0.44895 0.75734 0.47749 distance= 0.00001
 O atom at 1.55105 0.24266 0.52251 mapped onto lattice site at 1.55105 0.24266 0.52251 distance= 0.00001
 O atom at 1.55105 1.24266 0.52251 mapped onto lattice site at 1.55105 1.24266 0.52251 distance= 0.00001
 O atom at 0.55105 0.25734 0.02251 mapped onto lattice site at 0.55105 0.25734 0.02251 distance= 0.00001
-Vac atom at 0.55105 1.25734 0.02251 mapped onto lattice site at 0.55105 1.25734 0.02251 distance= 0.00001
+O atom at 0.55105 1.25734 0.02251 mapped onto lattice site at 0.55105 1.25734 0.02251 distance= 0.00001
 O atom at 1.55105 0.25734 1.02251 mapped onto lattice site at 1.55105 0.25734 1.02251 distance= 0.00001
 O atom at 1.55105 1.25734 1.02251 mapped onto lattice site at 1.55105 1.25734 1.02251 distance= 0.00001
 O atom at 0.55105 0.25734 1.02251 mapped onto lattice site at 0.55105 0.25734 1.02251 distance= 0.00001
-Vac atom at 0.55105 1.24266 0.52251 mapped onto lattice site at 0.55105 1.24266 0.52251 distance= 0.00001
+O atom at 0.55105 1.24266 0.52251 mapped onto lattice site at 0.55105 1.24266 0.52251 distance= 0.00001
 O atom at 0.55105 1.25734 1.02251 mapped onto lattice site at 0.55105 1.25734 1.02251 distance= 0.00001
 O atom at 1.44895 0.74266 1.97749 mapped onto lattice site at 1.44895 0.74266 1.97749 distance= 0.00001
-Vac atom at 1.44895 0.74266 0.97749 mapped onto lattice site at 1.44895 0.74266 0.97749 distance= 0.00001
-O atom at 0.55105 0.24266 0.52251 mapped onto lattice site at 0.55105 0.24266 0.52251 distance= 0.00001
-O atom at 1.06760 1.17051 1.84765 mapped onto lattice site at 1.06760 1.17051 1.84765 distance= 0.00001
-O atom at 1.06760 0.17051 1.84765 mapped onto lattice site at 1.06760 0.17051 1.84765 distance= 0.00001
+O atom at 1.44895 0.74266 0.97749 mapped onto lattice site at 1.44895 0.74266 0.97749 distance= 0.00001
+Vac atom at 0.55105 0.24266 0.52251 mapped onto lattice site at 0.55105 0.24266 0.52251 distance= 0.00001
+Vac atom at 1.06760 1.17051 1.84765 mapped onto lattice site at 1.06760 1.17051 1.84765 distance= 0.00001
+Vac atom at 1.06760 0.17051 1.84765 mapped onto lattice site at 1.06760 0.17051 1.84765 distance= 0.00001
 Vac atom at 1.06760 0.17051 0.84765 mapped onto lattice site at 1.06760 0.17051 0.84765 distance= 0.00001
 O atom at 0.06760 1.17051 1.84765 mapped onto lattice site at 0.06760 1.17051 1.84765 distance= 0.00001
-Vac atom at 0.06760 0.17051 1.84765 mapped onto lattice site at 0.06760 0.17051 1.84765 distance= 0.00001
+O atom at 0.06760 0.17051 1.84765 mapped onto lattice site at 0.06760 0.17051 1.84765 distance= 0.00001
 O atom at 0.06760 0.17051 0.84765 mapped onto lattice site at 0.06760 0.17051 0.84765 distance= 0.00001
 O atom at 1.06760 1.17051 0.84765 mapped onto lattice site at 1.06760 1.17051 0.84765 distance= 0.00001
 O atom at 0.06760 1.17051 0.84765 mapped onto lattice site at 0.06760 1.17051 0.84765 distance= 0.00001
@@ -48,24 +48,24 @@ O atom at 1.06760 1.32949 1.34765 mapped onto lattice site at 1.06760 1.32949 1.
 O atom at 0.06760 0.32949 0.34765 mapped onto lattice site at 0.06760 0.32949 0.34765 distance= 0.00001
 O atom at 0.06760 0.32949 1.34765 mapped onto lattice site at 0.06760 0.32949 1.34765 distance= 0.00001
 Vac atom at 1.06760 0.32949 0.34765 mapped onto lattice site at 1.06760 0.32949 0.34765 distance= 0.00001
-O atom at 1.06760 0.32949 1.34765 mapped onto lattice site at 1.06760 0.32949 1.34765 distance= 0.00001
+Vac atom at 1.06760 0.32949 1.34765 mapped onto lattice site at 1.06760 0.32949 1.34765 distance= 0.00001
 O atom at 0.06760 1.32949 0.34765 mapped onto lattice site at 0.06760 1.32949 0.34765 distance= 0.00001
 O atom at 1.06760 1.32949 0.34765 mapped onto lattice site at 1.06760 1.32949 0.34765 distance= 0.00001
-O atom at 0.93239 1.82949 0.15235 mapped onto lattice site at 0.93239 1.82949 0.15235 distance= 0.00001
+Vac atom at 0.93239 1.82949 0.15235 mapped onto lattice site at 0.93239 1.82949 0.15235 distance= 0.00001
 O atom at 0.93239 1.82949 1.15235 mapped onto lattice site at 0.93239 1.82949 1.15235 distance= 0.00001
-O atom at 0.93239 0.82949 1.15235 mapped onto lattice site at 0.93239 0.82949 1.15235 distance= 0.00001
-O atom at 0.93239 0.67051 1.65235 mapped onto lattice site at 0.93239 0.67051 1.65235 distance= 0.00001
-O atom at 0.93239 1.67051 1.65235 mapped onto lattice site at 0.93239 1.67051 1.65235 distance= 0.00001
+Vac atom at 0.93239 0.82949 1.15235 mapped onto lattice site at 0.93239 0.82949 1.15235 distance= 0.00001
+Vac atom at 0.93239 0.67051 1.65235 mapped onto lattice site at 0.93239 0.67051 1.65235 distance= 0.00001
+Vac atom at 0.93239 1.67051 1.65235 mapped onto lattice site at 0.93239 1.67051 1.65235 distance= 0.00001
 Vac atom at 0.93239 0.67051 0.65235 mapped onto lattice site at 0.93239 0.67051 0.65235 distance= 0.00001
-O atom at 0.93239 0.82949 0.15235 mapped onto lattice site at 0.93239 0.82949 0.15235 distance= 0.00001
+Vac atom at 0.93239 0.82949 0.15235 mapped onto lattice site at 0.93239 0.82949 0.15235 distance= 0.00001
 O atom at 0.93239 1.67051 0.65235 mapped onto lattice site at 0.93239 1.67051 0.65235 distance= 0.00001
 O atom at 1.93240 0.82949 1.15235 mapped onto lattice site at 1.93239 0.82949 1.15235 distance= 0.00001
 O atom at 1.93240 1.82949 1.15235 mapped onto lattice site at 1.93239 1.82949 1.15235 distance= 0.00001
-Vac atom at 1.93240 0.67051 1.65235 mapped onto lattice site at 1.93239 0.67051 1.65235 distance= 0.00001
+O atom at 1.93240 0.67051 1.65235 mapped onto lattice site at 1.93239 0.67051 1.65235 distance= 0.00001
 O atom at 1.93240 1.67051 1.65235 mapped onto lattice site at 1.93239 1.67051 1.65235 distance= 0.00001
 O atom at 1.93240 1.82949 0.15235 mapped onto lattice site at 1.93239 1.82949 0.15235 distance= 0.00001
 O atom at 1.93240 0.67051 0.65235 mapped onto lattice site at 1.93239 0.67051 0.65235 distance= 0.00001
-Vac atom at 1.93240 0.82949 0.15235 mapped onto lattice site at 1.93239 0.82949 0.15235 distance= 0.00001
+O atom at 1.93240 0.82949 0.15235 mapped onto lattice site at 1.93239 0.82949 0.15235 distance= 0.00001
 O atom at 1.93240 1.67051 0.65235 mapped onto lattice site at 1.93239 1.67051 0.65235 distance= 0.00001
 Hf_pv atom ignored at 0.27587 0.04263 0.20788
 Hf_pv atom ignored at 1.27587 1.45737 1.70788

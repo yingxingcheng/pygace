@@ -21,6 +21,7 @@ from copy import deepcopy
 import os, os.path
 import multiprocessing
 import uuid, pickle
+import shutil
 
 from pygace.examples.hfo2.algorithms import hfo2_ga, crossover,mutShuffleIndexes
 
@@ -54,7 +55,7 @@ if os.path.exists(energy_database_fname):
     with open(energy_database_fname, 'r') as f:
         e_db = pickle.load(f)
     ENERGY_DICT = e_db
-    print('energy database has {0} energies'.format(len(ENERGY_DICT)))
+    #print('energy database has {0} energies'.format(len(ENERGY_DICT)))
 else:
     ENERGY_DICT = {}
 
@@ -195,7 +196,7 @@ def multiple_run(mission_name,iters):
 
 
 def main():
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=100)
     toolbox.register("map", pool.map)
 
     # mission_name = 'test-crossnum'
@@ -260,8 +261,22 @@ class ele_indv(object):
         return float(HFO2_CE.get_total_energy(
             transver_to_struct(self.ele_lis),is_corrdump=False))
 
-    def dft_energy(self):
-        raise NotImplementedError
+    def dft_energy(self,iters=None):
+        str_name = transver_to_struct(self.ele_lis)
+        if iters is None:
+            iters = 'INF'
+        #random_fname = str(uuid.uuid1())
+        idx = [ str(i) for i, ele in enumerate(self.ele_lis) if ele == 'Vac' ]
+        random_fname =  '_'.join(idx)
+        cal_dir = os.path.join(TMP_DIR,random_fname)
+        if not os.path.exists(cal_dir):
+            os.makedirs(cal_dir)
+        dist_fname = 'str.out'
+        shutil.copyfile(str_name,os.path.join(cal_dir,dist_fname))
+        shutil.copyfile(os.path.join(HFO2_CE.work_path,'vasp.wrap'),os.path.join(cal_dir,'vasp.wrap'))
+        #args = 'runstruct_vasp -nr '
+        #s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        # runstruct_vasp -nr
 
     def is_correct(self):
         """
@@ -295,25 +310,28 @@ def print_gs():
         if not i in new_ground:
             new_ground.append(i)
             print(i.ce_energy)
+            print(i.ele_lis)
+            i.dft_energy() 
 
 
 
 if __name__ == "__main__":
     #main()
+
     print_gs()
 
-    test1 = ['Vac','O','O','O'] * 16
-    t1 = ele_indv(test1)
-    print(t1.ce_energy)
+    #test1 = ['O','O','O','O'] * 16
+    #test1 = ['O']*64
+    # for a
+    #for i in [29,32,56,39,55,44,41,24,52,10,53,11,15,17,51,48]:
+    #    test1[i] = 'Vac'
 
+    # for b
+    #for i in [29,50,56,58,55,42,41,59,52,4,51,21,53,60,15,16]:
+    #    test1[i] = 'Vac'
 
-    #for i in range(10):
-    #    print(evalEnergy(sorted_population[i]))
-
-
-
-
-
-
-
-
+    # for c
+    #for i in [29,30,41,28,56,34,55,52,6,51,20,53,0,15,57,61]:
+    #    test1[i] = 'Vac'
+    #t1 = ele_indv(test1)
+    #print(t1.ce_energy)

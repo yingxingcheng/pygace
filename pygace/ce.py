@@ -6,6 +6,8 @@ __author__ = 'yxcheng'
 __mtime__ = '18-5-16'
 __mail__ = 'yxcheng@buaa.edu.cn'
 """
+import warnings
+warnings.filterwarnings("ignore")
 
 from copy import deepcopy
 import numpy as np
@@ -15,6 +17,9 @@ from pymatgen.io.atat import Mcsqs
 import subprocess
 #from collections import Counter
 #from ase import Atom
+
+CORRDUMP='/public/lgzhu-ICME/yxcheng/software/atat/corrdump '
+COMPARE_CRYSTAL='/public/lgzhu-ICME/yxcheng/bin/CompareCrystal '
 
 # interface to ATAT
 class CE(object):
@@ -64,9 +69,8 @@ class CE(object):
         """
         x is similar as a str.out file in atat
         """
-        _args = '/home/yxcheng/usr/local/atat/bin/corrdump ' \
-                '-c -s={0} -eci={1} -l={2} -cf={3}'.format(
-            x, self.eci_out, self.lat_in, self.cluster_info)
+        _args = CORRDUMP + ' -c -s={0} -eci={1} -l={2} -cf={3}'
+        _args = _args.format(x, self.eci_out, self.lat_in, self.cluster_info)
         _y = self.corrdump(_args)
         return _y
 
@@ -110,9 +114,8 @@ class CE(object):
         ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
         at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
         verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
-        args = '/home/yxcheng/bin/CompareCrystal ' \
-                '-f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'.format(
-                str1,str2,ct,at,verbos)
+        args =  COMPARE_CRYSTAL +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
+        args = args.format(str1,str2,ct,at,verbos)
         s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
         stdout,stderr= s.communicate()
         res = str(stdout)
