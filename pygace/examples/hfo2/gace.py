@@ -23,13 +23,13 @@ import multiprocessing
 import uuid, pickle
 import shutil
 
-from pygace.examples.hfo2.algorithms import hfo2_ga, crossover,mutShuffleIndexes
+from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 
 # Problem parameter
 NB_SITES = 64
-NB_VAC = 16
+NB_VAC = 4
 #TEMPLATE_FILE = './data/HfO2_unitce/lat_in.template'
-TEMPLATE_FILE = './data/hfo2_iter1/lat_in.template'
+TEMPLATE_FILE = './data/hfo2_iters/lat_in.template'
 TMP_DIR = os.path.abspath('tmp_dir')
 PICKLE_DIR = os.path.abspath('pickle_bakup')
 TEST_RES_DIR = os.path.abspath('res_dir')
@@ -45,7 +45,7 @@ for dir in (TMP_DIR,PICKLE_DIR,TEST_RES_DIR):
 
 HFO2_CE = CE(site=8)
 #HFO2_CE.fit(dirname='./data/HfO2_unitce')
-HFO2_CE.fit(dirname='./data/hfo2_iter1')
+HFO2_CE.fit(dirname='./data/hfo2_iters')
 
 with open(TEMPLATE_FILE, 'r') as f:
     TEMPLATE_FILE_STR = f.read()
@@ -131,9 +131,9 @@ def initial():
 
     toolbox.register("evaluate", evalEnergy)
     #toolbox.register("mate", tools.cxPartialyMatched)
-    toolbox.register("mate", crossover,select=3,cross_num=8)
+    toolbox.register("mate", gaceCrossover,select=3,cross_num=8)
     # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=2.0 / NB_SITES)
-    toolbox.register("mutate", mutShuffleIndexes, indpb=0.015)
+    toolbox.register("mutate", gaceMutShuffleIndexes, indpb=0.015)
     toolbox.register("select", tools.selTournament, tournsize=6)
 
     return toolbox
@@ -153,7 +153,7 @@ def single_run( mission_name, iter):
     stats.register("Max", numpy.max)
 
     checkpoint_fname = os.path.join(PICKLE_DIR,'checkpoint_name_{0}_{1}.pkl')
-    res = hfo2_ga(pop, toolbox, cxpb=0.5,ngen=90, stats=stats,halloffame=hof, verbose=True,
+    res = gaceGA(pop, toolbox, cxpb=0.5,ngen=90, stats=stats,halloffame=hof, verbose=True,
             checkpoint=checkpoint_fname.format(mission_name,iter))
 
     pop = res[0]
@@ -192,7 +192,8 @@ def multiple_run(mission_name,iters):
     # with open(energy_database_fname, 'wb') as db_file:
     #     pickle.dump(ENERGY_DICT, db_file)
 
-    return all_best_son[min_idx]
+    return [all_best_son[min_idx]]
+    #return all_best_son
 
 
 def main():
@@ -202,22 +203,24 @@ def main():
     # mission_name = 'test-crossnum'
     # for cross_num in range(3,8):
     #     _name = mission_name+str(cross_num)
-    #     toolbox.register("mate", crossover, select=1,
+    #     toolbox.register("mate", gaceCrossover, select=1,
     #                      cross_num=cross_num)
     #     multiple_run(_name, 50)
 
     toolbox.unregister("mate")
-    mission_name = 'final-hfo2-iter1-cm'
+    mission_name = 'final-hfo2-iter2-'+str(NB_VAC)+'vac-cm'
     ground_states = []
-    for cross_method in [1, 2, 3, 4, 5, 6]:
+    #for cross_method in [1, 2, 3, 4, 5, 6]:
+    for cross_method in [1]:
         _name = mission_name + str(cross_method)
-        toolbox.register("mate", crossover, select=cross_method,
+        toolbox.register("mate", gaceCrossover, select=cross_method,
                          cross_num=8)  # the best cross_num
-        ground_states.append(multiple_run(_name, 50))
+        #ground_states.append(multiple_run(_name, 50))
+        ground_states.extend(multiple_run(_name, 50))
         toolbox.unregister("mate")
     #
     # select = 2 or 3, cross_num = 6
-    # toolbox.register("mate",crossover, select =3,cross_num=8)
+    # toolbox.register("mate",gaceCrossover, select =3,cross_num=8)
     # mission_name = 'test-mutate'
     # for i, mutate in enumerate([0.015, 0.025, 0.035, 0.045]):
     #     _name = mission_name + str(i+1)
@@ -243,7 +246,7 @@ def main():
     pool.close()
 
 
-class ele_indv(object):
+class EleIndv(object):
 
     def __init__(self, ele_lis):
         self.ele_lis = ele_lis
@@ -304,9 +307,9 @@ def print_gs():
     #         types_lis2 = [str(TYPES_DICT[_j]) for _j in ground_states[j]]
     #         typeslis2 = ''.join(types_lis2)
     #         print(i, j, CE.compare_crystal(typeslis1, typeslis2))
-    ele_indv_lis = [ele_indv(i) for i in ground_states]
+    EleIndv_lis = [EleIndv(i) for i in ground_states]
     new_ground = []
-    for i in ele_indv_lis:
+    for i in EleIndv_lis:
         if not i in new_ground:
             new_ground.append(i)
             print(i.ce_energy)
@@ -314,10 +317,8 @@ def print_gs():
             i.dft_energy() 
 
 
-
 if __name__ == "__main__":
-    #main()
-
+    main()
     print_gs()
 
     #test1 = ['O','O','O','O'] * 16
@@ -327,11 +328,21 @@ if __name__ == "__main__":
     #    test1[i] = 'Vac'
 
     # for b
+    #test1 = ['O']*64
     #for i in [29,50,56,58,55,42,41,59,52,4,51,21,53,60,15,16]:
     #    test1[i] = 'Vac'
 
     # for c
+    #test1 = ['O']*64
     #for i in [29,30,41,28,56,34,55,52,6,51,20,53,0,15,57,61]:
     #    test1[i] = 'Vac'
-    #t1 = ele_indv(test1)
+    #t1 = EleIndv(test1)
     #print(t1.ce_energy)
+
+    # for daiyuehua
+    #test1 = ['O']*64
+    #for i in [7,9,34,61,49,24,56,55]:
+    #    test1[i] = 'Vac'
+    #t1 = EleIndv(test1)
+    #print(t1.ce_energy)
+    #t1.dft_energy() 

@@ -65,6 +65,15 @@ class CE(object):
         if 'Vac' in self.per_atom_energy.keys():
             self.per_atom_energy['Au'] = self.per_atom_energy['Vac']
 
+        if 'Nb_sv' in self.per_atom_energy.keys():
+            self.per_atom_energy['Nb'] = self.per_atom_energy['Nb_sv']
+
+        if 'Ti_sv' in self.per_atom_energy.keys():
+            self.per_atom_energy['Ti'] = self.per_atom_energy['Ti_sv']
+
+        if 'Sr_sv' in self.per_atom_energy.keys():
+            self.per_atom_energy['Sr'] = self.per_atom_energy['Sr_sv']
+
     def predict(self, x):
         """
         x is similar as a str.out file in atat
@@ -157,8 +166,8 @@ class CE(object):
             _lat_in_string = [line.split(',')[0] for line in _lat_in_string]
             _lat_in_string = '\n'.join(_lat_in_string)
 
-        _str_out = Mcsqs.structure_from_string(_struct_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au'))
-        _lat_in = Mcsqs.structure_from_string(_lat_in_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au'))
+        _str_out = Mcsqs.structure_from_string(_struct_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au').replace('Sr_sv','Sr').replace('Ti_sv','Ti').replace('Nb_sv','Nb'))
+        _lat_in = Mcsqs.structure_from_string(_lat_in_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au').replace('Sr_sv','Sr').replace('Ti_sv','Ti').replace('Nb_sv','Nb'))
 
         _count_atom = {}
         num = 0
