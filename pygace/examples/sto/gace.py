@@ -236,12 +236,7 @@ class EleIndv(object):
         self.ele_lis = ele_lis
 
     def __eq__(self, other):
-        types_lis1 = [str(TYPES_DICT[_i]) for _i in self.ele_lis]
-        typeslis1 = ''.join(types_lis1)
-
-        types_lis2 = [str(TYPES_DICT[_j]) for _j in other.ele_lis]
-        typeslis2 = ''.join(types_lis2)
-        return CE.compare_crystal(typeslis1, typeslis2)
+        raise NotImplemented
 
     @property
     def ce_energy(self):
