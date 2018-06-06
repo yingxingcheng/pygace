@@ -13,4 +13,6 @@ pygace/examples/sto/pickle_bakup
 pygace/examples/sto/corrdump.log 
 pygace/examples/sto/tmp_dir
 pygace/examples/sto/run.log
-pygace/examples/sto/data/*
+pygace/examples/sto/res_dir/*
+
+save.sh
