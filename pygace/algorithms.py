@@ -33,7 +33,9 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
             cp = pickle.load(cp_file)
         population = cp['population']
         start_gen = cp['generation']
-        halloffame = cp['halloffame']
+        halloffame_old = cp['halloffame']
+        # update each epoch
+        halloffame = halloffame
         logbook = cp['logbook']
         random.setstate(cp['rndstate'])
     else:

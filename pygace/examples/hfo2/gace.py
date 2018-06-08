@@ -21,13 +21,14 @@ from copy import deepcopy
 import os, os.path
 import multiprocessing
 import uuid, pickle
-import shutil
+import shutil,glob
 
 from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 
 # Problem parameter
 NB_SITES = 64
 NB_VAC = 4
+STEP = 2
 #TEMPLATE_FILE = './data/HfO2_unitce/lat_in.template'
 TEMPLATE_FILE = './data/hfo2_iters/lat_in.template'
 TMP_DIR = os.path.abspath('tmp_dir')
@@ -195,6 +196,15 @@ def multiple_run(mission_name,iters):
     return [all_best_son[min_idx]]
     #return all_best_son
 
+def get_epoch(nb_vac):
+    checkpoint_fname = PICKLE_DIR + '/*-{0}vac-cm*'.format(nb_vac)
+    res = glob.glob(checkpoint_fname)
+    if len(res) > 0:
+        new_res = sorted(res,key=lambda x:int(x.split('.')[0].split('_')[-1]))
+        epoch = int(new_res[-1].split('.')[0].split('_')[-1])
+        return epoch
+    else:
+        return 0
 
 def main():
     pool = multiprocessing.Pool(processes=100)
@@ -210,13 +220,18 @@ def main():
     toolbox.unregister("mate")
     mission_name = 'final-hfo2-iter2-'+str(NB_VAC)+'vac-cm'
     ground_states = []
+    epoch = get_epoch(NB_VAC)
+    if epoch == 0:
+        epoch = 50
+    else:
+        epoch += STEP
     #for cross_method in [1, 2, 3, 4, 5, 6]:
     for cross_method in [1]:
         _name = mission_name + str(cross_method)
         toolbox.register("mate", gaceCrossover, select=cross_method,
                          cross_num=8)  # the best cross_num
         #ground_states.append(multiple_run(_name, 50))
-        ground_states.extend(multiple_run(_name, 50))
+        ground_states.extend(multiple_run(_name, epoch))
         toolbox.unregister("mate")
     #
     # select = 2 or 3, cross_num = 6
@@ -270,6 +285,8 @@ class EleIndv(object):
             iters = 'INF'
         #random_fname = str(uuid.uuid1())
         idx = [ str(i) for i, ele in enumerate(self.ele_lis) if ele == 'Vac' ]
+        if len(idx) == 0:
+            idx = ['perfect','struct']
         random_fname =  '_'.join(idx)
         cal_dir = os.path.join(TMP_DIR,random_fname)
         if not os.path.exists(cal_dir):
@@ -314,12 +331,75 @@ def print_gs():
             new_ground.append(i)
             print(i.ce_energy)
             print(i.ele_lis)
+            idx = [ str(_i) for _i, ele in enumerate(i.ele_lis) if ele == 'Vac' ]
+            idx_lis =  '_'.join(idx)
+            print(idx_lis)
             i.dft_energy() 
 
+def str2energy(string):
+    test1 = ['O']*64
+    ilis = [int(i) for i in string.split('_')]
+    for i in ilis:
+        test1[i] = 'Vac'
+    t1 = EleIndv(test1)
+    return  float(t1.ce_energy)
+
+def compare_gs(new_gs, old_gs):
+    #new_gs = '4_10_11_24_32_42_58_60'
+    #old = '2_3_9_23_33_38_49_62'
+    nb_vac1 = new_gs.count('_') + 1
+    nb_vac2 = old_gs.count('_') + 1
+    if nb_vac1 != nb_vac2:
+        raise RuntimeError("the number of vacancy is not equal!")
+    e_new = str2energy(new_gs)
+    e_old = str2energy(old_gs)
+    if numpy.abs(e_new - e_old) < 0.001:
+        print('{0} Vac Yes'.format(nb_vac1))
+    else:
+        print('{0} Vac No!'.format(nb_vac1))
+        print('new gs: {0}'.format(e_new))
+        print('old gs: {0}'.format(e_old))
+        print("The energy of new gs will be calculated by DFT. If it is truely \nnew gs it will be added in ce fitness process as a new struct \nand the eci of ce will be update.")
+    print('+'*80)
 
 if __name__ == "__main__":
-    main()
-    print_gs()
+    #main()
+    #print_gs()
+    #print(get_epoch(15))
+
+
+    ### 16 vac
+    #new_gs = '0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63'
+    #old_gs = '0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63'
+    #compare_gs(new_gs,old_gs)
+
+    ### 15 vac
+    #new_gs = '4_5_6_20_22_26_28_29_30_31_41_50_51_52_59'
+    ##old_1 = '1_5_8_14_18_21_30_31_37_38_41_43_46_54_57'
+    #old_gs = '11_12_13_14_17_18_19_27_36_37_39_44_45_46_47'
+    #compare_gs(new_gs,old_gs)
+
+    ### 8 vac
+    #new_gs = '2_3_9_23_33_38_49_62'
+    #old_gs = '2_3_9_23_33_38_49_62'
+    #compare_gs(new_gs,old_gs)
+
+    ### 4 vac
+    ##new_gs = '22_29_31_51'
+    #new_gs = '12_23_36_44'
+    #old_gs = '21_30_41_57'
+    #compare_gs(new_gs,old_gs)
+
+    #print(str2energy('22_29_31_51'))
+    #print(str2energy('7_48_58_60'))
+
+    #test1 = ['O']*64
+    ## for minimun four vac
+    #for i in [7,48,58,60]:
+    #    test1[i] = 'Vac'
+    #t1 = EleIndv(test1)
+    #print(t1.ce_energy)
+    #t1.dft_energy() 
 
     #test1 = ['O','O','O','O'] * 16
     #test1 = ['O']*64
@@ -346,3 +426,11 @@ if __name__ == "__main__":
     #t1 = EleIndv(test1)
     #print(t1.ce_energy)
     #t1.dft_energy() 
+
+    test1 = ['O']*64
+    # calculate DOS 
+    #for i in [7,48,58,60]:
+    #    test1[i] = 'Vac'
+    t1 = EleIndv(test1)
+    print(t1.ce_energy)
+    t1.dft_energy() 
