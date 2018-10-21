@@ -8,24 +8,32 @@ __mail__ = 'yxcheng@buaa.edu.cn'
 """
 
 from __future__ import print_function
-import random
+import random, numpy
 
-import numpy
-
-from deap import algorithms
-from deap import base
-from deap import creator
-from deap import tools
+from deap import algorithms, base, creator, tools
 
 from pygace.ce import CE
 from copy import deepcopy
-import os, os.path
-import multiprocessing
-import uuid, pickle
-import shutil
+import os, os.path, multiprocessing, uuid, pickle, shutil
 
 from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 import sys
+
+class AbstractApp(object):
+    TEMPLATE_FILE = './data/lat_in.template'
+    TMP_DIR = os.path.abspath('tmp_dir')
+    PICKLE_DIR = os.path.abspath('pickle_bakup')
+    TEST_DES_DIR = os.path.abspath('res_dir')
+
+    SECOND_ELEMENT = ''
+    FIRST_ELEMENT = ''
+
+    TYPES_DICT = {}
+    PERFECT_ENERGY = 0.0
+
+
+    def __init__(self):
+        pass 
 
 if len(sys.argv) <= 1:
     NB_NB = 12
@@ -49,23 +57,34 @@ FIRST_ELEMENT = 'Ti_sv'
 
 TYPES_DICT = {SECOND_ELEMENT: 3, 'O': 2, FIRST_ELEMENT: 1,'Sr_sv':4}
 
-for dir in (TMP_DIR,PICKLE_DIR,TEST_RES_DIR):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+class STOApp(AbstractApp):
+    NB_NB = 0
+    MU_OXYGEN = -4.91223
+    PERFECT_STO = perfect_energy
 
-STO_CE = CE(site=1)
-#STO_CE.fit(dirname='./data/HfO2_unitce')
-STO_CE.fit(dirname='./data/iter1')
+    def __init__(self,nb_Nb= None,
+            perfect_energy=0.0, 
+            second_element='Nb_sv',
+            first_element='Ti_sv'):
 
-with open(TEMPLATE_FILE, 'r') as f:
-    TEMPLATE_FILE_STR = f.read()
+        super(AbstractApp,self).__init__()
+        self.NB_NB = nb_Nb or STOApp.NB_NB
+
+        for dir in (self.TMP_DIR, self.PICKLE_DIR, self.TEST_RES_DIR):
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+    
+        self.STO_CE = CE(site=1)
+        self.STO_CE.fit(dirname='./data/iter1')
+
+    with open(TEMPLATE_FILE, 'r') as f:
+        TEMPLATE_FILE_STR = f.read()
 
 energy_database_fname = 'energy_dict_{0}.pkl'.format(NB_NB)
 if os.path.exists(energy_database_fname):
     with open(energy_database_fname, 'r') as f:
         e_db = pickle.load(f)
     ENERGY_DICT = e_db
-    #print('energy database has {0} energies'.format(len(ENERGY_DICT)))
 else:
     ENERGY_DICT = {}
 
@@ -118,7 +137,6 @@ def evalEnergy(individual):
             #TYPES_ENERGY_DICT[typeslis] = energy
             #print('energy dict length is :',len(ENERGY_DICT))
             #print('calculation ',len(ENERGY_DICT))
-
     return energy,
 
 def initial():
