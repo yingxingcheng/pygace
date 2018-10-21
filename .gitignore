@@ -17,3 +17,5 @@ pygace/examples/sto/res_dir/*
 
 pygace/examples/bak/*
 save.sh
+
+.idea/*
