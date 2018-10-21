@@ -15,4 +15,5 @@ pygace/examples/sto/tmp_dir
 pygace/examples/sto/run.log
 pygace/examples/sto/res_dir/*
 
+pygace/examples/bak/*
 save.sh
