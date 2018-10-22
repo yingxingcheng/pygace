@@ -412,6 +412,18 @@ def god_view():
 
     get_all_unique_number()
 
+def create_dir_for_DFT(task_fname='./DFT_task.dat',app=None):
+    dirlis= numpy.loadtxt(task_fname,dtype=str)
+
+    print('#nb_Nb   c_Nb    e_ce    e_dft')
+    for d in dirlis[::-1]:
+        test1 = ['Ti_sv'] * 15
+        for atom_idx in [int(i) for i in d.split('_')]:
+            test1[atom_idx] = 'Nb_sv'
+        t1 = EleIndv(test1,app)
+        print(t1.ce_energy)
+        t1.dft_energy()
+
 if __name__ == "__main__":
 
 
@@ -435,12 +447,13 @@ if __name__ == "__main__":
     sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
     #
     #
-    # print('iter0',get_all_str_and_energy([8],sto_app=sto_app_iter0))
+    # print('iter0',get_all_str_and_energy([8],sto_app=sto_app_iterklle0))
     # print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter1))
 
 
     #simulation()
 
     #print_gs([0, 1],[sto_app_iter0,sto_app_iter1])
-    god_view()
+    #god_view()
+    create_dir_for_DFT(app=sto_app_iter1)
 
