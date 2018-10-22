@@ -19,3 +19,4 @@ pygace/examples/bak/*
 save.sh
 
 .idea/*
+pygace/examples/sto/env.cfg
