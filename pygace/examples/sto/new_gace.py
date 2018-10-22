@@ -342,66 +342,72 @@ def god_view():
 
 
     def get_all_unique_number():
-        with open('god_view.dat','w') as f:
-            for nb in range(1,15):
-                res_num_energy = get_all_str_and_energy(nb_Nb=nb,sto_app=sto_app_iter0)
-                tmp_energy_num = {}
-                for k,v in res_num_energy.items():
-                    tmp_energy_num[v] = k
-                #unic_res = set(res.values())
-                # energy: 2_3_11
+        with open('DFT_task.dat','w') as f_dft:
+            with open('god_view.dat','w') as f:
+                for nb in range(1,15):
+                    res_num_energy = get_all_str_and_energy(nb_Nb=nb,sto_app=sto_app_iter0)
+                    tmp_energy_num = {}
+                    for k,v in res_num_energy.items():
+                        tmp_energy_num[v] = k
+                    #unic_res = set(res.values())
+                    # energy: 2_3_11
 
-                re_tmp_num_energy = {}
-                for k, v in tmp_energy_num.items():
-                    re_tmp_num_energy[v] = k
-                # 2_3_11: energy
+                    re_tmp_num_energy = {}
+                    for k, v in tmp_energy_num.items():
+                        re_tmp_num_energy[v] = k
+                    # 2_3_11: energy
 
-                li = [(tmp_energy_num[v], v) for v in sorted(re_tmp_num_energy.values(),key=lambda x:float(x))]
-                print(li,file=f)
-                print(li)
-                #exit()
-                res_iter1_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter1)
+                    li = [(tmp_energy_num[v], v) for v in sorted(re_tmp_num_energy.values(),key=lambda x:float(x))]
+                    print(li,file=f)
+                    print(li)
+                    #exit()
+                    res_iter1_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter1)
 
-                ## get identical num_lis as iter0 except addition items
-                # 2_3_11: energy
-                key_of_iter1_in_iter0 = deepcopy(re_tmp_num_energy)
-                for _k in re_tmp_num_energy.keys():
-                    key_of_iter1_in_iter0[_k] = res_iter1_num_energy[_k]
+                    ## get identical num_lis as iter0 except addition items
+                    # 2_3_11: energy
+                    key_of_iter1_in_iter0 = deepcopy(re_tmp_num_energy)
+                    for _k in re_tmp_num_energy.keys():
+                        key_of_iter1_in_iter0[_k] = res_iter1_num_energy[_k]
 
-                ## reverse res_iter1
-                # energy: 2_3_11
-                tmp2_iter1_energy_num = {}
-                for k, v in res_iter1_num_energy.items():
-                    tmp2_iter1_energy_num[v] = k
-                #unic_res = set(res.values())
+                    ## reverse res_iter1
+                    # energy: 2_3_11
+                    tmp2_iter1_energy_num = {}
+                    for k, v in res_iter1_num_energy.items():
+                        tmp2_iter1_energy_num[v] = k
+                    #unic_res = set(res.values())
 
-                for _k in tmp2_iter1_energy_num.keys():
-                    if _k not in key_of_iter1_in_iter0.values():
-                        key_of_iter1_in_iter0[tmp2_iter1_energy_num[_k]] = _k
+                    for _k in tmp2_iter1_energy_num.keys():
+                        if _k not in key_of_iter1_in_iter0.values():
+                            key_of_iter1_in_iter0[tmp2_iter1_energy_num[_k]] = _k
 
-                ## add addition items which is not contained in iter0
+                    ## add addition items which is not contained in iter0
 
-                print('\n',file=f)
-                print('\n')
+                    print('\n',file=f)
+                    print('\n')
 
-                ## get rid of repeate items
-                # 2_3_11: energy
-                re_tmp2_num_energy = {}
-                for k, v in key_of_iter1_in_iter0.items():
-                    re_tmp2_num_energy[v] = k
+                    ## get rid of repeate items
+                    # 2_3_11: energy
+                    re_tmp2_num_energy = {}
+                    for k, v in key_of_iter1_in_iter0.items():
+                        re_tmp2_num_energy[v] = k
 
 
-                ## sorted by energy
-                li2 = [(re_tmp2_num_energy[v], v) for v in sorted(key_of_iter1_in_iter0.values(),key=lambda x:float(x))]
-                print(li2,file=f)
-                print(li2)
+                    ## sorted by energy
+                    li2 = [(re_tmp2_num_energy[v], v) for v in sorted(key_of_iter1_in_iter0.values(),key=lambda x:float(x))]
+                    print(li2,file=f)
+                    print(li2)
 
-                print(nb,len(tmp_energy_num.keys()), len(tmp2_iter1_energy_num.keys()),file=f)
-                print(nb,len(tmp_energy_num.keys()), len(tmp2_iter1_energy_num.keys()))
-                print('#'*80,file=f)
-                print('#'*80)
-                print('\n',file=f)
-                print('\n')
+                    print(nb,len(tmp_energy_num.keys()), len(tmp2_iter1_energy_num.keys()),file=f)
+                    print(nb,len(tmp_energy_num.keys()), len(tmp2_iter1_energy_num.keys()))
+                    print('#'*80,file=f)
+                    print('#'*80)
+                    print('\n',file=f)
+                    print('\n')
+
+                    ## wirte new tasks for DFT
+                    if li2[0][0] != li[0][0]:
+                        print(li2[0][0],file=f_dft)
+
         print('finished!')
 
     get_all_unique_number()
