@@ -45,8 +45,11 @@ class STOApp(object):
                  params_config_dict=None):
         cp = ConfigParser.ConfigParser()
         cp.read('./env.cfg')
-        corrdump_cmd = cp.get('ENV_PATH','CORRDUMP')
-        compare_crystal_cmd = cp.get('ENV_PATH','COMPARE_CRYSTAL')
+        corrdump_cmd = str(cp.get('ENV_PATH','CORRDUMP'))
+        compare_crystal_cmd = str(cp.get('ENV_PATH','COMPARE_CRYSTAL'))
+        #print(compare_crystal_cmd)
+        #compare_crystal_cmd =None
+        #corrdump_cmd = None
         self.sto_ce = CE(site=sto_ce_site,
                          compare_crystal_cmd=compare_crystal_cmd,
                          corrdump_cmd=corrdump_cmd)
