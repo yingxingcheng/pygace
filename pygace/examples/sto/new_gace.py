@@ -26,6 +26,8 @@ import shutil
 
 from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 
+import ConfigParser
+
 class STOApp(object):
     DEFAULT_SETUP = {
         'NB_NB': 12,
@@ -41,7 +43,13 @@ class STOApp(object):
     def __init__(self,sto_ce_site=1, sto_ce_dirname='./data/iter0',
                  ele_1st = 'Ti_sv', ele_2nd = 'Nb_sv',
                  params_config_dict=None):
-        self.sto_ce = CE(site=sto_ce_site)
+        cp = ConfigParser.ConfigParser()
+        cp.read('./env.cfg')
+        corrdump_cmd = cp.get('ENV_PATH','CORRDUMP')
+        compare_crystal_cmd = cp.get('ENV_PATH','COMPARE_CRYSTAL')
+        self.sto_ce = CE(site=sto_ce_site,
+                         compare_crystal_cmd=compare_crystal_cmd,
+                         corrdump_cmd=corrdump_cmd)
         self.sto_ce.fit(dirname=sto_ce_dirname)
         self.params_config_dict = deepcopy(STOApp.DEFAULT_SETUP)
         if params_config_dict:
