@@ -18,19 +18,30 @@ import subprocess
 #from collections import Counter
 #from ase import Atom
 
-CORRDUMP='/public/lgzhu-ICME/yxcheng/software/atat/corrdump '
-COMPARE_CRYSTAL='/public/lgzhu-ICME/yxcheng/bin/CompareCrystal '
+# ENV = 'ICME'
+# if ENV == 'ICME':
+#     COMPARE_CRYSTAL = '/public/lgzhu-ICME/yxcheng/bin/CompareCrystal '
+#     CORRDUMP = '/public/lgzhu-ICME/yxcheng/software/atat/corrdump '
+# else:
+#     COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
+#     CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
 
 # interface to ATAT
 class CE(object):
     """
     an interface of atat ce method
     """
+    COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
+    CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
 
-    def __init__(self, lat_in=None, site=16):
+    def __init__(self, lat_in=None, site=16, corrdump_cmd=None,compare_crystal=None):
         self.count = 0
         self.lat_in = lat_in
         self.site = site
+        if corrdump_cmd:
+            self.CORRDUMP = corrdump_cmd
+        if compare_crystal:
+            self.COMPARE_CRYSTAL = compare_crystal
 
     def __get_mess(self):
         if not self.lat_in:
@@ -78,7 +89,7 @@ class CE(object):
         """
         x is similar as a str.out file in atat
         """
-        _args = CORRDUMP + ' -c -s={0} -eci={1} -l={2} -cf={3}'
+        _args = self.CORRDUMP + ' -c -s={0} -eci={1} -l={2} -cf={3}'
         _args = _args.format(x, self.eci_out, self.lat_in, self.cluster_info)
         _y = self.corrdump(_args)
         return _y
@@ -118,12 +129,15 @@ class CE(object):
         # return 0.001
 
     @staticmethod
-    def compare_crystal(str1,str2,**kwargs):
+    def compare_crystal(str1,str2,compare_crystal_cmd=None,**kwargs):
+        if compare_crystal_cmd is None:
+            compare_crystal_cmd = 'CompareCrystal '
+
         assert(len(str1)==len(str2))
         ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
         at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
         verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
-        args =  COMPARE_CRYSTAL +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
+        args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
         args = args.format(str1,str2,ct,at,verbos)
         s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
         stdout,stderr= s.communicate()

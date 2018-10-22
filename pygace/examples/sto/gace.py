@@ -75,6 +75,11 @@ PREVIOUS_COUNT = len(ENERGY_DICT)
 
 
 def transver_to_struct(element_lis):
+    """
+    convert element list to ATAT str.out file
+    :param element_lis:
+    :return:
+    """
     tmp_str = deepcopy(TEMPLATE_FILE_STR)
     struct_str = str(tmp_str).format(*element_lis)
 
@@ -86,6 +91,12 @@ def transver_to_struct(element_lis):
     return _str_out
 
 def _ind_to_elis(individual):
+    """
+    convert individual (number list) to element list
+    :param individual:
+    :return:
+    """
+    # a function that convert `number list` to `element list`
     tmp_f = lambda x: SECOND_ELEMENT if x < NB_NB else FIRST_ELEMENT
     element_lis = [tmp_f(i) for i in individual]
     return element_lis
@@ -148,12 +159,7 @@ def initial():
 
     return toolbox
 
-toolbox = initial()
-
-def single_run( mission_name, iter):
-    #seed = 0
-    #random.seed(seed)
-
+def single_run( toolbox, mission_name, iter):
     pop = toolbox.population(n=150)
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -169,12 +175,12 @@ def single_run( mission_name, iter):
     pop = res[0]
     return pop, stats, hof
 
-def multiple_run(mission_name,iters):
+def multiple_run(toolbox, mission_name,iters):
     all_min = []
     all_best_son = []
     for i in range(iters):
         print('No. {0}'.format(i))
-        res = single_run(mission_name,i)
+        res = single_run(toolbox, mission_name,i)
         population = res[0]
         sorted_population = sorted(population, key=lambda ind: ind.fitness.values)
         all_min.append(evalEnergy(sorted_population[0]))
@@ -184,26 +190,12 @@ def multiple_run(mission_name,iters):
         if iters % 10 == 0:
             ENERGY_DICT = {}
     all_min = numpy.asarray(all_min)
-
     min_idx = numpy.argmin(all_min)
-    # print(all_min[min_idx])
-    # print(min_idx, all_best_son[min_idx])
-
-    # types_lis = [str(TYPES_DICT[i]) for i in all_best_son[min_idx]]
-    # typeslis = ''.join(types_lis)
-    # CE.compare_crystal()
-
 
     s_fname = os.path.join(TEST_RES_DIR,'{0}.txt')
     numpy.savetxt(s_fname.format(mission_name), all_min, fmt='%.3f')
 
-    # print('energy database has {0} energies'.format(len(ENERGY_DICT)))
-    # #if len(ENERGY_DICT) > PREVIOUS_COUNT + 100:
-    # with open(energy_database_fname, 'wb') as db_file:
-    #     pickle.dump(ENERGY_DICT, db_file)
-
     return [all_best_son[min_idx]]
-    #return all_best_son
 
 
 def main():
@@ -216,7 +208,7 @@ def main():
     #     toolbox.register("mate", gaceCrossover, select=1,
     #                      cross_num=cross_num)
     #     multiple_run(_name, 50)
-
+    toolbox = initial()
     toolbox.unregister("mate")
     mission_name = 'final-sto-iter0-'+str(NB_NB)+'nb-cm'
     ground_states = []
@@ -226,7 +218,7 @@ def main():
         toolbox.register("mate", gaceCrossover, select=cross_method,
                          cross_num=8)  # the best cross_num
         #ground_states.append(multiple_run(_name, 50))
-        ground_states.extend(multiple_run(_name, 50))
+        ground_states.extend(multiple_run(toolbox, _name, 50))
         toolbox.unregister("mate")
 
     # print(ground_states)
@@ -262,7 +254,8 @@ class EleIndv(object):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
         shutil.copyfile(str_name,os.path.join(cal_dir,dist_fname))
-        shutil.copyfile(os.path.join(STO_CE.work_path,'vasp.wrap'),os.path.join(cal_dir,'vasp.wrap'))
+        shutil.copyfile(os.path.join(STO_CE.work_path,'vasp.wrap'),
+                        os.path.join(cal_dir,'vasp.wrap'))
         #args = 'runstruct_vasp -nr '
         #s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
         # runstruct_vasp -nr
@@ -305,7 +298,7 @@ def print_gs():
 
 
 if __name__ == "__main__":
-    #main()
+    main()
     #print_gs()
 
     # for daiyuehua
@@ -323,40 +316,40 @@ if __name__ == "__main__":
     #print(t1.ele_lis)
     #print(float(STO_CE.get_total_energy(transver_to_struct(t1.ele_lis),is_corrdump=True)))
 
-    dirlis=[ 
-        '0_1_2_3_4_5_6_7_8_9_10_11_12_13_14',
-        '1_2_3_4_5_6_7_8_9_10_11_12_13_14',
-        '0_1_2_3_5_6_7_8_9_10_11_13_14',
-        '0_1_2_3_5_8_9_10_11_12_13_14',
-        '0_1_3_4_6_7_8_10_11_13_14',
-        '0_1_2_3_4_10_11_12_13_14',
-        '0_2_3_5_7_8_10_12_13',
-        '0_2_5_7_8_10_12_13',
-        '0_1_3_8_10_11_13',
-        '1_3_5_6_13_14',
-        '2_5_9_12_14',
-        '3_4_6_11',
-        '1_8_10',
-        '8_11',
-        '8']
-    print('#nb_Nb   c_Nb    e_ce    e_dft')
-    for d in dirlis[::-1]:
-        test1 = ['Ti_sv'] * 15
-        for atom_idx in [int(i) for i in d.split('_')]:
-            test1[atom_idx] = 'Nb_sv'
-        t1 = EleIndv(test1)
-        nb_Nb = len(d.split('_'))
-        print('{0}'.format(nb_Nb),end='   ')
-        print(nb_Nb/75. , end='   ')
-        #print(t1.ce_energy)
-        print(float(STO_CE.get_total_energy(transver_to_struct(t1.ele_lis),is_corrdump=True)), end='   ')
-        dft_efname = os.path.join('./','tmp_dir','iter0',d,'energy')
-        dft_e = numpy.loadtxt(dft_efname)
-        c_Nb = nb_Nb/75.
-        c_Ti = (15-nb_Nb)/75.
-        c_Sr = 15/75.
-        c_O = 45/75. 
-        dft_dump = dft_e/15 - (STO_CE.per_atom_energy['Nb'] * c_Nb + STO_CE.per_atom_energy['Ti'] * c_Ti + \
-                STO_CE.per_atom_energy['Sr'] * c_Sr + STO_CE.per_atom_energy['O'] * c_O )
-        print(dft_dump,end='    ')
-        print(t1.ce_energy)
+    # dirlis=[
+    #     '0_1_2_3_4_5_6_7_8_9_10_11_12_13_14',
+    #     '1_2_3_4_5_6_7_8_9_10_11_12_13_14',
+    #     '0_1_2_3_5_6_7_8_9_10_11_13_14',
+    #     '0_1_2_3_5_8_9_10_11_12_13_14',
+    #     '0_1_3_4_6_7_8_10_11_13_14',
+    #     '0_1_2_3_4_10_11_12_13_14',
+    #     '0_2_3_5_7_8_10_12_13',
+    #     '0_2_5_7_8_10_12_13',
+    #     '0_1_3_8_10_11_13',
+    #     '1_3_5_6_13_14',
+    #     '2_5_9_12_14',
+    #     '3_4_6_11',
+    #     '1_8_10',
+    #     '8_11',
+    #     '8']
+    # print('#nb_Nb   c_Nb    e_ce    e_dft')
+    # for d in dirlis[::-1]:
+    #     test1 = ['Ti_sv'] * 15
+    #     for atom_idx in [int(i) for i in d.split('_')]:
+    #         test1[atom_idx] = 'Nb_sv'
+    #     t1 = EleIndv(test1)
+    #     nb_Nb = len(d.split('_'))
+    #     print('{0}'.format(nb_Nb),end='   ')
+    #     print(nb_Nb/75. , end='   ')
+    #     #print(t1.ce_energy)
+    #     print(float(STO_CE.get_total_energy(transver_to_struct(t1.ele_lis),is_corrdump=True)), end='   ')
+    #     dft_efname = os.path.join('./','tmp_dir','iter0',d,'energy')
+    #     dft_e = numpy.loadtxt(dft_efname)
+    #     c_Nb = nb_Nb/75.
+    #     c_Ti = (15-nb_Nb)/75.
+    #     c_Sr = 15/75.
+    #     c_O = 45/75.
+    #     dft_dump = dft_e/15 - (STO_CE.per_atom_energy['Nb'] * c_Nb + STO_CE.per_atom_energy['Ti'] * c_Ti + \
+    #             STO_CE.per_atom_energy['Sr'] * c_Sr + STO_CE.per_atom_energy['O'] * c_O )
+    #     print(dft_dump,end='    ')
+    #     print(t1.ce_energy)

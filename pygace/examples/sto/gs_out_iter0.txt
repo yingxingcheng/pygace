@@ -1,0 +1,56 @@
+-602.79283623
+['Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv']
+
+
+-604.011728989
+['Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv']
+
+
+-605.145272115
+['Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv']
+
+
+-606.245815383
+['Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv']
+
+
+-607.267908989
+['Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv']
+
+
+-608.235702828
+['Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv']
+
+
+-609.188946729
+['Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv']
+
+
+-610.024741135
+['Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv']
+
+
+-610.835935648
+['Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv']
+
+
+-611.606930333
+['Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv']
+
+
+-612.331725216
+['Nb_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv']
+
+
+-613.003870326
+['Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Ti_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv']
+
+
+-613.646165565
+['Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv']
+
+
+-614.263860909
+['Nb_sv', 'Ti_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv', 'Nb_sv']
+
+
