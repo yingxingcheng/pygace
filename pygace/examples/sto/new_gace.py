@@ -398,8 +398,6 @@ def god_view():
                             pickle.dump((_iter0_num_energy,iter0_unique_energy_num,
                                          iter0_unique_num_energy,li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
 
-
-
                     ## iter1
                     pickle_name_iter1 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(1,nb)
                     pickle_name_iter1 = os.path.abspath(pickle_name_iter1)
