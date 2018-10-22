@@ -92,7 +92,6 @@ class CE(object):
         """
         _args = '{0} -c -s={1} -eci={2} -l={3} -cf={4}'.format(
             self.CORRDUMP,x, self.eci_out,self.lat_in,self.cluster_info)
-        print(_args)
         _y = self.corrdump(_args)
         return _y
 
