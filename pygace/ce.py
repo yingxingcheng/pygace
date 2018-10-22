@@ -34,14 +34,15 @@ class CE(object):
     COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
     CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
 
-    def __init__(self, lat_in=None, site=16, corrdump_cmd=None,compare_crystal=None):
+    def __init__(self, lat_in=None, site=16,
+                 corrdump_cmd=None,compare_crystal_cmd=None):
         self.count = 0
         self.lat_in = lat_in
         self.site = site
         if corrdump_cmd:
             self.CORRDUMP = corrdump_cmd
-        if compare_crystal:
-            self.COMPARE_CRYSTAL = compare_crystal
+        if compare_crystal_cmd:
+            self.COMPARE_CRYSTAL = compare_crystal_cmd
 
     def __get_mess(self):
         if not self.lat_in:
