@@ -599,53 +599,61 @@ def god_view():
         print('finished!')
 
 
-        #TODO
-        def get_info_from_iter_idx(iter_idx,nb,app):
-            ## iter3
-            pickle_name_iter3 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter_idx, nb)
-            pickle_name_iter3 = os.path.abspath(pickle_name_iter3)
-            if os.path.exists(pickle_name_iter3):
-                ## read from pickle
-                with open(pickle_name_iter3, 'rb') as fin_iter3:
-                    _iter3_num_energy, iter3_unique_energy_num, iter3_unique_num_energy, li3 = pickle.load(
-                        fin_iter3)
-            else:
-                _iter3_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=app)
-                _iter3_unique_energy_num = reverse_dict(_iter3_num_energy)
+    #TODO
+    def get_info_from_iter_idx(iter_idx,nb,apps,f_god):
+        ## iter3
+        assert(len(apps) == iter_idx + 1)
 
-                #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                pre_iter_res_num_energy3 = {}
-                for _k in iter0_unique_num_energy.keys():
-                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+        pickle_name_iter = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter_idx, nb)
+        pickle_name_iter = os.path.abspath(pickle_name_iter)
+        if os.path.exists(pickle_name_iter):
+            ## read from pickle
+            with open(pickle_name_iter, 'rb') as fin_iter:
+                _iter_num_energy, iter_unique_energy_num, iter_unique_num_energy, li = pickle.load(
+                    fin_iter)
+        else:
+            _iter_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=apps[-1])
+            _iter_unique_energy_num = reverse_dict(_iter_num_energy)
 
-                for _k in iter1_unique_num_energy.keys():
-                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+            #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
+            pre_iter_res_num_energy = {}
+            #for _app, _i in enumerate(apps[:-1]):
+            for _i in range(len(apps[:-1]),0,-1):
+                iteri_unique_num_energy = get_info_from_iter_idx(_i,nb,apps[0:_i],f_god)
+                for _k in iteri_unique_num_energy.keys():
+                    pre_iter_res_num_energy[_k] = _iter_num_energy[_k]
 
-                for _k in iter2_unique_num_energy.keys():
-                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+            # for _k in iter0_unique_num_energy.keys():
+            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+            #
+            # for _k in iter1_unique_num_energy.keys():
+            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+            #
+            # for _k in iter2_unique_num_energy.keys():
+            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
 
-                for _k in _iter3_unique_energy_num.keys():
-                    if _k not in pre_iter_res_num_energy3.values():
-                        pre_iter_res_num_energy3[_iter3_unique_energy_num[_k]] = _k
-                #print(pre_iter_res_num_energy)
+            for _k in _iter_unique_energy_num.keys():
+                if _k not in pre_iter_res_num_energy.values():
+                    pre_iter_res_num_energy[_iter_unique_energy_num[_k]] = _k
+            #print(pre_iter_res_num_energy)
 
-                ## get rid of repeate items
-                # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                iter3_unique_num_energy = deepcopy(pre_iter_res_num_energy3)
-                iter3_unique_energy_num = reverse_dict(iter3_unique_num_energy)
-                li3 = [(iter3_unique_energy_num[v], v) for v in
-                       sorted(iter3_unique_num_energy.values(), key=lambda x: float(x))]
+            ## get rid of repeate items
+            # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
+            iter_unique_num_energy = deepcopy(pre_iter_res_num_energy)
+            iter_unique_energy_num = reverse_dict(iter_unique_num_energy)
+            li = [(iter_unique_energy_num[v], v) for v in
+                   sorted(iter_unique_num_energy.values(), key=lambda x: float(x))]
 
-                ## save to pickle
-                with open(pickle_name_iter3, 'wb') as fout_iter3:
-                    pickle.dump((_iter3_num_energy, iter3_unique_energy_num,
-                                 iter3_unique_num_energy, li3), fout_iter3, pickle.HIGHEST_PROTOCOL)
-            ## print message
-            print(li0, file=f_god)
-            print(li0)
-            print('\n', file=f_god)
-            print('\n')
-            return iter3_unique_num_energy, li3
+            ## save to pickle
+            with open(pickle_name_iter, 'wb') as fout_iter:
+                pickle.dump((_iter_num_energy, iter_unique_energy_num,
+                             iter_unique_num_energy, li), fout_iter, pickle.HIGHEST_PROTOCOL)
+        ## print message
+        print(li, file=f_god)
+        print(li)
+        print('\n', file=f_god)
+        print('\n')
+        return iter_unique_num_energy
 
     get_all_unique_number()
 
