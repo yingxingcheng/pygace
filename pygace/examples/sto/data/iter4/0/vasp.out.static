@@ -1,0 +1,22 @@
+ running on   40 total cores
+ distrk:  each k-point on   40 cores,    1 groups
+ distr:  one band on   10 cores,    4 groups
+ using from now: INCAR     
+ vasp.5.4.4.18Apr17-6-g9f103f2a35 (build Oct 23 2017 21:22:35) complex          
+  
+ POSCAR found type information on POSCAR  O  Sr Ti
+ POSCAR found :  3 types and       5 ions
+ scaLAPACK will be used
+ LDA part: xc-table for Pade appr. of Perdew
+ found WAVECAR, reading the header
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ...
+ reading WAVECAR
+ the WAVECAR file was read successfully
+ initial charge from wavefunction
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1    -0.401034139976E+02   -0.40103E+02   -0.28934E-05  1440   0.521E-02    0.151E-02
+DAV:   2    -0.401034115975E+02    0.24001E-05   -0.42388E-05  1504   0.695E-02
+   1 F= -.40103412E+02 E0= -.40103412E+02  d E =0.000000E+00
+ writing wavefunctions

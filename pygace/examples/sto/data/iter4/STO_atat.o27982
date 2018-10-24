@@ -1,0 +1,41 @@
+mpdboot_cu16 (handle_mpd_output 971): Failed to establish a socket connection with cu15:54998 : [Errno 111] Connection refused
+mpdboot_cu16 (handle_mpd_output 993): failed to connect to mpd on cu15
+Warning: File /public/lgzhu-ICME/.machines.rc not found, running in single machine mode...
+for more information on the multiple machine mode type chl
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/0
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/0
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/1
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/1
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/2
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/2
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/3
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/3
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/4
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/4
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/7
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/7
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/8
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/8
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/5
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/5
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/6
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/6
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/9
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/9
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/16
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/16
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/10
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/10
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/14
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/14
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/28
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/28
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/29
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/29
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/17
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/17
+Running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/12
+Done running in /public/lgzhu-ICME/yxcheng/work/VASP/SrTiO3/atat/12
+mpdallexit: cannot connect to local mpd (/tmp/mpd2.console_lgzhu-ICME); possible causes:
+  1. no mpd is running on this host
+  2. an mpd is running but was started without a "console" (-n option)

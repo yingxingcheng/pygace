@@ -344,6 +344,7 @@ def god_view():
     sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
     sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
     sto_app_iter3 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter3')
+    sto_app_iter4 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter4')
 
     from itertools import combinations
     def get_num_lis(nb_Nb):
@@ -411,7 +412,8 @@ def god_view():
                         _iter1_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter1)
                         _iter1_unique_energy_num = reverse_dict(_iter1_num_energy)
 
-                        pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
+                        #pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
+                        pre_iter_res_num_energy = {}
                         for _k in iter0_unique_num_energy.keys():
                             pre_iter_res_num_energy[_k] = _iter1_num_energy[_k]
 
@@ -510,6 +512,49 @@ def god_view():
                         with open(pickle_name_iter3, 'wb') as fout_iter3:
                             pickle.dump((_iter3_num_energy, iter3_unique_energy_num,
                                          iter3_unique_num_energy, li3), fout_iter3, pickle.HIGHEST_PROTOCOL)
+
+                    ## iter4
+                    pickle_name_iter4 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(4, nb)
+                    pickle_name_iter4 = os.path.abspath(pickle_name_iter4)
+                    if os.path.exists(pickle_name_iter4):
+                        ## read from pickle
+                        with open(pickle_name_iter4, 'rb') as fin_iter4:
+                            _iter4_num_energy, iter4_unique_energy_num, iter4_unique_num_energy, li4 = pickle.load(
+                                fin_iter4)
+                    else:
+                        _iter4_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter4)
+                        _iter4_unique_energy_num = reverse_dict(_iter4_num_energy)
+
+                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
+                        pre_iter_res_num_energy4 = {}
+                        for _k in iter0_unique_num_energy.keys():
+                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
+
+                        for _k in iter1_unique_num_energy.keys():
+                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
+
+                        for _k in iter2_unique_num_energy.keys():
+                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
+
+                        for _k in iter3_unique_num_energy.keys():
+                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
+
+                        for _k in _iter4_unique_energy_num.keys():
+                            if _k not in pre_iter_res_num_energy4.values():
+                                pre_iter_res_num_energy4[_iter4_unique_energy_num[_k]] = _k
+                        #print(pre_iter_res_num_energy)
+
+                        ## get rid of repeate items
+                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
+                        iter4_unique_num_energy = deepcopy(pre_iter_res_num_energy4)
+                        iter4_unique_energy_num = reverse_dict(iter4_unique_num_energy)
+                        li4 = [(iter4_unique_energy_num[v], v) for v in
+                               sorted(iter4_unique_num_energy.values(), key=lambda x: float(x))]
+
+                        ## save to pickle
+                        with open(pickle_name_iter4, 'wb') as fout_iter4:
+                            pickle.dump((_iter4_num_energy, iter4_unique_energy_num,
+                                         iter4_unique_num_energy, li4), fout_iter4, pickle.HIGHEST_PROTOCOL)
                     ## print message
                     print(li0, file=f_god)
                     print(li0)
@@ -525,16 +570,22 @@ def god_view():
                     print('\n')
                     print(li3, file=f_god)
                     print(li3)
+                    print('\n', file=f_god)
+                    print('\n')
+                    print(li4, file=f_god)
+                    print(li4)
 
                     print(nb,len(iter0_unique_energy_num.keys()),
                           len(iter1_unique_energy_num.keys()),
                           len(iter2_unique_energy_num.keys()),
                           len(iter3_unique_energy_num.keys()),
+                          len(iter4_unique_energy_num.keys()),
                           file=f_god)
                     print(nb,len(iter0_unique_energy_num.keys()),
                           len(iter1_unique_energy_num.keys()),
                           len(iter2_unique_energy_num.keys()),
-                          len(iter3_unique_energy_num.keys())
+                          len(iter3_unique_energy_num.keys()),
+                          len(iter4_unique_energy_num.keys()),
                           )
                     print('#'*80,file=f_god)
                     print('#'*80)
@@ -542,10 +593,59 @@ def god_view():
                     print('\n')
 
                     # wirte new tasks for DFT
-                    if li3[0][0] not in  [li0[0][0], li1[0][0],li2[0][0]]:
-                        print(li3[0][0],file=f_dft)
+                    if li4[0][0] not in  [li0[0][0], li1[0][0],li2[0][0],li3[0][0]]:
+                        print(li4[0][0],file=f_dft)
 
         print('finished!')
+
+
+        #TODO
+        def get_info_from_iter_idx(iter_idx,nb,app):
+            ## iter3
+            pickle_name_iter3 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter_idx, nb)
+            pickle_name_iter3 = os.path.abspath(pickle_name_iter3)
+            if os.path.exists(pickle_name_iter3):
+                ## read from pickle
+                with open(pickle_name_iter3, 'rb') as fin_iter3:
+                    _iter3_num_energy, iter3_unique_energy_num, iter3_unique_num_energy, li3 = pickle.load(
+                        fin_iter3)
+            else:
+                _iter3_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=app)
+                _iter3_unique_energy_num = reverse_dict(_iter3_num_energy)
+
+                #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
+                pre_iter_res_num_energy3 = {}
+                for _k in iter0_unique_num_energy.keys():
+                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+
+                for _k in iter1_unique_num_energy.keys():
+                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+
+                for _k in iter2_unique_num_energy.keys():
+                    pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
+
+                for _k in _iter3_unique_energy_num.keys():
+                    if _k not in pre_iter_res_num_energy3.values():
+                        pre_iter_res_num_energy3[_iter3_unique_energy_num[_k]] = _k
+                #print(pre_iter_res_num_energy)
+
+                ## get rid of repeate items
+                # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
+                iter3_unique_num_energy = deepcopy(pre_iter_res_num_energy3)
+                iter3_unique_energy_num = reverse_dict(iter3_unique_num_energy)
+                li3 = [(iter3_unique_energy_num[v], v) for v in
+                       sorted(iter3_unique_num_energy.values(), key=lambda x: float(x))]
+
+                ## save to pickle
+                with open(pickle_name_iter3, 'wb') as fout_iter3:
+                    pickle.dump((_iter3_num_energy, iter3_unique_energy_num,
+                                 iter3_unique_num_energy, li3), fout_iter3, pickle.HIGHEST_PROTOCOL)
+            ## print message
+            print(li0, file=f_god)
+            print(li0)
+            print('\n', file=f_god)
+            print('\n')
+            return iter3_unique_num_energy, li3
 
     get_all_unique_number()
 
@@ -584,6 +684,7 @@ if __name__ == "__main__":
     sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
     sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
     sto_app_iter3 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter3')
+    sto_app_iter4 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter4')
     #
     #
     #print('iter0',get_all_str_and_energy([8],sto_app=sto_app_iter0))
@@ -596,5 +697,5 @@ if __name__ == "__main__":
 
     #print_gs([0, 1],[sto_app_iter0,sto_app_iter1])
     #god_view()
-    create_dir_for_DFT(app=sto_app_iter3)
+    create_dir_for_DFT(app=sto_app_iter4)
 
