@@ -5,7 +5,7 @@ pygace/examples/hfo2/pickle_bakup
 pygace/examples/hfo2/corrdump.log 
 pygace/examples/hfo2/tmp_dir
 pygace/examples/hfo2/run.log
-pygace/examples/hfo2/data/hfo2_iters/*
+#pygace/examples/hfo2/data/hfo2_iters/*
 *.pkl
 pygace/examples/hfo2/res_dir/*
 

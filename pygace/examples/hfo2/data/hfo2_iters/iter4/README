@@ -1,0 +1,6 @@
+add 20180605001 for 15 vac
+add 20180605002 for 15 vac
+iter3 != iter4
+but the energy of structures containing 16vac ground state has beed calculated.
+and the differences between ce energies of structures with 15vac specifed by GA 
+and DFT energies is less that 0.2eV
