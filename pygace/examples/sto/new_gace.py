@@ -266,6 +266,14 @@ class EleIndv(object):
         return float(self.ce_object.get_total_energy(
             self.app.transver_to_struct(self.ele_lis),is_corrdump=False))
 
+    @property
+    def ce_energy_ref(self):
+        if self.app is None:
+            raise RuntimeError
+
+        return float(self.ce_object.get_total_energy(
+            self.app.transver_to_struct(self.ele_lis),is_corrdump=True))
+
     def dft_energy(self,iters=None):
         str_name = self.app.transver_to_struct(self.ele_lis)
         if iters is None:
@@ -760,6 +768,58 @@ if __name__ == "__main__":
     #simulation()
 
     #print_gs([0, 1],[sto_app_iter0,sto_app_iter1])
-    god_view()
+    #god_view()
     #create_dir_for_DFT(app=sto_app_iter4)
+
+    
+    ###############################################
+    # get gs ; update 2018/10/29
+    ###############################################
+    def get_all_str_and_energy_gs(num_lis ,sto_app):
+        test1 = ['Ti_sv'] * 15
+
+        for i in num_lis:
+            test1[i] = 'Nb_sv'
+        t1 = EleIndv(test1,app=sto_app)
+
+        #res['_'.join([str(_i) for _i in num_lis])] ='{:.6f}'.format(t1.ce_energy)
+        nb = len(num_lis)
+        ce_energy = t1.ce_energy
+        ce_energy_ref = t1.ce_energy_ref
+        return nb, ce_energy, ce_energy_ref
+
+    print(get_all_str_and_energy_gs([0,1,2],sto_app_iter5))
+
+    import numpy as np
+
+    fname = './data/iter5/all_iters.dat'
+    iter_name = np.loadtxt(fname,dtype='str',usecols=0)
+    iter_dft_energy = np.loadtxt(fname,dtype=float,usecols=1)
+
+
+    from collections import OrderedDict
+    gs = OrderedDict()
+    
+    for i in  range(1,16):
+        # dft, ce
+        gs[i] = {'dft':0,'ce':0}
+
+    for _i , iter_i in enumerate(iter_name):
+        _iter_lis = iter_i.split('_')
+        iter_name = _iter_lis[0]
+        curr_dft_E = iter_dft_energy[_i]
+        #gs[i]['dft'] = iter_dft_energy[_i] 
+        iter_site = [ int(j) for j in _iter_lis[1:]]
+        nb, ce_E, ce_ref = get_all_str_and_energy_gs(iter_site,sto_app_iter5)
+        if gs[nb]['dft'] > curr_dft_E:
+        #if gs[nb]['ce'] > ce_E:
+            gs[nb]['dft'] = curr_dft_E
+            gs[nb]['ce'] = ce_E
+            gs[nb]['ce_ref'] = ce_ref
+            gs[nb]['name'] = iter_i
+        #res.update(_r)
+
+    for k, v in gs.items():
+        print('{0}    :    {1}'.format(k,v))
+
 
