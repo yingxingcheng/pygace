@@ -279,6 +279,11 @@ class EleIndv(object):
         return float(HFO2_CE.get_total_energy(
             transver_to_struct(self.ele_lis),is_corrdump=False))
 
+    @property
+    def ce_energy_corrdump(self):
+        return float(HFO2_CE.get_total_energy(
+            transver_to_struct(self.ele_lis),is_corrdump=True))
+
     def dft_energy(self,iters=None):
         str_name = transver_to_struct(self.ele_lis)
         if iters is None:
@@ -433,4 +438,5 @@ if __name__ == "__main__":
     #    test1[i] = 'Vac'
     t1 = EleIndv(test1)
     print(t1.ce_energy)
-    t1.dft_energy() 
+    #t1.dft_energy() 
+    #print(t1.ce_energy_corrdump)

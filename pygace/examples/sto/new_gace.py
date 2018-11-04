@@ -610,6 +610,55 @@ def god_view():
                         with open(pickle_name_iter5, 'wb') as fout_iter5:
                             pickle.dump((_iter5_num_energy, iter5_unique_energy_num,
                                          iter5_unique_num_energy, li5), fout_iter5, pickle.HIGHEST_PROTOCOL)
+                    
+                    ## iter6
+                    pickle_name_iter6 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(6, nb)
+                    pickle_name_iter6 = os.path.abspath(pickle_name_iter6)
+                    if os.path.exists(pickle_name_iter6):
+                        ## read from pickle
+                        with open(pickle_name_iter6, 'rb') as fin_iter6:
+                            _iter6_num_energy, iter6_unique_energy_num, iter6_unique_num_energy, li6 = pickle.load(
+                                fin_iter6)
+                    else:
+                        _iter6_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter6)
+                        _iter6_unique_energy_num = reverse_dict(_iter6_num_energy)
+
+                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
+                        pre_iter_res_num_energy6 = {}
+                        for _k in iter0_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in iter1_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in iter2_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in iter3_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in iter4_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in iter5_unique_num_energy.keys():
+                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
+
+                        for _k in _iter6_unique_energy_num.keys():
+                            if _k not in pre_iter_res_num_energy6.values():
+                                pre_iter_res_num_energy6[_iter6_unique_energy_num[_k]] = _k
+                        #print(pre_iter_res_num_energy)
+
+                        ## get rid of repeate items
+                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
+                        iter6_unique_num_energy = deepcopy(pre_iter_res_num_energy6)
+                        iter6_unique_energy_num = reverse_dict(iter6_unique_num_energy)
+                        li6 = [(iter6_unique_energy_num[v], v) for v in
+                               sorted(iter6_unique_num_energy.values(), key=lambda x: float(x))]
+
+                        ## save to pickle
+                        with open(pickle_name_iter6, 'wb') as fout_iter6:
+                            pickle.dump((_iter6_num_energy, iter6_unique_energy_num,
+                                         iter6_unique_num_energy, li6), fout_iter6, pickle.HIGHEST_PROTOCOL)
                     ## print message
                     print(li0, file=f_god)
                     print(li0)
@@ -633,6 +682,10 @@ def god_view():
                     print('\n')
                     print(li5, file=f_god)
                     print(li5)
+                    print('\n', file=f_god)
+                    print('\n')
+                    print(li6, file=f_god)
+                    print(li6)
 
                     print(nb,len(iter0_unique_energy_num.keys()),
                           len(iter1_unique_energy_num.keys()),
@@ -640,6 +693,7 @@ def god_view():
                           len(iter3_unique_energy_num.keys()),
                           len(iter4_unique_energy_num.keys()),
                           len(iter5_unique_energy_num.keys()),
+                          len(iter6_unique_energy_num.keys()),
                           file=f_god)
                     print(nb,len(iter0_unique_energy_num.keys()),
                           len(iter1_unique_energy_num.keys()),
@@ -647,6 +701,7 @@ def god_view():
                           len(iter3_unique_energy_num.keys()),
                           len(iter4_unique_energy_num.keys()),
                           len(iter5_unique_energy_num.keys()),
+                          len(iter6_unique_energy_num.keys()),
                           )
                     print('#'*80,file=f_god)
                     print('#'*80)
@@ -654,8 +709,12 @@ def god_view():
                     print('\n')
 
                     # wirte new tasks for DFT
-                    if li5[0][0] not in  [li0[0][0], li1[0][0],li2[0][0],li3[0][0],li4[0][0]]:
-                        print(li5[0][0],file=f_dft)
+                    if li6[0][0] not in  [li0[0][0], 
+                            li1[0][0],li2[0][0],
+                            li3[0][0],li4[0][0],
+                            li5[0][0],
+                            ]:
+                        print(li6[0][0],file=f_dft)
 
         print('finished!')
 
@@ -755,6 +814,7 @@ if __name__ == "__main__":
     sto_app_iter3 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter3')
     sto_app_iter4 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter4')
     sto_app_iter5 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter5')
+    sto_app_iter6 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter6')
     #
     #
     #print('iter0',get_all_str_and_energy([8],sto_app=sto_app_iter0))
@@ -766,6 +826,7 @@ if __name__ == "__main__":
 
 
     #simulation()
+    god_view()
 
     #print_gs([0, 1],[sto_app_iter0,sto_app_iter1])
     #god_view()
@@ -788,38 +849,46 @@ if __name__ == "__main__":
         ce_energy_ref = t1.ce_energy_ref
         return nb, ce_energy, ce_energy_ref
 
-    print(get_all_str_and_energy_gs([0,1,2],sto_app_iter5))
+    ##print(get_all_str_and_energy_gs([0,1,2],sto_app_iter5))
 
-    import numpy as np
+    ##import numpy as np
 
-    fname = './data/iter5/all_iters.dat'
-    iter_name = np.loadtxt(fname,dtype='str',usecols=0)
-    iter_dft_energy = np.loadtxt(fname,dtype=float,usecols=1)
-
-
-    from collections import OrderedDict
-    gs = OrderedDict()
-    
-    for i in  range(1,16):
-        # dft, ce
-        gs[i] = {'dft':0,'ce':0}
-
-    for _i , iter_i in enumerate(iter_name):
-        _iter_lis = iter_i.split('_')
-        iter_name = _iter_lis[0]
-        curr_dft_E = iter_dft_energy[_i]
-        #gs[i]['dft'] = iter_dft_energy[_i] 
-        iter_site = [ int(j) for j in _iter_lis[1:]]
-        nb, ce_E, ce_ref = get_all_str_and_energy_gs(iter_site,sto_app_iter5)
-        if gs[nb]['dft'] > curr_dft_E:
-        #if gs[nb]['ce'] > ce_E:
-            gs[nb]['dft'] = curr_dft_E
-            gs[nb]['ce'] = ce_E
-            gs[nb]['ce_ref'] = ce_ref
-            gs[nb]['name'] = iter_i
-        #res.update(_r)
-
-    for k, v in gs.items():
-        print('{0}    :    {1}'.format(k,v))
+    ##fname = './data/iter5/all_iters.dat'
+    ##iter_name = np.loadtxt(fname,dtype='str',usecols=0)
+    ##iter_dft_energy = np.loadtxt(fname,dtype=float,usecols=1)
 
 
+    ##from collections import OrderedDict
+    ##gs = OrderedDict()
+    ##
+    ##for i in  range(1,16):
+    ##    # dft, ce
+    ##    gs[i] = {'dft':0,'ce':0}
+
+    ##for _i , iter_i in enumerate(iter_name):
+    ##    _iter_lis = iter_i.split('_')
+    ##    iter_name = _iter_lis[0]
+    ##    curr_dft_E = iter_dft_energy[_i]
+    ##    #gs[i]['dft'] = iter_dft_energy[_i] 
+    ##    iter_site = [ int(j) for j in _iter_lis[1:]]
+    ##    nb, ce_E, ce_ref = get_all_str_and_energy_gs(iter_site,sto_app_iter5)
+    ##    if gs[nb]['dft'] > curr_dft_E:
+    ##    #if gs[nb]['ce'] > ce_E:
+    ##        gs[nb]['dft'] = curr_dft_E
+    ##        gs[nb]['ce'] = ce_E
+    ##        gs[nb]['ce_ref'] = ce_ref
+    ##        gs[nb]['name'] = iter_i
+    ##    #res.update(_r)
+
+    ##for k, v in gs.items():
+    ##    print('{0}    :    {1}'.format(k,v))
+
+
+    ##diff_ce_and_dft = []
+    ##for k, v in gs.items():
+    ##    diff_ce_and_dft.append(np.abs(gs[k]['dft']-gs[k]['ce']))
+
+    ##print(diff_ce_and_dft, max(diff_ce_and_dft))
+
+
+    #create_dir_for_DFT(task_fname='./DFT_task.dat',app=sto_app_iter5)
