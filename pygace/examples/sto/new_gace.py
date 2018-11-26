@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 """
 __title__ = ''
-__function__ = 'This module is used for XXX.'
+__function__ = 'This module is used for test of SrTi(1-x)Nb(x)O3 system.'
 __author__ = 'yxcheng'
 __mtime__ = '18-5-16'
 __mail__ = 'yxcheng@buaa.edu.cn'
@@ -22,13 +22,16 @@ from copy import deepcopy
 import os, os.path
 import multiprocessing
 import uuid, pickle
-import shutil
 
 from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
+from pygace.utility import  EleIndv, reverse_dict, get_num_lis
 
 import ConfigParser
 
 class STOApp(object):
+    """
+    An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp object
+    """
     DEFAULT_SETUP = {
         'NB_NB': 12,
         'NB_SITES': 15,
@@ -43,6 +46,14 @@ class STOApp(object):
     def __init__(self,sto_ce_site=1, sto_ce_dirname='./data/iter0',
                  ele_1st = 'Ti_sv', ele_2nd = 'Nb_sv',
                  params_config_dict=None):
+        """Initial function used to construct a STOApp object
+
+        :param sto_ce_site: the concept of site used in ATAT program.
+        :param sto_ce_dirname: a directory contain information of MMAPS or MAPS running
+        :param ele_1st: host atom type
+        :param ele_2nd: point-defect atom type
+        :param params_config_dict: config dict used to update defect dict
+        """
         cp = ConfigParser.ConfigParser()
         cp.read('./env.cfg')
         corrdump_cmd = str(cp.get('ENV_PATH','CORRDUMP'))
@@ -66,6 +77,12 @@ class STOApp(object):
         self.__get_energy_info_from_database()
 
     def update_ce(self, site=1, dirname='./data/iter0'):
+        """Function to update inner CE object
+
+        :param site:
+        :param dirname:
+        :return:
+        """
         self.sto_ce = CE(site=site)
         self.sto_ce.fit(dirname=dirname)
 
@@ -95,10 +112,11 @@ class STOApp(object):
         self.PREVIOUS_COUNT = len(self.ENERGY_DICT)
 
     def transver_to_struct(self, element_lis):
-        """
-        convert element list to ATAT str.out file
-        :param element_lis:
-        :return:
+        """Function used to transveer list of number to str.out file in `ATAT` program.
+
+        Convert element list to ATAT str.out file
+        :param element_lis: list of number
+        :return: str, filename of ATAT structure file, default `str.out`
         """
         tmp_str = deepcopy(self.TEMPLATE_FILE_STR)
         struct_str = str(tmp_str).format(*element_lis)
@@ -111,7 +129,7 @@ class STOApp(object):
             f.write(struct_str)
         return _str_out
 
-    def _ind_to_elis(self, individual):
+    def __ind_to_elis(self, individual):
         """
         convert individual (number list) to element list
         :param individual:
@@ -131,30 +149,31 @@ class STOApp(object):
         on a crystalline structures such that the energy of crystalline
         structures can obtain minimum value.
         """
-        element_lis = self._ind_to_elis(individual)
+        element_lis = self.__ind_to_elis(individual)
         types_lis = [str(self.type_dict[i]) for i in element_lis]
         typeslis = ''.join(types_lis)
 
         k = '_'.join(element_lis)
         if k in self.ENERGY_DICT.keys():
             energy = self.ENERGY_DICT[k]
-            #print('no calculation')
         else:
+            # TODO: optimize energy data saved in storage during executing process
             for e_type in self.TYPES_ENERGY_DICT.keys():
+                # TODO: never run here
                 if CE.compare_crystal(e_type,typeslis):
                     energy = self.TYPES_ENERGY_DICT[e_type]
             else:
-                energy = float(self.sto_ce.get_total_energy(self.transver_to_struct(element_lis),
-                                                        is_corrdump=False))
+                energy = float(self.sto_ce.get_total_energy(
+                    self.transver_to_struct(element_lis),
+                    is_corrdump=False))
                 # TODO get total energy from VASP based DFT
-                #energy = (energy - PERFECT_STO + NB_NB * MU_OXYGEN)/NB_NB
                 self.ENERGY_DICT[k] = energy
-                #TYPES_ENERGY_DICT[typeslis] = energy
-                #print('energy dict length is :',len(ENERGY_DICT))
-                #print('calculation ',len(ENERGY_DICT))
 
         return energy,
 
+    #-----------------------------------------------------------------------------
+    # Standard GA execute
+    #-----------------------------------------------------------------------------
     def initial(self):
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -224,7 +243,6 @@ class STOApp(object):
     def main(self,ce_iter=0, ga_iters=50):
         toolbox = self.initial()
         toolbox.unregister("mate")
-        #mission_name = 'sto-iter{0}-'+str(DEFAULT_SETUP['NB_NB'])+'nb-cm1'.format(ce_iter)
         toolbox.register("mate", gaceCrossover, select=1,cross_num=8)
 
         ground_states = []
@@ -235,78 +253,46 @@ class STOApp(object):
         with open(checkpoint, 'wb') as cp_file:
             pickle.dump(ground_states, cp_file)
 
-    # utility function
+    #-----------------------------------------------------------------------------
+    #utility function
+    #-----------------------------------------------------------------------------
     def get_ce(self):
+        """
+        Function used to get the CE object contained in STOApp object
+        :return: CE object
+        """
         return self.sto_ce
 
+    def create_dir_for_DFT(self, task_fname='./DFT_task.dat'):
+        # dirlis= numpy.loadtxt(task_fname,dtype=str)
 
-class EleIndv(object):
+        with open(task_fname, 'r') as fin:
+            dirlis = fin.readlines()
 
-    def __init__(self, ele_lis, app=None):
-        self.ele_lis = ele_lis
-        self.app = app
+        if len(dirlis) == 0:
+            print('no structures needed to calculate by DFT')
+            return
 
-    def __eq__(self, other):
-        raise NotImplemented
+        dirlis = [_dir.strip().strip('\n') for _dir in dirlis]
 
-    @property
-    def ce_object(self):
-        if self.app is None:
-            raise RuntimeError
-        return self.app.get_ce()
+        print('#nb_Nb   c_Nb    e_ce    e_dft')
+        for d in dirlis[::-1]:
+            test1 = ['Ti_sv'] * 15
+            for atom_idx in [int(i) for i in d.split('_')]:
+                test1[atom_idx] = 'Nb_sv'
+            t1 = EleIndv(test1, self)
+            print(t1.ce_energy)
+            #t1.dft_energy()
 
-    def set_app(self,app):
-        self.sto_app = app
-
-    @property
-    def ce_energy(self):
-        if self.app is None:
-            raise RuntimeError
-
-        return float(self.ce_object.get_total_energy(
-            self.app.transver_to_struct(self.ele_lis),is_corrdump=False))
-
-    @property
-    def ce_energy_ref(self):
-        if self.app is None:
-            raise RuntimeError
-
-        return float(self.ce_object.get_total_energy(
-            self.app.transver_to_struct(self.ele_lis),is_corrdump=True))
-
-    def dft_energy(self,iters=None):
-        str_name = self.app.transver_to_struct(self.ele_lis)
-        if iters is None:
-            iters = 'INF'
-        #random_fname = str(uuid.uuid1())
-        idx = [ str(i) for i, ele in enumerate(self.ele_lis)
-                if ele == self.app.params_config_dict['SECOND_ELEMENT'] ]
-        random_fname =  '_'.join(idx)
-        cal_dir = os.path.join(self.app.params_config_dict['TMP_DIR'],random_fname)
-        if not os.path.exists(cal_dir):
-            os.makedirs(cal_dir)
-        dist_fname = 'str.out'
-        shutil.copyfile(str_name,os.path.join(cal_dir,dist_fname))
-        shutil.copyfile(os.path.join(self.ce_object.work_path,'vasp.wrap'),
-                        os.path.join(cal_dir,'vasp.wrap'))
-        #args = 'runstruct_vasp -nr '
-        #s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
-        # runstruct_vasp -nr
-
-    def is_correct(self):
-        """
-        return whether are the dft energy and the ce energy of indv equivalent
-        :return: bool
-        """
-        raise NotImplementedError
-
-    def __str__(self):
-        return '_'.join(self.ele_lis)
-
-    def __repr__(self):
-        return self.__str__()
 
 def print_gs(ce_iters,sto_apps):
+    """Function used to extract ground-state information from pickle file saved during GACE
+    running.
+
+    :param ce_iters: list of number
+    :param sto_apps: list STOApp
+    :return: None
+    """
     #sto_app = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
 
     def get_checkpoints(ce_iter,nb_Nb):
@@ -328,6 +314,12 @@ def print_gs(ce_iters,sto_apps):
                     #i.dft_energy()
 
 def simulation():
+    """Standard GACE running entrance, in this example, this method is not used because the number of
+    all candidate configurations in sample space is limited. However, a method using violent enumeration
+    to obtain CE energies and configurations is introduced, more detail see function `god_view`.
+
+    :return: None
+    """
     sto_app_iter0 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
     sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
     #sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
@@ -338,505 +330,156 @@ def simulation():
             app.main(ce_iter=iter_idx)
         #main(ce_iter=1)
 
-def save_to_pickle(f,python_obj):
-    #with open(filename, 'wb') as f:
-    pickle.dump(python_obj, f, pickle.HIGHEST_PROTOCOL)  # uid, iid
-    # pickle.dump(cate_list, f, pickle.HIGHEST_PROTOCOL)  # cid of iid line
-    # pickle.dump((user_count, item_count, cate_count, example_count),
-    #             f, pickle.HIGHEST_PROTOCOL)
-    # pickle.dump((asin_key, cate_key, revi_key), f, pickle.HIGHEST_PROTOCOL)
+def god_view(iter_idx):
+    """
+    In some cases, the number of all candidate configurations in sample space is limited, and we can enumerate
+    these configurations one by one to calculate CE energis, which is a fast and efficient way to obtain potential
+    ground-state structures than standard genetic algorithms selection.
+    :param iter_idx: the time of iteration.
+    :return: None
+    """
+    sto_apps = []
+    for i in range(iter_idx+1):
+        sto_apps.append(STOApp(sto_ce_site=1,sto_ce_dirname='./data/iter{0}'.format(iter_idx)))
 
-
-def god_view():
-    sto_app_iter0 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
-    sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
-    sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
-    sto_app_iter3 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter3')
-    sto_app_iter4 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter4')
-    sto_app_iter5 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter5')
-
-    from itertools import combinations
-    def get_num_lis(nb_Nb):
-        for i in  combinations(range(0,15),nb_Nb):
-            yield  i
-
-    def get_all_str_and_energy(nb_Nb,sto_app):
+    def get_all_by_violent(nb_Nb,sto_app):
+        """
+        get all possibilities with ce energy by specified the number of
+        point-defect atom and which app is used.
+        :param nb_Nb:
+        :param sto_app:
+        :return:
+        """
         res = {}
-        for atom_idx_lis in get_num_lis(nb_Nb):
+        for atom_idx_lis in get_num_lis(nb_Nb,nb_site=15):
             test1 = ['Ti_sv'] * 15
 
             for i in atom_idx_lis:
                 test1[i] = 'Nb_sv'
             t1 = EleIndv(test1,app=sto_app)
 
-            res['_'.join([str(_i) for _i in atom_idx_lis])] ='{:.6f}'.format(t1.ce_energy)
+            res['_'.join([str(_i) for _i in atom_idx_lis])] =\
+                '{:.6f}'.format(t1.ce_energy)
         return res
 
-    def reverse_dict(d):
-        """
-        reverse dict key:value to value:key
-        :param d:
-        :return:
-        """
-        tmp_d = {}
-        for _k, _v in d.items():
-            tmp_d[_v] = _k
-        return tmp_d
 
+    def F(iter, nb, sto_app, pre_iter_res_num_energy_lis):
+        """
+        a helper function is used to obtain previous iterations execution information.
+        :param iter: the time of iteration
+        :param nb: the number of point-defect
+        :param sto_app: STOApp object
+        :param pre_iter_res_num_energy_lis: a list of dicts of number and energy of all previous iterations
+        :return: list
+        """
+        pickle_name_iter0 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter, nb)
+        pickle_name_iter0 = os.path.abspath(pickle_name_iter0)
+        if os.path.exists(pickle_name_iter0):
+            ## read from pickle
+            with open(pickle_name_iter0, 'rb') as fin_iter0:
+                _iter0_num_energy, iter0_unique_energy_num, iter0_unique_num_energy, li0 = pickle.load(
+                    fin_iter0)
+        else:
+            _iter0_num_energy = get_all_by_violent(nb_Nb=nb, sto_app=sto_app)
+            _iter0_unique_energy_num = reverse_dict(_iter0_num_energy)
 
-    def get_all_unique_number(apps=None):
+            # pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
+            pre_iter_res_num_energy = {}
+            for _pre_iter_res_num_energy in pre_iter_res_num_energy_lis:
+                for _k in _pre_iter_res_num_energy:
+                    pre_iter_res_num_energy[_k] = _iter0_num_energy[_k]
+
+            for _k in _iter0_unique_energy_num.keys():
+                if _k not in pre_iter_res_num_energy.values():
+                    pre_iter_res_num_energy[_iter0_unique_energy_num[_k]] = _k
+
+            iter0_unique_num_energy = deepcopy(pre_iter_res_num_energy)
+            iter0_unique_energy_num = reverse_dict(iter0_unique_num_energy)
+            li0 = [(iter0_unique_energy_num[v], v) for v in
+                   sorted(iter0_unique_num_energy.values(), key=lambda x: float(x))]
+
+            with open(pickle_name_iter0, 'wb') as fout_iter0:
+                pickle.dump((_iter0_num_energy, iter0_unique_energy_num,
+                             iter0_unique_num_energy, li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
+        return iter0_unique_num_energy, li0, iter0_unique_energy_num
+
+    def get_all_unique_number(iter_idx):
+        """
+        write execution result to file and obtain ground-state configuration and its CE energies if there is no
+         responding pickle file exists.
+        :param iter_idx: the index of iteration
+        :return: None
+        """
         god_view_res_path = 'god_view'
         if not os.path.exists(god_view_res_path):
             os.makedirs(god_view_res_path)
 
-        with open('DFT_task.dat','w') as f_dft:
-            with open('god_view.dat','w') as f_god:
-                for nb in range(0,16):
+        with open('DFT_task.dat', 'w') as f_dft:
+            with open('god_view.dat', 'w') as f_god:
+                for nb in range(0, 16):
+
+                    len_lis = []
+                    li_lis = []
                     ## iter0
-                    pickle_name_iter0 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(0,nb)
-                    pickle_name_iter0 = os.path.abspath(pickle_name_iter0)
-                    if os.path.exists(pickle_name_iter0):
-                        ## read from pickle
-                        with open(pickle_name_iter0,'rb') as fin_iter0:
-                            _iter0_num_energy,iter0_unique_energy_num, iter0_unique_num_energy,li0 = pickle.load(fin_iter0)
-                    else:
-                        _iter0_num_energy = get_all_str_and_energy(nb_Nb=nb,sto_app=sto_app_iter0)
-                        iter0_unique_energy_num = reverse_dict(_iter0_num_energy)
-                        iter0_unique_num_energy = reverse_dict(iter0_unique_energy_num)
-                        li0 = [(iter0_unique_energy_num[v], v) for v in
-                              sorted(iter0_unique_num_energy.values(),key=lambda x:float(x))]
-                        ## save to pickle
-                        with open(pickle_name_iter0,'wb') as fout_iter0:
-                            pickle.dump((_iter0_num_energy,iter0_unique_energy_num,
-                                         iter0_unique_num_energy,li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
+                    pre_iter_res_num_energy_lis = []
+                    for iter in range(iter_idx+1):
+                        _pre_iter, li0, iter0_unique_energy_num = \
+                            F(iter, nb, sto_apps[iter_idx],pre_iter_res_num_energy_lis)
+                        pre_iter_res_num_energy_lis.append(_pre_iter)
+                        len_lis.append(len(iter0_unique_energy_num.keys()))
+                        li_lis.append(li0)
+                        print(li0, file=f_god)
+                        print(li0)
+                        print('\n', file=f_god)
+                        print('\n')
 
-                    ## iter1
-                    pickle_name_iter1 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(1,nb)
-                    pickle_name_iter1 = os.path.abspath(pickle_name_iter1)
-                    if os.path.exists(pickle_name_iter1):
-                        ## read from pickle
-                        with open(pickle_name_iter1,'rb') as fin_iter1:
-                            _iter1_num_energy,iter1_unique_energy_num, iter1_unique_num_energy,li1 = pickle.load(fin_iter1)
-                    else:
-                        _iter1_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter1)
-                        _iter1_unique_energy_num = reverse_dict(_iter1_num_energy)
+                    print(nb,len_lis,file=f_god)
+                    print(nb,len_lis)
 
-                        #pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy[_k] = _iter1_num_energy[_k]
-
-                        for _k in _iter1_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy.values():
-                                pre_iter_res_num_energy[_iter1_unique_energy_num[_k]] = _k
-
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        #iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter1_unique_num_energy = deepcopy(pre_iter_res_num_energy)
-                        iter1_unique_energy_num = reverse_dict(iter1_unique_num_energy)
-                        li1 = [(iter1_unique_energy_num[v], v) for v in
-                               sorted(iter1_unique_num_energy.values(),key=lambda x:float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter1,'wb') as fout_iter1:
-                            pickle.dump((_iter1_num_energy,iter1_unique_energy_num,
-                                         iter1_unique_num_energy,li1), fout_iter1, pickle.HIGHEST_PROTOCOL)
-
-                    ## iter2
-                    pickle_name_iter2 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(2, nb)
-                    pickle_name_iter2 = os.path.abspath(pickle_name_iter2)
-                    if os.path.exists(pickle_name_iter2):
-                        ## read from pickle
-                        with open(pickle_name_iter2, 'rb') as fin_iter2:
-                            _iter2_num_energy, iter2_unique_energy_num, iter2_unique_num_energy, li2 = pickle.load(
-                                fin_iter2)
-                    else:
-                        _iter2_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter2)
-                        _iter2_unique_energy_num = reverse_dict(_iter2_num_energy)
-
-                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy2 = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy2[_k] = _iter2_num_energy[_k]
-
-                        for _k in iter1_unique_num_energy.keys():
-                            pre_iter_res_num_energy2[_k] = _iter2_num_energy[_k]
-
-                        for _k in _iter2_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy2.values():
-                                pre_iter_res_num_energy2[_iter2_unique_energy_num[_k]] = _k
-
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter2_unique_num_energy = deepcopy(pre_iter_res_num_energy2)
-                        iter2_unique_energy_num = reverse_dict(iter2_unique_num_energy)
-                        li2 = [(iter2_unique_energy_num[v], v) for v in
-                               sorted(iter2_unique_num_energy.values(), key=lambda x: float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter2, 'wb') as fout_iter2:
-                            pickle.dump((_iter2_num_energy, iter2_unique_energy_num,
-                                         iter2_unique_num_energy, li2), fout_iter2, pickle.HIGHEST_PROTOCOL)
-
-                    ## iter3
-                    pickle_name_iter3 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(3, nb)
-                    pickle_name_iter3 = os.path.abspath(pickle_name_iter3)
-                    if os.path.exists(pickle_name_iter3):
-                        ## read from pickle
-                        with open(pickle_name_iter3, 'rb') as fin_iter3:
-                            _iter3_num_energy, iter3_unique_energy_num, iter3_unique_num_energy, li3 = pickle.load(
-                                fin_iter3)
-                    else:
-                        _iter3_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter3)
-                        _iter3_unique_energy_num = reverse_dict(_iter3_num_energy)
-
-                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy3 = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-
-                        for _k in iter1_unique_num_energy.keys():
-                            pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-
-                        for _k in iter2_unique_num_energy.keys():
-                            pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-
-                        for _k in _iter3_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy3.values():
-                                pre_iter_res_num_energy3[_iter3_unique_energy_num[_k]] = _k
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter3_unique_num_energy = deepcopy(pre_iter_res_num_energy3)
-                        iter3_unique_energy_num = reverse_dict(iter3_unique_num_energy)
-                        li3 = [(iter3_unique_energy_num[v], v) for v in
-                               sorted(iter3_unique_num_energy.values(), key=lambda x: float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter3, 'wb') as fout_iter3:
-                            pickle.dump((_iter3_num_energy, iter3_unique_energy_num,
-                                         iter3_unique_num_energy, li3), fout_iter3, pickle.HIGHEST_PROTOCOL)
-
-                    ## iter4
-                    pickle_name_iter4 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(4, nb)
-                    pickle_name_iter4 = os.path.abspath(pickle_name_iter4)
-                    if os.path.exists(pickle_name_iter4):
-                        ## read from pickle
-                        with open(pickle_name_iter4, 'rb') as fin_iter4:
-                            _iter4_num_energy, iter4_unique_energy_num, iter4_unique_num_energy, li4 = pickle.load(
-                                fin_iter4)
-                    else:
-                        _iter4_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter4)
-                        _iter4_unique_energy_num = reverse_dict(_iter4_num_energy)
-
-                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy4 = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
-
-                        for _k in iter1_unique_num_energy.keys():
-                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
-
-                        for _k in iter2_unique_num_energy.keys():
-                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
-
-                        for _k in iter3_unique_num_energy.keys():
-                            pre_iter_res_num_energy4[_k] = _iter4_num_energy[_k]
-
-                        for _k in _iter4_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy4.values():
-                                pre_iter_res_num_energy4[_iter4_unique_energy_num[_k]] = _k
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter4_unique_num_energy = deepcopy(pre_iter_res_num_energy4)
-                        iter4_unique_energy_num = reverse_dict(iter4_unique_num_energy)
-                        li4 = [(iter4_unique_energy_num[v], v) for v in
-                               sorted(iter4_unique_num_energy.values(), key=lambda x: float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter4, 'wb') as fout_iter4:
-                            pickle.dump((_iter4_num_energy, iter4_unique_energy_num,
-                                         iter4_unique_num_energy, li4), fout_iter4, pickle.HIGHEST_PROTOCOL)
-
-                    ## iter5
-                    pickle_name_iter5 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(5, nb)
-                    pickle_name_iter5 = os.path.abspath(pickle_name_iter5)
-                    if os.path.exists(pickle_name_iter5):
-                        ## read from pickle
-                        with open(pickle_name_iter5, 'rb') as fin_iter5:
-                            _iter5_num_energy, iter5_unique_energy_num, iter5_unique_num_energy, li5 = pickle.load(
-                                fin_iter5)
-                    else:
-                        _iter5_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter5)
-                        _iter5_unique_energy_num = reverse_dict(_iter5_num_energy)
-
-                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy5 = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy5[_k] = _iter5_num_energy[_k]
-
-                        for _k in iter1_unique_num_energy.keys():
-                            pre_iter_res_num_energy5[_k] = _iter5_num_energy[_k]
-
-                        for _k in iter2_unique_num_energy.keys():
-                            pre_iter_res_num_energy5[_k] = _iter5_num_energy[_k]
-
-                        for _k in iter3_unique_num_energy.keys():
-                            pre_iter_res_num_energy5[_k] = _iter5_num_energy[_k]
-
-                        for _k in iter4_unique_num_energy.keys():
-                            pre_iter_res_num_energy5[_k] = _iter5_num_energy[_k]
-
-                        for _k in _iter5_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy5.values():
-                                pre_iter_res_num_energy5[_iter5_unique_energy_num[_k]] = _k
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter5_unique_num_energy = deepcopy(pre_iter_res_num_energy5)
-                        iter5_unique_energy_num = reverse_dict(iter5_unique_num_energy)
-                        li5 = [(iter5_unique_energy_num[v], v) for v in
-                               sorted(iter5_unique_num_energy.values(), key=lambda x: float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter5, 'wb') as fout_iter5:
-                            pickle.dump((_iter5_num_energy, iter5_unique_energy_num,
-                                         iter5_unique_num_energy, li5), fout_iter5, pickle.HIGHEST_PROTOCOL)
-                    
-                    ## iter6
-                    pickle_name_iter6 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(6, nb)
-                    pickle_name_iter6 = os.path.abspath(pickle_name_iter6)
-                    if os.path.exists(pickle_name_iter6):
-                        ## read from pickle
-                        with open(pickle_name_iter6, 'rb') as fin_iter6:
-                            _iter6_num_energy, iter6_unique_energy_num, iter6_unique_num_energy, li6 = pickle.load(
-                                fin_iter6)
-                    else:
-                        _iter6_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=sto_app_iter6)
-                        _iter6_unique_energy_num = reverse_dict(_iter6_num_energy)
-
-                        #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-                        pre_iter_res_num_energy6 = {}
-                        for _k in iter0_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in iter1_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in iter2_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in iter3_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in iter4_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in iter5_unique_num_energy.keys():
-                            pre_iter_res_num_energy6[_k] = _iter6_num_energy[_k]
-
-                        for _k in _iter6_unique_energy_num.keys():
-                            if _k not in pre_iter_res_num_energy6.values():
-                                pre_iter_res_num_energy6[_iter6_unique_energy_num[_k]] = _k
-                        #print(pre_iter_res_num_energy)
-
-                        ## get rid of repeate items
-                        # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-                        iter6_unique_num_energy = deepcopy(pre_iter_res_num_energy6)
-                        iter6_unique_energy_num = reverse_dict(iter6_unique_num_energy)
-                        li6 = [(iter6_unique_energy_num[v], v) for v in
-                               sorted(iter6_unique_num_energy.values(), key=lambda x: float(x))]
-
-                        ## save to pickle
-                        with open(pickle_name_iter6, 'wb') as fout_iter6:
-                            pickle.dump((_iter6_num_energy, iter6_unique_energy_num,
-                                         iter6_unique_num_energy, li6), fout_iter6, pickle.HIGHEST_PROTOCOL)
-                    ## print message
-                    print(li0, file=f_god)
-                    print(li0)
+                    print('#' * 80, file=f_god)
+                    print('#' * 80)
                     print('\n', file=f_god)
                     print('\n')
-                    print(li1,file=f_god)
-                    print(li1)
-                    print('\n', file=f_god)
-                    print('\n')
-                    print(li2, file=f_god)
-                    print(li2)
-                    print('\n', file=f_god)
-                    print('\n')
-                    print(li3, file=f_god)
-                    print(li3)
-                    print('\n', file=f_god)
-                    print('\n')
-                    print(li4, file=f_god)
-                    print(li4)
-                    print('\n', file=f_god)
-                    print('\n')
-                    print(li5, file=f_god)
-                    print(li5)
-                    print('\n', file=f_god)
-                    print('\n')
-                    print(li6, file=f_god)
-                    print(li6)
 
-                    print(nb,len(iter0_unique_energy_num.keys()),
-                          len(iter1_unique_energy_num.keys()),
-                          len(iter2_unique_energy_num.keys()),
-                          len(iter3_unique_energy_num.keys()),
-                          len(iter4_unique_energy_num.keys()),
-                          len(iter5_unique_energy_num.keys()),
-                          len(iter6_unique_energy_num.keys()),
-                          file=f_god)
-                    print(nb,len(iter0_unique_energy_num.keys()),
-                          len(iter1_unique_energy_num.keys()),
-                          len(iter2_unique_energy_num.keys()),
-                          len(iter3_unique_energy_num.keys()),
-                          len(iter4_unique_energy_num.keys()),
-                          len(iter5_unique_energy_num.keys()),
-                          len(iter6_unique_energy_num.keys()),
-                          )
-                    print('#'*80,file=f_god)
-                    print('#'*80)
-                    print('\n',file=f_god)
-                    print('\n')
 
                     # wirte new tasks for DFT
-                    if li6[0][0] not in  [li0[0][0], 
-                            li1[0][0],li2[0][0],
-                            li3[0][0],li4[0][0],
-                            li5[0][0],
-                            ]:
-                        print(li6[0][0],file=f_dft)
+                    li_last = li_lis[-1][0][0]
+                    _li_pool = [_li[0][0] for _li in li_lis[0:-1]]
+                    if li_last not in _li_pool:
+                        print(li_last, file=f_dft)
 
         print('finished!')
 
-
-    #TODO
-    def get_info_from_iter_idx(iter_idx,nb,apps,f_god):
-        ## iter3
-        assert(len(apps) == iter_idx + 1)
-
-        pickle_name_iter = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter_idx, nb)
-        pickle_name_iter = os.path.abspath(pickle_name_iter)
-        if os.path.exists(pickle_name_iter):
-            ## read from pickle
-            with open(pickle_name_iter, 'rb') as fin_iter:
-                _iter_num_energy, iter_unique_energy_num, iter_unique_num_energy, li = pickle.load(
-                    fin_iter)
-        else:
-            _iter_num_energy = get_all_str_and_energy(nb_Nb=nb, sto_app=apps[-1])
-            _iter_unique_energy_num = reverse_dict(_iter_num_energy)
-
-            #pre_iter_res_num_energy2 = deepcopy(iter0_unique_num_energy)
-            pre_iter_res_num_energy = {}
-            #for _app, _i in enumerate(apps[:-1]):
-            for _i in range(len(apps[:-1]),0,-1):
-                iteri_unique_num_energy = get_info_from_iter_idx(_i,nb,apps[0:_i],f_god)
-                for _k in iteri_unique_num_energy.keys():
-                    pre_iter_res_num_energy[_k] = _iter_num_energy[_k]
-
-            # for _k in iter0_unique_num_energy.keys():
-            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-            #
-            # for _k in iter1_unique_num_energy.keys():
-            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-            #
-            # for _k in iter2_unique_num_energy.keys():
-            #     pre_iter_res_num_energy3[_k] = _iter3_num_energy[_k]
-
-            for _k in _iter_unique_energy_num.keys():
-                if _k not in pre_iter_res_num_energy.values():
-                    pre_iter_res_num_energy[_iter_unique_energy_num[_k]] = _k
-            #print(pre_iter_res_num_energy)
-
-            ## get rid of repeate items
-            # iter1_unique_num_energy = reverse_dict(pre_iter_res_num_energy)
-            iter_unique_num_energy = deepcopy(pre_iter_res_num_energy)
-            iter_unique_energy_num = reverse_dict(iter_unique_num_energy)
-            li = [(iter_unique_energy_num[v], v) for v in
-                   sorted(iter_unique_num_energy.values(), key=lambda x: float(x))]
-
-            ## save to pickle
-            with open(pickle_name_iter, 'wb') as fout_iter:
-                pickle.dump((_iter_num_energy, iter_unique_energy_num,
-                             iter_unique_num_energy, li), fout_iter, pickle.HIGHEST_PROTOCOL)
-        ## print message
-        print(li, file=f_god)
-        print(li)
-        print('\n', file=f_god)
-        print('\n')
-        return iter_unique_num_energy
-
-    get_all_unique_number()
-
-def create_dir_for_DFT(task_fname='./DFT_task.dat',app=None):
-    dirlis= numpy.loadtxt(task_fname,dtype=str)
-
-    print('#nb_Nb   c_Nb    e_ce    e_dft')
-    for d in dirlis[::-1]:
-        test1 = ['Ti_sv'] * 15
-        for atom_idx in [int(i) for i in d.split('_')]:
-            test1[atom_idx] = 'Nb_sv'
-        t1 = EleIndv(test1,app)
-        print(t1.ce_energy)
-        t1.dft_energy()
+    get_all_unique_number(iter_idx)
 
 if __name__ == "__main__":
 
-
-    #god_view()
     #simulation()
 
-    def get_all_str_and_energy(num_lis ,sto_app):
+    def get_single_res(num_lis ,sto_app):
+        """
+        A tool function which is used to obtain CE energies and CE reference energies of a configuration by give a
+        list of number. A STOApp object should be given.
+        :param num_lis: list of number
+        :param sto_app: STOApp object
+        :return:
+        """
         res = {}
-
         test1 = ['Ti_sv'] * 15
-
         for i in num_lis:
             test1[i] = 'Nb_sv'
         t1 = EleIndv(test1,app=sto_app)
-
         res['_'.join([str(_i) for _i in num_lis])] ='{:.6f}'.format(t1.ce_energy)
         return res
 
-
-    sto_app_iter0 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
-    sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
-    sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
-    sto_app_iter3 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter3')
-    sto_app_iter4 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter4')
-    sto_app_iter5 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter5')
-    sto_app_iter6 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter6')
-    #
-    #
-    #print('iter0',get_all_str_and_energy([8],sto_app=sto_app_iter0))
-    #print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter1))
-    #print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter2))
-    #print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter3))
-    #print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter4))
-    #print('iter1',get_all_str_and_energy([8],sto_app=sto_app_iter5))
-
-
-    #simulation()
-    god_view()
-
-    #print_gs([0, 1],[sto_app_iter0,sto_app_iter1])
-    #god_view()
-    #create_dir_for_DFT(app=sto_app_iter4)
-
-    
-    ###############################################
-    # get gs ; update 2018/10/29
-    ###############################################
-    def get_all_str_and_energy_gs(num_lis ,sto_app):
+    def get_bunch_res_gs(num_lis ,sto_app):
+        """
+        A tool function which is used to obtain CE energies and CE reference energies of a configuration
+         by give a list of number. A STOApp object should be given.
+        :param num_lis: list of number
+        :param sto_app: STOApp object
+        :return: tuple of number of point-defect, CE energies and CE reference energies.
+        """
         test1 = ['Ti_sv'] * 15
 
         for i in num_lis:
@@ -849,46 +492,79 @@ if __name__ == "__main__":
         ce_energy_ref = t1.ce_energy_ref
         return nb, ce_energy, ce_energy_ref
 
-    ##print(get_all_str_and_energy_gs([0,1,2],sto_app_iter5))
+    def get_app(iter_idx):
+        """
+        Obtain a SrTiO3 application (sto_app) by specified iteration index, for example, if a iter_idx of 3 is given,
+        a STOApp which initialize by `./data/iter3/` will be return. iter_idx should site [0,6], of which 6 is a
+        test STOApp, and 5 is the responding final results in this simulation.
+        :param iter_idx: the time of iteration
+        :return: STOApp object
+        """
+        assert(type(iter_idx) is int and iter_idx <=6 and iter_idx >= 0)
+        sto_apps = []
+        for i in range(6):
+            sto_apps.append(STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter{0}'.format(iter_idx)))
+        return sto_apps[iter_idx]
 
-    ##import numpy as np
+    def show_results():
+        """
+        Show information by given iteration, for example `iter_idx = 3` means when GACE executes iteration of 3,
+        all structures predicted by GACE and energies would be presented. Also, the structures whose energies may
+        be lower than previous ground-state structures will be computed by DFT for correction.
+        :return: None
+        """
+        iter_idx = 3
+        god_view(iter_idx)
+        app = get_app(iter_idx)
+        app.create_dir_for_DFT()
 
-    ##fname = './data/iter5/all_iters.dat'
-    ##iter_name = np.loadtxt(fname,dtype='str',usecols=0)
-    ##iter_dft_energy = np.loadtxt(fname,dtype=float,usecols=1)
+    def data_process():
+        """
+        Obtain ground-state structures from iter5 which is the last iteration of GACE. This give a comparison between
+        DFT energies and CE energies of ground-state structures.
+        :return: None
+        """
+        import numpy as np
 
-
-    ##from collections import OrderedDict
-    ##gs = OrderedDict()
-    ##
-    ##for i in  range(1,16):
-    ##    # dft, ce
-    ##    gs[i] = {'dft':0,'ce':0}
-
-    ##for _i , iter_i in enumerate(iter_name):
-    ##    _iter_lis = iter_i.split('_')
-    ##    iter_name = _iter_lis[0]
-    ##    curr_dft_E = iter_dft_energy[_i]
-    ##    #gs[i]['dft'] = iter_dft_energy[_i] 
-    ##    iter_site = [ int(j) for j in _iter_lis[1:]]
-    ##    nb, ce_E, ce_ref = get_all_str_and_energy_gs(iter_site,sto_app_iter5)
-    ##    if gs[nb]['dft'] > curr_dft_E:
-    ##    #if gs[nb]['ce'] > ce_E:
-    ##        gs[nb]['dft'] = curr_dft_E
-    ##        gs[nb]['ce'] = ce_E
-    ##        gs[nb]['ce_ref'] = ce_ref
-    ##        gs[nb]['name'] = iter_i
-    ##    #res.update(_r)
-
-    ##for k, v in gs.items():
-    ##    print('{0}    :    {1}'.format(k,v))
-
-
-    ##diff_ce_and_dft = []
-    ##for k, v in gs.items():
-    ##    diff_ce_and_dft.append(np.abs(gs[k]['dft']-gs[k]['ce']))
-
-    ##print(diff_ce_and_dft, max(diff_ce_and_dft))
+        app = get_app(5)
+        fname = './data/iter5/all_iters.dat'
+        iter_name = np.loadtxt(fname,dtype='str',usecols=0)
+        iter_dft_energy = np.loadtxt(fname,dtype=float,usecols=1)
 
 
-    #create_dir_for_DFT(task_fname='./DFT_task.dat',app=sto_app_iter5)
+        from collections import OrderedDict
+        gs = OrderedDict()
+
+        for i in  range(1,16):
+           # dft, ce
+           gs[i] = {'dft':0,'ce':0}
+
+        for _i , iter_i in enumerate(iter_name):
+           _iter_lis = iter_i.split('_')
+           iter_name = _iter_lis[0]
+           curr_dft_E = iter_dft_energy[_i]
+           #gs[i]['dft'] = iter_dft_energy[_i]
+           iter_site = [ int(j) for j in _iter_lis[1:]]
+           nb, ce_E, ce_ref = get_bunch_res_gs(iter_site,app)
+           if gs[nb]['dft'] > curr_dft_E:
+           #if gs[nb]['ce'] > ce_E:
+               gs[nb]['dft'] = curr_dft_E
+               gs[nb]['ce'] = ce_E
+               gs[nb]['ce_ref'] = ce_ref
+               gs[nb]['name'] = iter_i
+           #res.update(_r)
+
+        for k, v in gs.items():
+           print('{0}    :    {1}'.format(k,v))
+
+
+        diff_ce_and_dft = []
+        for k, v in gs.items():
+           diff_ce_and_dft.append(np.abs(gs[k]['dft']-gs[k]['ce']))
+
+        print(diff_ce_and_dft, max(diff_ce_and_dft))
+
+
+        app.create_dir_for_DFT(task_fname='./DFT_task.dat')
+
+    #data_process()
