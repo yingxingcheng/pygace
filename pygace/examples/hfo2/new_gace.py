@@ -27,6 +27,8 @@ from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 from pygace.utility import  EleIndv, reverse_dict, get_num_lis, compare_crystal
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 
+DEBUG = True
+
 class HFO2App(object):
     """
     An app of HfO(2-x) system which is implemented from AbstractApp object
@@ -35,7 +37,7 @@ class HFO2App(object):
         #'NB_VAC': 4,
         'NB_DEFECT':4, # DEFECT for VAC
         'NB_SITES': 64,
-        'TEMPLATE_FILE': './data/hfo2_iters/lat_in.template',
+        'TEMPLATE_FILE': './data/lat_in.template',
         'TMP_DIR': os.path.abspath('tmp_dir'),
         'PICKLE_DIR': os.path.abspath('pickle_bakup'),
         'TEST_RES_DIR': os.path.abspath('res_dir'),
@@ -46,7 +48,7 @@ class HFO2App(object):
         'DFT_CAL_DIR':'./dft_dirs',
     }
 
-    def __init__(self,ce_site=8, ce_dirname='./data/hfo2_iters',
+    def __init__(self,ce_site=8, ce_dirname='./data/iter1',
                  ele_1st = 'O', ele_2nd = 'Vac',
                  params_config_dict=None):
         """Initial function used to construct a HFO2App object
@@ -80,7 +82,7 @@ class HFO2App(object):
         self.__set_dir()
         self.__get_energy_info_from_database()
 
-    def update_ce(self, site=8, dirname='./data/hfo2_iters'):
+    def update_ce(self, site=8, dirname='./data/iter1'):
         """Function to update inner CE object
 
         :param site:
@@ -347,7 +349,7 @@ class HFO2App(object):
 
 
 class Runner(object):
-    app = HFO2App(ce_site=8, ce_dirname='./data/hfo2_iters')
+    app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
     iter_idx = 1
 
     def __init__(self, app=None, iter_idx=None):
@@ -365,6 +367,12 @@ class Runner(object):
     # Standard GACE route
     # -----------------------------------------------------------------------------
     def run(self):
+        if DEBUG:
+            print('#'*80)
+            print('Iteration {0} begin: '.format(self.iter_idx))
+            print('In debug mode, this mode give the results of simulation used in our paper.')
+            print('Iteration {0} done!\n'.format(self.iter_idx))
+            return
         self.app.main(self.iter_idx)
 
     def print_gs(self):
@@ -373,6 +381,45 @@ class Runner(object):
 
         :return: None
         """
+
+        if DEBUG:
+            if self.iter_idx == 1:
+                print('In iter1, there are three structures needed to calculated by DFT:')
+                print('0_3_7_9_10_24_32_33_34_35_40_42_53_55_56_61, \n'
+                      '7_9_15_16_23_33_34_35_38_40_43_48_54_57_61_63, \n'
+                      '11_13_14_20_21_22_25_29_30_31_44_45_46_47_50_51. \n'
+                      'The file `str.out` and `energy` will be copied into `data/hfo2_iters/iter2`,\n'
+                      'and run mmaps in `data/hfo2_iters/iter2` to obtain new `eci.out`.')
+            if self.iter_idx == 2:
+                print('In iter2, there are two structures needed to calculated by DFT:')
+                print('0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63, \n'
+                      '7_10_11_12_16_20_22_23_29_32_34_44_52_53_55_62, \n'
+                      'The file `str.out` and `energy` will be copied into `data/hfo2_iters/iter3`,\n'
+                      'and run mmaps in `data/hfo2_iters/iter3` to obtain new `eci.out`.')
+            if self.iter_idx == 3:
+                print('In iter3, there are two structures needed to calculated by DFT:')
+                print('1_5_8_14_18_21_30_31_37_38_41_43_46_54_57, \n'
+                      '11_12_13_14_17_18_19_27_36_37_39_44_45_46_47, \n'
+                      'The file `str.out` and `energy` will be copied into `data/hfo2_iters/iter4`,'
+                      'and run mmaps in `data/hfo2_iters/iter4` to obtain new `eci.out`.')
+            if self.iter_idx == 4:
+                print('In iter4, there are six structures needed to calculated by DFT:')
+                print('2_3_9_23_33_38_49_62, \n'
+                      '7_9_24_34_49_55_56_61, \n'
+                      '10_11_22_29, \n'
+                      '12_23_36_44, \n'
+                      '21_30_41_57, \n'
+                      '22_29_31_51, \n'
+                      'The file `str.out` and `energy` will be copied into `data/hfo2_iters/iter5`,'
+                      'and run mmaps in `data/hfo2_iters/iter2` to obtain new `eci.out`.')
+            if self.iter_idx == 5:
+                print('In our previous calculation, in this iteration, all selected candidate ground-state \n'
+                      'structures containing 4, 8, 15 and 16 oxygen vacancy have been calculated by \n'
+                      'previous iteration. The application can be terminated, but if we want to add more\n'
+                      'structures to ensure more accurate results can be obtained.')
+            print('#'*80)
+            return
+
         checkpoint = 'ground_states_iter{}.pkl'.format(self.iter_idx)
         with open(checkpoint, 'r') as cp_file:
             ground_states = pickle.load(cp_file)
@@ -475,6 +522,9 @@ class HfO2EleIndv(EleIndv):
     def __repr__(self):
         return self.__str__()
 
+#-----------------------------------------------------------------------------
+# simple test function to test
+#-----------------------------------------------------------------------------
 def simple_using(app):
     test1 = ['O'] * 64
     t1 = HfO2EleIndv(test1,app)
@@ -497,43 +547,48 @@ def compare_(numlis1, numlis2, app):
     return t1 == t2
 
 
+
 if __name__ == '__main__':
     def get_app(iter_idx,nb_defect):
         assert(type(iter_idx) is int and iter_idx <= 5 and iter_idx >= 0)
         assert(nb_defect in [4, 8, 15, 16])
         apps = {}
         for _i in range(1,6):
-            app = HFO2App(ce_site=8,ce_dirname='./data/hfo2_iters/iter{0}'.format(_i))
+            app = HFO2App(ce_site=8,ce_dirname='./data/iter{0}'.format(_i))
             app.params_config_dict['NB_DEFECT'] = nb_defect
             apps[_i] = app
         return apps[iter_idx]
 
-    iter_idx = 2
+    # iter1
+    iter_idx = 1
     runner = Runner(get_app(iter_idx,16),iter_idx)
     runner.run()
     runner.print_gs()
 
-    def previous_work_compare():
-        origin_lis = [
-            '0_3_7_9_10_24_32_33_34_35_40_42_53_55_56_61',
-            '0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63',
-            '7_10_11_12_16_20_22_23_29_32_34_44_52_53_55_62',
-            '7_9_15_16_23_33_34_35_38_40_43_48_54_57_61_63'
-        ]
+    # iter2
+    iter_idx = 2
+    runner = Runner(get_app(iter_idx, 16), iter_idx)
+    runner.run()
+    runner.print_gs()
 
-        curr_lis = [
-            '11_12_19_20_26_29_31_36_37_39_41_44_45_50_51_59',
-            '11_13_14_20_21_22_25_29_30_31_44_45_46_47_50_51',
-            '0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63',
-        ]
+    # iter3
+    iter_idx = 3
+    runner = Runner(get_app(iter_idx, 15), iter_idx)
+    runner.run()
+    runner.print_gs()
 
-        for i in curr_lis:
-            for j in origin_lis:
-                if compare_(i,j,app=get_app(iter_idx,16)):
-                    print('find')
-                    break
-            else:
-                print('not find')
+    # iter4
+    iter_idx = 4
+    for nb_vac in [8,4]:
+        runner = Runner(get_app(iter_idx, nb_vac), iter_idx)
+        runner.run()
+        runner.print_gs()
 
-    previous_work_compare()
+    print("*"*80)
+    print("ground-state structrues with different oxygen vacncy are:")
+    print("0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63 for 16 vac")
+    print("11_12_13_14_17_18_19_27_36_37_39_44_45_46_47 for 15 vac")
+    print("2_3_9_23_33_38_49_62 for 8 vac")
+    print("12_23_36_44 for 4 vac")
+    print("*"*80)
 
