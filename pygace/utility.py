@@ -9,7 +9,7 @@ __mail__ = 'yxcheng@buaa.edu.cn'
 
 import pickle
 from itertools import combinations
-import os, shutil
+import os, shutil, subprocess
 
 def save_to_pickle(f,python_obj):
     pickle.dump(python_obj, f, pickle.HIGHEST_PROTOCOL)
@@ -28,6 +28,22 @@ def reverse_dict(d):
     for _k, _v in d.items():
         tmp_d[_v] = _k
     return tmp_d
+
+
+def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',**kwargs):
+    assert(len(str1)==len(str2))
+    ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
+    at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
+    verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
+    args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
+    args = args.format(str1,str2,ct,at,verbos)
+    s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
+    stdout,stderr= s.communicate()
+    res = str(stdout)
+    if 'Not' in res:
+        return False
+    else:
+        return True
 
 class EleIndv(object):
 

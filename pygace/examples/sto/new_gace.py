@@ -25,8 +25,8 @@ import uuid, pickle
 
 from pygace.algorithms import gaceGA, gaceCrossover, gaceMutShuffleIndexes
 from pygace.utility import  EleIndv, reverse_dict, get_num_lis
+from pygace.config import corrdump_cmd, compare_crystal_cmd
 
-import ConfigParser
 
 class STOApp(object):
     """
@@ -54,10 +54,10 @@ class STOApp(object):
         :param ele_2nd: point-defect atom type
         :param params_config_dict: config dict used to update defect dict
         """
-        cp = ConfigParser.ConfigParser()
-        cp.read('./env.cfg')
-        corrdump_cmd = str(cp.get('ENV_PATH','CORRDUMP'))
-        compare_crystal_cmd = str(cp.get('ENV_PATH','COMPARE_CRYSTAL'))
+        # cp = ConfigParser.ConfigParser()
+        # cp.read('./env.cfg')
+        # corrdump_cmd = str(cp.get('ENV_PATH','CORRDUMP'))
+        # compare_crystal_cmd = str(cp.get('ENV_PATH','COMPARE_CRYSTAL'))
         #print(compare_crystal_cmd)
         #compare_crystal_cmd =None
         #corrdump_cmd = None
@@ -284,173 +284,183 @@ class STOApp(object):
             print(t1.ce_energy)
             #t1.dft_energy()
 
+class Runner(object):
+    #-----------------------------------------------------------------------------
+    # Standard GACE route
+    #-----------------------------------------------------------------------------
+    @staticmethod
+    def simulation():
+        """Standard GACE running entrance, in this example, this method is not used because the number of
+        all candidate configurations in sample space is limited. However, a method using violent enumeration
+        to obtain CE energies and configurations is introduced, more detail see function `god_view`.
 
-def print_gs(ce_iters,sto_apps):
-    """Function used to extract ground-state information from pickle file saved during GACE
-    running.
-
-    :param ce_iters: list of number
-    :param sto_apps: list STOApp
-    :return: None
-    """
-    #sto_app = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
-
-    def get_checkpoints(ce_iter,nb_Nb):
-        checkpoint = 'ground_states_{0}_{1}.pkl'.format(ce_iter,nb_Nb)
-        with open(checkpoint, 'r') as cp_file:
-            ground_states = pickle.load(cp_file)
-        return ground_states
-
-    for ce_iter in ce_iters:
-        with open('gs_out_iter{0}.txt'.format(ce_iter),'w') as f:
-            for nb_nb in range(1, 15):
-                EleIndv_lis = [EleIndv(i, app=sto_apps[ce_iter])
-                               for i in get_checkpoints(ce_iter, nb_nb)]
-                for i in EleIndv_lis:
-                    print('count NB = {0}'.format(nb_nb,file=f))
-                    print(i.ce_energy,file=f)
-                    print(i.ele_lis,file=f)
-                    print('\n',file=f)
-                    #i.dft_energy()
-
-def simulation():
-    """Standard GACE running entrance, in this example, this method is not used because the number of
-    all candidate configurations in sample space is limited. However, a method using violent enumeration
-    to obtain CE energies and configurations is introduced, more detail see function `god_view`.
-
-    :return: None
-    """
-    sto_app_iter0 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
-    sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
-    #sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
-    for nb_nb in range(1,15):
-        for app,iter_idx in zip([sto_app_iter0,sto_app_iter1],
-                                [0,1]):
-            app.params_config_dict['NB_NB'] = nb_nb
-            app.main(ce_iter=iter_idx)
-        #main(ce_iter=1)
-
-def god_view(iter_idx):
-    """
-    In some cases, the number of all candidate configurations in sample space is limited, and we can enumerate
-    these configurations one by one to calculate CE energis, which is a fast and efficient way to obtain potential
-    ground-state structures than standard genetic algorithms selection.
-    :param iter_idx: the time of iteration.
-    :return: None
-    """
-    sto_apps = []
-    for i in range(iter_idx+1):
-        sto_apps.append(STOApp(sto_ce_site=1,sto_ce_dirname='./data/iter{0}'.format(iter_idx)))
-
-    def get_all_by_violent(nb_Nb,sto_app):
-        """
-        get all possibilities with ce energy by specified the number of
-        point-defect atom and which app is used.
-        :param nb_Nb:
-        :param sto_app:
-        :return:
-        """
-        res = {}
-        for atom_idx_lis in get_num_lis(nb_Nb,nb_site=15):
-            test1 = ['Ti_sv'] * 15
-
-            for i in atom_idx_lis:
-                test1[i] = 'Nb_sv'
-            t1 = EleIndv(test1,app=sto_app)
-
-            res['_'.join([str(_i) for _i in atom_idx_lis])] =\
-                '{:.6f}'.format(t1.ce_energy)
-        return res
-
-
-    def F(iter, nb, sto_app, pre_iter_res_num_energy_lis):
-        """
-        a helper function is used to obtain previous iterations execution information.
-        :param iter: the time of iteration
-        :param nb: the number of point-defect
-        :param sto_app: STOApp object
-        :param pre_iter_res_num_energy_lis: a list of dicts of number and energy of all previous iterations
-        :return: list
-        """
-        pickle_name_iter0 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter, nb)
-        pickle_name_iter0 = os.path.abspath(pickle_name_iter0)
-        if os.path.exists(pickle_name_iter0):
-            ## read from pickle
-            with open(pickle_name_iter0, 'rb') as fin_iter0:
-                _iter0_num_energy, iter0_unique_energy_num, iter0_unique_num_energy, li0 = pickle.load(
-                    fin_iter0)
-        else:
-            _iter0_num_energy = get_all_by_violent(nb_Nb=nb, sto_app=sto_app)
-            _iter0_unique_energy_num = reverse_dict(_iter0_num_energy)
-
-            # pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
-            pre_iter_res_num_energy = {}
-            for _pre_iter_res_num_energy in pre_iter_res_num_energy_lis:
-                for _k in _pre_iter_res_num_energy:
-                    pre_iter_res_num_energy[_k] = _iter0_num_energy[_k]
-
-            for _k in _iter0_unique_energy_num.keys():
-                if _k not in pre_iter_res_num_energy.values():
-                    pre_iter_res_num_energy[_iter0_unique_energy_num[_k]] = _k
-
-            iter0_unique_num_energy = deepcopy(pre_iter_res_num_energy)
-            iter0_unique_energy_num = reverse_dict(iter0_unique_num_energy)
-            li0 = [(iter0_unique_energy_num[v], v) for v in
-                   sorted(iter0_unique_num_energy.values(), key=lambda x: float(x))]
-
-            with open(pickle_name_iter0, 'wb') as fout_iter0:
-                pickle.dump((_iter0_num_energy, iter0_unique_energy_num,
-                             iter0_unique_num_energy, li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
-        return iter0_unique_num_energy, li0, iter0_unique_energy_num
-
-    def get_all_unique_number(iter_idx):
-        """
-        write execution result to file and obtain ground-state configuration and its CE energies if there is no
-         responding pickle file exists.
-        :param iter_idx: the index of iteration
         :return: None
         """
-        god_view_res_path = 'god_view'
-        if not os.path.exists(god_view_res_path):
-            os.makedirs(god_view_res_path)
+        sto_app_iter0 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
+        sto_app_iter1 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter1')
+        # sto_app_iter2 = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter2')
+        for nb_nb in range(1, 15):
+            for app, iter_idx in zip([sto_app_iter0, sto_app_iter1],
+                                     [0, 1]):
+                app.params_config_dict['NB_NB'] = nb_nb
+                app.main(ce_iter=iter_idx)
+            # main(ce_iter=1)
 
-        with open('DFT_task.dat', 'w') as f_dft:
-            with open('god_view.dat', 'w') as f_god:
-                for nb in range(0, 16):
+    @staticmethod
+    def print_gs(ce_iters,sto_apps):
+        """Function used to extract ground-state information from pickle file saved during GACE
+        running.
 
-                    len_lis = []
-                    li_lis = []
-                    ## iter0
-                    pre_iter_res_num_energy_lis = []
-                    for iter in range(iter_idx+1):
-                        _pre_iter, li0, iter0_unique_energy_num = \
-                            F(iter, nb, sto_apps[iter_idx],pre_iter_res_num_energy_lis)
-                        pre_iter_res_num_energy_lis.append(_pre_iter)
-                        len_lis.append(len(iter0_unique_energy_num.keys()))
-                        li_lis.append(li0)
-                        print(li0, file=f_god)
-                        print(li0)
+        :param ce_iters: list of number
+        :param sto_apps: list STOApp
+        :return: None
+        """
+        #sto_app = STOApp(sto_ce_site=1, sto_ce_dirname='./data/iter0')
+
+        def get_checkpoints(ce_iter,nb_Nb):
+            checkpoint = 'ground_states_{0}_{1}.pkl'.format(ce_iter,nb_Nb)
+            with open(checkpoint, 'r') as cp_file:
+                ground_states = pickle.load(cp_file)
+            return ground_states
+
+        for ce_iter in ce_iters:
+            with open('gs_out_iter{0}.txt'.format(ce_iter),'w') as f:
+                for nb_nb in range(1, 15):
+                    EleIndv_lis = [EleIndv(i, app=sto_apps[ce_iter])
+                                   for i in get_checkpoints(ce_iter, nb_nb)]
+                    for i in EleIndv_lis:
+                        print('count NB = {0}'.format(nb_nb,file=f))
+                        print(i.ce_energy,file=f)
+                        print(i.ele_lis,file=f)
+                        print('\n',file=f)
+                        #i.dft_energy()
+
+
+    #-----------------------------------------------------------------------------
+    # A god view for all candidates in sample space, just for small sample space
+    #-----------------------------------------------------------------------------
+    @staticmethod
+    def god_view(iter_idx):
+        """
+        In some cases, the number of all candidate configurations in sample space is limited, and we can enumerate
+        these configurations one by one to calculate CE energis, which is a fast and efficient way to obtain potential
+        ground-state structures than standard genetic algorithms selection.
+        :param iter_idx: the time of iteration.
+        :return: None
+        """
+        sto_apps = []
+        for i in range(iter_idx+1):
+            sto_apps.append(STOApp(sto_ce_site=1,sto_ce_dirname='./data/iter{0}'.format(iter_idx)))
+
+        def get_all_by_violent(nb_Nb,sto_app):
+            """
+            get all possibilities with ce energy by specified the number of
+            point-defect atom and which app is used.
+            :param nb_Nb:
+            :param sto_app:
+            :return:
+            """
+            res = {}
+            for atom_idx_lis in get_num_lis(nb_Nb,nb_site=15):
+                test1 = ['Ti_sv'] * 15
+
+                for i in atom_idx_lis:
+                    test1[i] = 'Nb_sv'
+                t1 = EleIndv(test1,app=sto_app)
+
+                res['_'.join([str(_i) for _i in atom_idx_lis])] =\
+                    '{:.6f}'.format(t1.ce_energy)
+            return res
+
+
+        def F(iter, nb, sto_app, pre_iter_res_num_energy_lis):
+            """
+            a helper function is used to obtain previous iterations execution information.
+            :param iter: the time of iteration
+            :param nb: the number of point-defect
+            :param sto_app: STOApp object
+            :param pre_iter_res_num_energy_lis: a list of dicts of number and energy of all previous iterations
+            :return: list
+            """
+            pickle_name_iter0 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter, nb)
+            pickle_name_iter0 = os.path.abspath(pickle_name_iter0)
+            if os.path.exists(pickle_name_iter0):
+                ## read from pickle
+                with open(pickle_name_iter0, 'rb') as fin_iter0:
+                    _iter0_num_energy, iter0_unique_energy_num, iter0_unique_num_energy, li0 = pickle.load(
+                        fin_iter0)
+            else:
+                _iter0_num_energy = get_all_by_violent(nb_Nb=nb, sto_app=sto_app)
+                _iter0_unique_energy_num = reverse_dict(_iter0_num_energy)
+
+                # pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)
+                pre_iter_res_num_energy = {}
+                for _pre_iter_res_num_energy in pre_iter_res_num_energy_lis:
+                    for _k in _pre_iter_res_num_energy:
+                        pre_iter_res_num_energy[_k] = _iter0_num_energy[_k]
+
+                for _k in _iter0_unique_energy_num.keys():
+                    if _k not in pre_iter_res_num_energy.values():
+                        pre_iter_res_num_energy[_iter0_unique_energy_num[_k]] = _k
+
+                iter0_unique_num_energy = deepcopy(pre_iter_res_num_energy)
+                iter0_unique_energy_num = reverse_dict(iter0_unique_num_energy)
+                li0 = [(iter0_unique_energy_num[v], v) for v in
+                       sorted(iter0_unique_num_energy.values(), key=lambda x: float(x))]
+
+                with open(pickle_name_iter0, 'wb') as fout_iter0:
+                    pickle.dump((_iter0_num_energy, iter0_unique_energy_num,
+                                 iter0_unique_num_energy, li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
+            return iter0_unique_num_energy, li0, iter0_unique_energy_num
+
+        def get_all_unique_number(iter_idx):
+            """
+            write execution result to file and obtain ground-state configuration and its CE energies if there is no
+             responding pickle file exists.
+            :param iter_idx: the index of iteration
+            :return: None
+            """
+            god_view_res_path = 'god_view'
+            if not os.path.exists(god_view_res_path):
+                os.makedirs(god_view_res_path)
+
+            with open('DFT_task.dat', 'w') as f_dft:
+                with open('god_view.dat', 'w') as f_god:
+                    for nb in range(0, 16):
+
+                        len_lis = []
+                        li_lis = []
+                        ## iter0
+                        pre_iter_res_num_energy_lis = []
+                        for iter in range(iter_idx+1):
+                            _pre_iter, li0, iter0_unique_energy_num = \
+                                F(iter, nb, sto_apps[iter_idx],pre_iter_res_num_energy_lis)
+                            pre_iter_res_num_energy_lis.append(_pre_iter)
+                            len_lis.append(len(iter0_unique_energy_num.keys()))
+                            li_lis.append(li0)
+                            print(li0, file=f_god)
+                            print(li0)
+                            print('\n', file=f_god)
+                            print('\n')
+
+                        print(nb,len_lis,file=f_god)
+                        print(nb,len_lis)
+
+                        print('#' * 80, file=f_god)
+                        print('#' * 80)
                         print('\n', file=f_god)
                         print('\n')
 
-                    print(nb,len_lis,file=f_god)
-                    print(nb,len_lis)
 
-                    print('#' * 80, file=f_god)
-                    print('#' * 80)
-                    print('\n', file=f_god)
-                    print('\n')
+                        # wirte new tasks for DFT
+                        li_last = li_lis[-1][0][0]
+                        _li_pool = [_li[0][0] for _li in li_lis[0:-1]]
+                        if li_last not in _li_pool:
+                            print(li_last, file=f_dft)
 
+            print('finished!')
 
-                    # wirte new tasks for DFT
-                    li_last = li_lis[-1][0][0]
-                    _li_pool = [_li[0][0] for _li in li_lis[0:-1]]
-                    if li_last not in _li_pool:
-                        print(li_last, file=f_dft)
-
-        print('finished!')
-
-    get_all_unique_number(iter_idx)
+        get_all_unique_number(iter_idx)
 
 if __name__ == "__main__":
 
@@ -514,7 +524,7 @@ if __name__ == "__main__":
         :return: None
         """
         iter_idx = 3
-        god_view(iter_idx)
+        Runner.god_view(iter_idx)
         app = get_app(iter_idx)
         app.create_dir_for_DFT()
 
@@ -567,4 +577,5 @@ if __name__ == "__main__":
 
         app.create_dir_for_DFT(task_fname='./DFT_task.dat')
 
+    show_results()
     #data_process()

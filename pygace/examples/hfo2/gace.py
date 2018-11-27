@@ -207,7 +207,7 @@ def get_epoch(nb_vac):
         return 0
 
 def main():
-    pool = multiprocessing.Pool(processes=100)
+    pool = multiprocessing.Pool(processes=8)
     toolbox.register("map", pool.map)
 
     # mission_name = 'test-crossnum'
@@ -339,7 +339,7 @@ def print_gs():
             idx = [ str(_i) for _i, ele in enumerate(i.ele_lis) if ele == 'Vac' ]
             idx_lis =  '_'.join(idx)
             print(idx_lis)
-            i.dft_energy() 
+            i.dft_energy()
 
 def str2energy(string):
     test1 = ['O']*64
