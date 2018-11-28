@@ -478,7 +478,8 @@ class HfO2EleIndv(EleIndv):
         types_lis2 = [str(self.app.type_dict[_j]) for _j in other.ele_lis]
         typeslis2 = ''.join(types_lis2)
         return compare_crystal(typeslis1, typeslis2,
-                               compare_crystal_cmd=compare_crystal_cmd)
+                               compare_crystal_cmd=compare_crystal_cmd,
+                               str_template=self.app.params_config_dict['TEMPLATE_FILE'])
 
     @property
     def ce_energy(self):
@@ -559,36 +560,39 @@ if __name__ == '__main__':
             apps[_i] = app
         return apps[iter_idx]
 
-    # iter1
-    iter_idx = 1
-    runner = Runner(get_app(iter_idx,16),iter_idx)
-    runner.run()
-    runner.print_gs()
-
-    # iter2
-    iter_idx = 2
-    runner = Runner(get_app(iter_idx, 16), iter_idx)
-    runner.run()
-    runner.print_gs()
-
-    # iter3
-    iter_idx = 3
-    runner = Runner(get_app(iter_idx, 15), iter_idx)
-    runner.run()
-    runner.print_gs()
-
-    # iter4
-    iter_idx = 4
-    for nb_vac in [8,4]:
-        runner = Runner(get_app(iter_idx, nb_vac), iter_idx)
+    def show_results():
+        # iter1
+        iter_idx = 1
+        runner = Runner(get_app(iter_idx,16),iter_idx)
         runner.run()
         runner.print_gs()
 
-    print("*"*80)
-    print("ground-state structrues with different oxygen vacncy are:")
-    print("0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63 for 16 vac")
-    print("11_12_13_14_17_18_19_27_36_37_39_44_45_46_47 for 15 vac")
-    print("2_3_9_23_33_38_49_62 for 8 vac")
-    print("12_23_36_44 for 4 vac")
-    print("*"*80)
+        # iter2
+        iter_idx = 2
+        runner = Runner(get_app(iter_idx, 16), iter_idx)
+        runner.run()
+        runner.print_gs()
+
+        # iter3
+        iter_idx = 3
+        runner = Runner(get_app(iter_idx, 15), iter_idx)
+        runner.run()
+        runner.print_gs()
+
+        # iter4
+        iter_idx = 4
+        for nb_vac in [8,4]:
+            runner = Runner(get_app(iter_idx, nb_vac), iter_idx)
+            runner.run()
+            runner.print_gs()
+
+        print("*"*80)
+        print("ground-state structrues with different oxygen vacncy are:")
+        print("0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63 for 16 vac")
+        print("11_12_13_14_17_18_19_27_36_37_39_44_45_46_47 for 15 vac")
+        print("2_3_9_23_33_38_49_62 for 8 vac")
+        print("12_23_36_44 for 4 vac")
+        print("*"*80)
+
+        show_results()
 

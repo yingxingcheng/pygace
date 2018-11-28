@@ -30,13 +30,15 @@ def reverse_dict(d):
     return tmp_d
 
 
-def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',**kwargs):
+def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ', str_template=None,**kwargs):
     assert(len(str1)==len(str2))
     ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
     at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
     verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
-    args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
-    args = args.format(str1,str2,ct,at,verbos)
+    if str_template is None:
+        raise RuntimeError("`str.out` filename is Empty!")
+    args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4} -s {5}'
+    args = args.format(str1,str2,ct,at,verbos,str_template)
     s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
     stdout,stderr= s.communicate()
     res = str(stdout)
