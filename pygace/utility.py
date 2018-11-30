@@ -87,8 +87,10 @@ class EleIndv(object):
             iters = 'INF'
         idx = [ str(i) for i, ele in enumerate(self.ele_lis)
                 if ele == self.app.params_config_dict['SECOND_ELEMENT'] ]
+        if len(idx) == 0:
+            idx = ['perfect','struct']
         random_fname =  '_'.join(idx)
-        cal_dir = os.path.join(self.app.params_config_dict['TMP_DIR'],random_fname)
+        cal_dir = os.path.join(self.app.params_config_dict['DFT_CAL_DIR'],'iter'+str(iters),random_fname)
         if not os.path.exists(cal_dir):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
