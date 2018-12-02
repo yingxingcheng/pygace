@@ -1,0 +1,578 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.examples.sto.new_gace &#8212; pygace 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pygace.examples.sto.new_gace</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">__title__ = &#39;&#39;</span>
+<span class="sd">__function__ = &#39;This module is used for test of SrTi(1-x)Nb(x)O3 system.&#39;</span>
+<span class="sd">__author__ = &#39;yxcheng&#39;</span>
+<span class="sd">__mtime__ = &#39;18-5-16&#39;</span>
+<span class="sd">__mail__ = &#39;yxcheng@buaa.edu.cn&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">deap</span> <span class="k">import</span> <span class="n">tools</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">pygace.ga</span> <span class="k">import</span> <span class="n">gaceGA</span><span class="p">,</span> <span class="n">gaceCrossover</span>
+<span class="kn">from</span> <span class="nn">pygace.utility</span> <span class="k">import</span>  <span class="n">EleIndv</span><span class="p">,</span> <span class="n">reverse_dict</span><span class="p">,</span> <span class="n">get_num_lis</span>
+<span class="kn">from</span> <span class="nn">pygace.gace</span> <span class="k">import</span> <span class="n">AbstractApp</span><span class="p">,</span> <span class="n">AbstractRunner</span>
+
+
+<div class="viewcode-block" id="STOApp"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp">[docs]</a><span class="k">class</span> <span class="nc">STOApp</span><span class="p">(</span><span class="n">AbstractApp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DEFAULT_SETUP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s1">&#39;NB_SITES&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="s1">&#39;TEMPLATE_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;./data/lat_in.template&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TMP_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;pickle_bakup&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;res_dir&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;MU_OXYGEN&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">4.91223</span><span class="p">,</span>
+        <span class="s1">&#39;PERFECT_STO&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;./dft_dirs&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter0&#39;</span><span class="p">,</span>
+                 <span class="n">ele_1st</span> <span class="o">=</span> <span class="s1">&#39;Ti_sv&#39;</span><span class="p">,</span> <span class="n">ele_2nd</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span><span class="p">,</span>
+                 <span class="n">params_config_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initial function used to construct a STOApp object</span>
+
+<span class="sd">        :param ce_site: the concept of site used in ATAT program.</span>
+<span class="sd">        :param ce_dirname: a directory contain information of MMAPS or MAPS running</span>
+<span class="sd">        :param ele_1st: host atom type</span>
+<span class="sd">        :param ele_2nd: point-defect atom type</span>
+<span class="sd">        :param params_config_dict: config dict used to update defect dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">STOApp</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ce_site</span><span class="p">,</span><span class="n">ce_dirname</span><span class="p">,</span> <span class="n">params_config_dict</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;FIRST_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_1st</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_2nd</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">type_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">ele_1st</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ele_2nd</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sr_sv&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="STOApp.update_ce"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.update_ce">[docs]</a>    <span class="k">def</span> <span class="nf">update_ce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter0&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to update inner CE object</span>
+
+<span class="sd">        :param site:</span>
+<span class="sd">        :param dirname:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">STOApp</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update_ce</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">,</span><span class="n">dirname</span><span class="o">=</span><span class="n">dirname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="STOApp.ind_to_elis"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.ind_to_elis">[docs]</a>    <span class="k">def</span> <span class="nf">ind_to_elis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert individual (number list) to element list</span>
+<span class="sd">        :param individual:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># a function that convert `number list` to `element list`</span>
+        <span class="n">tmp_f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span> <span class="k">else</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;FIRST_ELEMENT&#39;</span><span class="p">]</span>
+        <span class="n">element_lis</span> <span class="o">=</span> <span class="p">[</span><span class="n">tmp_f</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">individual</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">element_lis</span></div>
+
+<div class="viewcode-block" id="STOApp.evalEnergy"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.evalEnergy">[docs]</a>    <span class="k">def</span> <span class="nf">evalEnergy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluation function for the ground-state searching problem.</span>
+
+<span class="sd">        The problem is to determine a configuration of n vacancies</span>
+<span class="sd">        on a crystalline structures such that the energy of crystalline</span>
+<span class="sd">        structures can obtain minimum value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element_lis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_to_elis</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+        <span class="n">types_lis</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">element_lis</span><span class="p">]</span>
+        <span class="n">typeslis</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">types_lis</span><span class="p">)</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">element_lis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO: optimize energy data saved in storage during executing process</span>
+            <span class="k">for</span> <span class="n">e_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPES_ENERGY_DICT</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># TODO: never run here</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">compare_crystal</span><span class="p">(</span><span class="n">e_type</span><span class="p">,</span><span class="n">typeslis</span><span class="p">):</span>
+                    <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPES_ENERGY_DICT</span><span class="p">[</span><span class="n">e_type</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="n">element_lis</span><span class="p">),</span>
+                    <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                <span class="c1"># TODO get total energy from VASP based DFT</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span>
+
+        <span class="k">return</span> <span class="n">energy</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="STOApp.single_run"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.single_run">[docs]</a>    <span class="k">def</span> <span class="nf">single_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ce_iter</span><span class="p">,</span> <span class="n">ga_iter</span><span class="p">):</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+        <span class="n">hof</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">HallOfFame</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">Statistics</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;Avg&quot;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;Std&quot;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;Min&quot;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;Max&quot;</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+
+        <span class="n">checkpoint_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">],</span>
+                                        <span class="s1">&#39;checkpoint_name_CE-</span><span class="si">{0}</span><span class="s1">_GA-</span><span class="si">{1}</span><span class="s1">_NB-</span><span class="si">{2}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">gaceGA</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="p">,</span> <span class="n">cxpb</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">ngen</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                     <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="n">halloffame</span><span class="o">=</span><span class="n">hof</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">checkpoint</span><span class="o">=</span><span class="n">checkpoint_fname</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ce_iter</span><span class="p">,</span><span class="n">ga_iter</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]))</span>
+
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pop</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">hof</span></div>
+
+<div class="viewcode-block" id="STOApp.multiple_run"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.multiple_run">[docs]</a>    <span class="k">def</span> <span class="nf">multiple_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ce_iter</span><span class="p">,</span><span class="n">ga_iters</span><span class="p">):</span>
+        <span class="n">all_min</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_best_son</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ga_iters</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CE_iter: </span><span class="si">{0}</span><span class="s1"> GA_iter: </span><span class="si">{1}</span><span class="s1"> NB_num: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">ce_iter</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]))</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_run</span><span class="p">(</span><span class="n">ce_iter</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">population</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sorted_population</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">population</span><span class="p">,</span>
+                                       <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="n">all_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evalEnergy</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="n">all_best_son</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_to_elis</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="k">if</span> <span class="n">ga_iters</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ENERGY_DICT</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">all_min</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">all_min</span><span class="p">)</span>
+        <span class="n">min_idx</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">all_min</span><span class="p">)</span>
+
+        <span class="n">s_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">.txt&#39;</span><span class="p">)</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">s_fname</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ce_iter</span><span class="p">),</span> <span class="n">all_min</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">all_best_son</span><span class="p">[</span><span class="n">min_idx</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="STOApp.run"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">target_epoch</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="n">toolbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="p">()</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">gaceCrossover</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">ground_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ground_states</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_run</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span> <span class="n">target_epoch</span><span class="p">))</span>
+
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="s1">&#39;ground_states_</span><span class="si">{1}</span><span class="s1">_</span><span class="si">{0}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">],</span>
+                                                        <span class="n">iter_idx</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ground_states</span><span class="p">,</span> <span class="n">cp_file</span><span class="p">)</span></div>
+
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+    <span class="c1">#utility function</span>
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="STOApp.create_dir_for_DFT"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.STOApp.create_dir_for_DFT">[docs]</a>    <span class="k">def</span> <span class="nf">create_dir_for_DFT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_fname</span><span class="o">=</span><span class="s1">&#39;./DFT_task.dat&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to create directories for DFT calculation for ground-state configurations</span>
+<span class="sd">        candidates in each GA iteration. This function is used to God_view function. The identical</span>
+<span class="sd">        functional method in a standard GACE iteration is included `print_gs` member function in</span>
+<span class="sd">        STOApp.</span>
+<span class="sd">        :param task_fname: name of a file containing directories for DFT calculations.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">task_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">dirlis</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirlis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no structures needed to calculate by DFT&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">dirlis</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dir</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">dirlis</span><span class="p">]</span>
+
+        <span class="c1">#print(&#39;#nb_Nb   c_Nb    e_ce    e_dft&#39;)</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirlis</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ti_sv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">15</span>
+            <span class="k">for</span> <span class="n">atom_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]:</span>
+                <span class="n">test1</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
+            <span class="n">t1</span><span class="o">.</span><span class="n">dft_energy</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="Runner"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.Runner">[docs]</a><span class="k">class</span> <span class="nc">Runner</span><span class="p">(</span><span class="n">AbstractRunner</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">iter_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Runner</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span><span class="n">iter_idx</span><span class="p">)</span>
+
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+    <span class="c1"># Standard GACE route</span>
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="Runner.run"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.Runner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">god_view</span><span class="p">()</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Runner.print_gs"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.Runner.print_gs">[docs]</a>    <span class="k">def</span> <span class="nf">print_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_dir_for_DFT</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Runner.create_dir_for_DFT"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.Runner.create_dir_for_DFT">[docs]</a>    <span class="k">def</span> <span class="nf">create_dir_for_DFT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_fname</span><span class="o">=</span><span class="s1">&#39;./DFT_task.dat&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to create directories for DFT calculation for ground-state configurations</span>
+<span class="sd">        candidates in each GA iteration. This function is used to God_view function. The identical</span>
+<span class="sd">        functional method in a standard GACE iteration is included `print_gs` member function in</span>
+<span class="sd">        STOApp.</span>
+<span class="sd">        :param task_fname: name of a file containing directories for DFT calculations.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">task_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">dirlis</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirlis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no structures needed to calculate by DFT&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">dirlis</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dir</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">dirlis</span><span class="p">]</span>
+
+        <span class="c1">#print(&#39;#nb_Nb   c_Nb    e_ce    e_dft&#39;)</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirlis</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ti_sv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">15</span>
+            <span class="k">for</span> <span class="n">atom_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]:</span>
+                <span class="n">test1</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="n">EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
+            <span class="n">t1</span><span class="o">.</span><span class="n">dft_energy</span><span class="p">(</span><span class="n">iters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span></div>
+
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+    <span class="c1"># A god view for all candidates in sample space, just for small sample space</span>
+    <span class="c1">#-----------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="Runner.god_view"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.new_gace.Runner.god_view">[docs]</a>    <span class="k">def</span> <span class="nf">god_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        In some cases, the number of all candidate configurations in sample space is limited, and we can enumerate</span>
+<span class="sd">        these configurations one by one to calculate CE energis, which is a fast and efficient way to obtain potential</span>
+<span class="sd">        ground-state structures than standard genetic algorithms selection.</span>
+<span class="sd">        :param iter_idx: the time of iteration.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sto_apps = []</span>
+        <span class="c1"># for i in range(iter_idx+1):</span>
+        <span class="c1">#     sto_apps.append(STOApp(ce_site=1,ce_dirname=&#39;./data/iter{0}&#39;.format(iter_idx)))</span>
+
+        <span class="k">def</span> <span class="nf">get_all_by_violent</span><span class="p">(</span><span class="n">nb_Nb</span><span class="p">,</span><span class="n">sto_app</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            get all possibilities with ce energy by specified the number of</span>
+<span class="sd">            point-defect atom and which app is used.</span>
+<span class="sd">            :param nb_Nb:</span>
+<span class="sd">            :param sto_app:</span>
+<span class="sd">            :return:</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">atom_idx_lis</span> <span class="ow">in</span> <span class="n">get_num_lis</span><span class="p">(</span><span class="n">nb_Nb</span><span class="p">,</span><span class="n">nb_site</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+                <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ti_sv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">15</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_idx_lis</span><span class="p">:</span>
+                    <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span><span class="n">app</span><span class="o">=</span><span class="n">sto_app</span><span class="p">)</span>
+
+                <span class="n">res</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="n">atom_idx_lis</span><span class="p">])]</span> <span class="o">=</span>\
+                    <span class="s1">&#39;</span><span class="si">{:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+
+        <span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">sto_app</span><span class="p">,</span> <span class="n">pre_iter_res_num_energy_lis</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            a helper function is used to obtain previous iterations execution information.</span>
+<span class="sd">            :param iter: the time of iteration</span>
+<span class="sd">            :param nb: the number of point-defect</span>
+<span class="sd">            :param sto_app: STOApp object</span>
+<span class="sd">            :param pre_iter_res_num_energy_lis: a list of dicts of number and energy of all previous iterations</span>
+<span class="sd">            :return: list</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">pickle_name_iter0</span> <span class="o">=</span> <span class="s1">&#39;god_view/god_view_res_iter</span><span class="si">{0}</span><span class="s1">_NB</span><span class="si">{1}</span><span class="s1">.pickle&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
+            <span class="n">pickle_name_iter0</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pickle_name_iter0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pickle_name_iter0</span><span class="p">):</span>
+                <span class="c1">## read from pickle</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_name_iter0</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin_iter0</span><span class="p">:</span>
+                    <span class="n">_iter0_num_energy</span><span class="p">,</span> <span class="n">iter0_unique_energy_num</span><span class="p">,</span> <span class="n">iter0_unique_num_energy</span><span class="p">,</span> <span class="n">li0</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                        <span class="n">fin_iter0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_iter0_num_energy</span> <span class="o">=</span> <span class="n">get_all_by_violent</span><span class="p">(</span><span class="n">nb_Nb</span><span class="o">=</span><span class="n">nb</span><span class="p">,</span> <span class="n">sto_app</span><span class="o">=</span><span class="n">sto_app</span><span class="p">)</span>
+                <span class="n">_iter0_unique_energy_num</span> <span class="o">=</span> <span class="n">reverse_dict</span><span class="p">(</span><span class="n">_iter0_num_energy</span><span class="p">)</span>
+
+                <span class="c1"># pre_iter_res_num_energy = deepcopy(iter0_unique_num_energy)</span>
+                <span class="n">pre_iter_res_num_energy</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">_pre_iter_res_num_energy</span> <span class="ow">in</span> <span class="n">pre_iter_res_num_energy_lis</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">_k</span> <span class="ow">in</span> <span class="n">_pre_iter_res_num_energy</span><span class="p">:</span>
+                        <span class="n">pre_iter_res_num_energy</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">_iter0_num_energy</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">_k</span> <span class="ow">in</span> <span class="n">_iter0_unique_energy_num</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">_k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pre_iter_res_num_energy</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                        <span class="n">pre_iter_res_num_energy</span><span class="p">[</span><span class="n">_iter0_unique_energy_num</span><span class="p">[</span><span class="n">_k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_k</span>
+
+                <span class="n">iter0_unique_num_energy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">pre_iter_res_num_energy</span><span class="p">)</span>
+                <span class="n">iter0_unique_energy_num</span> <span class="o">=</span> <span class="n">reverse_dict</span><span class="p">(</span><span class="n">iter0_unique_num_energy</span><span class="p">)</span>
+                <span class="n">li0</span> <span class="o">=</span> <span class="p">[(</span><span class="n">iter0_unique_energy_num</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span>
+                       <span class="nb">sorted</span><span class="p">(</span><span class="n">iter0_unique_num_energy</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_name_iter0</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout_iter0</span><span class="p">:</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">_iter0_num_energy</span><span class="p">,</span> <span class="n">iter0_unique_energy_num</span><span class="p">,</span>
+                                 <span class="n">iter0_unique_num_energy</span><span class="p">,</span> <span class="n">li0</span><span class="p">),</span> <span class="n">fout_iter0</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">iter0_unique_num_energy</span><span class="p">,</span> <span class="n">li0</span><span class="p">,</span> <span class="n">iter0_unique_energy_num</span>
+
+        <span class="k">def</span> <span class="nf">get_all_unique_number</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            write execution result to file and obtain ground-state configuration and its CE energies if there is no</span>
+<span class="sd">             responding pickle file exists.</span>
+<span class="sd">            :param iter_idx: the index of iteration</span>
+<span class="sd">            :return: None</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">god_view_res_path</span> <span class="o">=</span> <span class="s1">&#39;god_view&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">god_view_res_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">god_view_res_path</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;DFT_task.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_dft</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;god_view.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_god</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span>
+
+                        <span class="n">len_lis</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">li_lis</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="c1">## iter0</span>
+                        <span class="n">pre_iter_res_num_energy_lis</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iter_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="n">_pre_iter</span><span class="p">,</span> <span class="n">li0</span><span class="p">,</span> <span class="n">iter0_unique_energy_num</span> <span class="o">=</span> \
+                                <span class="n">F</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span><span class="n">pre_iter_res_num_energy_lis</span><span class="p">)</span>
+                            <span class="n">pre_iter_res_num_energy_lis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_pre_iter</span><span class="p">)</span>
+                            <span class="n">len_lis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iter0_unique_energy_num</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                            <span class="n">li_lis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">li0</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">li0</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f_god</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">li0</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f_god</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                        <span class="nb">print</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span><span class="n">len_lis</span><span class="p">,</span><span class="n">file</span><span class="o">=</span><span class="n">f_god</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span><span class="n">len_lis</span><span class="p">)</span>
+
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f_god</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f_god</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+                        <span class="c1"># wirte new tasks for DFT</span>
+                        <span class="n">li_last</span> <span class="o">=</span> <span class="n">li_lis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">_li_pool</span> <span class="o">=</span> <span class="p">[</span><span class="n">_li</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_li</span> <span class="ow">in</span> <span class="n">li_lis</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                        <span class="k">if</span> <span class="n">li_last</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_li_pool</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">li_last</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">f_dft</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finished!&#39;</span><span class="p">)</span>
+
+        <span class="n">get_all_unique_number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1">#run()</span>
+
+    <span class="k">def</span> <span class="nf">get_single_res</span><span class="p">(</span><span class="n">num_lis</span> <span class="p">,</span><span class="n">sto_app</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A tool function which is used to obtain CE energies and CE reference energies of a configuration by give a</span>
+<span class="sd">        list of number. A STOApp object should be given.</span>
+<span class="sd">        :param num_lis: list of number</span>
+<span class="sd">        :param sto_app: STOApp object</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ti_sv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">15</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">num_lis</span><span class="p">:</span>
+            <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span><span class="n">app</span><span class="o">=</span><span class="n">sto_app</span><span class="p">)</span>
+        <span class="n">res</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="n">num_lis</span><span class="p">])]</span> <span class="o">=</span><span class="s1">&#39;</span><span class="si">{:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">get_bunch_res_gs</span><span class="p">(</span><span class="n">num_lis</span> <span class="p">,</span><span class="n">sto_app</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A tool function which is used to obtain CE energies and CE reference energies of a configuration</span>
+<span class="sd">         by give a list of number. A STOApp object should be given.</span>
+<span class="sd">        :param num_lis: list of number</span>
+<span class="sd">        :param sto_app: STOApp object</span>
+<span class="sd">        :return: tuple of number of point-defect, CE energies and CE reference energies.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ti_sv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">15</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">num_lis</span><span class="p">:</span>
+            <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Nb_sv&#39;</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span><span class="n">app</span><span class="o">=</span><span class="n">sto_app</span><span class="p">)</span>
+
+        <span class="c1">#res[&#39;_&#39;.join([str(_i) for _i in num_lis])] =&#39;{:.6f}&#39;.format(t1.ce_energy)</span>
+        <span class="n">nb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_lis</span><span class="p">)</span>
+        <span class="n">ce_energy</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span>
+        <span class="n">ce_energy_ref</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">ce_energy_ref</span>
+        <span class="k">return</span> <span class="n">nb</span><span class="p">,</span> <span class="n">ce_energy</span><span class="p">,</span> <span class="n">ce_energy_ref</span>
+
+    <span class="k">def</span> <span class="nf">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain a SrTiO3 application (sto_app) by specified iteration index, for example, if a iter_idx of 3 is given,</span>
+<span class="sd">        a STOApp which initialize by `./data/iter3/` will be return. iter_idx should site [0,6], of which 6 is a</span>
+<span class="sd">        test STOApp, and 5 is the responding final results in this simulation.</span>
+<span class="sd">        :param iter_idx: the time of iteration</span>
+<span class="sd">        :return: STOApp object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">iter_idx</span> <span class="o">&lt;=</span><span class="mi">6</span> <span class="ow">and</span> <span class="n">iter_idx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sto_apps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">sto_apps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">STOApp</span><span class="p">(</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">sto_apps</span><span class="p">[</span><span class="n">iter_idx</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">show_results</span><span class="p">(</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show information by given iteration, for example `iter_idx = 3` means when GACE executes iteration of 3,</span>
+<span class="sd">        all structures predicted by GACE and energies would be presented. Also, the structures whose energies may</span>
+<span class="sd">        be lower than previous ground-state structures will be computed by DFT for correction.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">),</span><span class="n">iter_idx</span><span class="p">)</span>
+        <span class="c1">#Runner.god_view(iter_idx)</span>
+        <span class="c1">#app = get_app(iter_idx)</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">data_process</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain ground-state structures from iter5 which is the last iteration of GACE. This give a comparison between</span>
+<span class="sd">        DFT energies and CE energies of ground-state structures.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">get_app</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;./data/iter5/all_iters.dat&#39;</span>
+        <span class="n">iter_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;str&#39;</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">iter_dft_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+        <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>  <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">16</span><span class="p">):</span>
+           <span class="c1"># dft, ce</span>
+           <span class="n">gs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dft&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;ce&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">_i</span> <span class="p">,</span> <span class="n">iter_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iter_name</span><span class="p">):</span>
+           <span class="n">_iter_lis</span> <span class="o">=</span> <span class="n">iter_i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+           <span class="n">iter_name</span> <span class="o">=</span> <span class="n">_iter_lis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+           <span class="n">curr_dft_E</span> <span class="o">=</span> <span class="n">iter_dft_energy</span><span class="p">[</span><span class="n">_i</span><span class="p">]</span>
+           <span class="c1">#gs[i][&#39;dft&#39;] = iter_dft_energy[_i]</span>
+           <span class="n">iter_site</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">_iter_lis</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+           <span class="n">nb</span><span class="p">,</span> <span class="n">ce_E</span><span class="p">,</span> <span class="n">ce_ref</span> <span class="o">=</span> <span class="n">get_bunch_res_gs</span><span class="p">(</span><span class="n">iter_site</span><span class="p">,</span><span class="n">app</span><span class="p">)</span>
+           <span class="k">if</span> <span class="n">gs</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s1">&#39;dft&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">curr_dft_E</span><span class="p">:</span>
+           <span class="c1">#if gs[nb][&#39;ce&#39;] &gt; ce_E:</span>
+               <span class="n">gs</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s1">&#39;dft&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr_dft_E</span>
+               <span class="n">gs</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s1">&#39;ce&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ce_E</span>
+               <span class="n">gs</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s1">&#39;ce_ref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ce_ref</span>
+               <span class="n">gs</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iter_i</span>
+           <span class="c1">#res.update(_r)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+           <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">    :    </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">))</span>
+
+
+        <span class="n">diff_ce_and_dft</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+           <span class="n">diff_ce_and_dft</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;dft&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">gs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;ce&#39;</span><span class="p">]))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">diff_ce_and_dft</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">diff_ce_and_dft</span><span class="p">))</span>
+
+
+        <span class="n">app</span><span class="o">.</span><span class="n">create_dir_for_DFT</span><span class="p">(</span><span class="n">task_fname</span><span class="o">=</span><span class="s1">&#39;./DFT_task.dat&#39;</span><span class="p">)</span>
+
+    <span class="n">show_results</span><span class="p">(</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="c1">#data_process()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

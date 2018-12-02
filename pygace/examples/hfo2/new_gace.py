@@ -69,11 +69,20 @@ class HFO2App(AbstractApp):
 
 
     def update_ce(self, site=8, dirname='./data/iter1'):
-        """Function to update inner CE object
+        """
+        Parameters
+        ----------
+        site : int
+            The site used in cluster expansion.
 
-        :param site:
-        :param dirname:
-        :return:
+        dirname : :obj: `str`, optional
+            The name of directory which contains file required in cluster
+            expansion.
+
+        Returns
+        -------
+            None
+
         """
         super(HFO2App,self).update_ce(site=site,dirname=dirname)
 
@@ -233,7 +242,8 @@ class HFO2App(AbstractApp):
 
 
 class Runner(AbstractRunner):
-    app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
+    #app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
+    app = None
     iter_idx = 1
 
     def __init__(self, app=None, iter_idx=None):

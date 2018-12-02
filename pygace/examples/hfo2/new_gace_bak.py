@@ -328,7 +328,8 @@ class HFO2App(object):
 
 
 class Runner(object):
-    app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
+    #app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
+    app = None
     iter_idx = 1
 
     def __init__(self, app=None, iter_idx=None):

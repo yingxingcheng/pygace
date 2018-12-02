@@ -18,7 +18,7 @@ if __name__ == "__main__":
         author_email='yxcheng@buaa.edu.cn',
         license='modified BSD',
         packages=find_packages(),
-        package_data={'pygace': ['examples/*']},
+        #package_data={'pygace': ['examples/*']},
         zip_safe=False,
         install_requires=['deap>=1.2.2','ase>=3.14.1','pymatgen>=2017.10.16'],
         extras_require={},

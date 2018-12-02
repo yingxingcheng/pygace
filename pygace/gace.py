@@ -1,38 +1,79 @@
 # -*- coding:utf-8 -*-
-"""
-__title__ = ''
-__function__ = 'This module is used for XXX.'
-__author__ = 'yxcheng'
-__mtime__ = '18-11-27'
-__mail__ = 'yxcheng@buaa.edu.cn'
+"""GACE framework module
+
+This module provide abstract GACE object used to be implemented by users in
+their application, and it defines several interface which are called in
+concreate application.
+
+Examples
+--------
 """
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import, division
 import random
-
-import numpy
-
-from deap import algorithms
 from deap import base
 from deap import creator
 from deap import tools
 
 from pygace.ce import CE
 from copy import deepcopy
-import os, glob
-import multiprocessing
-import uuid, pickle, shutil
+import os
+import uuid, pickle
 
-from pygace.ga import gaceGA, gaceCrossover, gaceMutShuffleIndexes
-from pygace.utility import  EleIndv, reverse_dict, get_num_lis, compare_crystal
+from pygace.ga import  gaceCrossover, gaceMutShuffleIndexes
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 
-DEBUG = True
 
 class AbstractApp(object):
+    """Abstract application object for ``GACE`` framework.
+
+    AbstractApp initial process needs input parameters of CE simulation
+    and informatin of output directory. Also, the parameters for DFT
+    calculation should also be included in ``params_config_dict`` for
+    user custom.
+
+    Attributes
+    ----------
+    ce : CE
+        CE object defined in `ce.CE`.
+    params_config_dict : dict
+        Parameters used in to construct CE object and other parameters used
+        in GACE simulation. User can custom this dict for their own needs.
+    energy_database_fname : str
+        Filename of file that restore energies for different configurations
+        to accelerate energy-calculation of a energy-unknown configuration.
+    toolbox : ToolBox
+        The ToolBox object defined in `deap.tools`.
+    DEFAULT_SETUP : dict
+        Class attribute which restores revelant parameters used in GA and
+        CE simulation process. See also `params_config_dict` for custom.
+    ENERGY_DICAT : dict
+        A dict in which key is list of num representing a configuration and
+        value is the fitness value of the configuration, e.g., total energy or
+        formation energy of point defects.
+    PREVIOUS_COUNT : int
+        A parameter used to restore the execution step of previous simulation
+        in order to run from previous stop step.
+    TYPES_ENERGY_DICT : dict
+        A dict restores different elements and their responding number index
+        in order to convert a element to a number in GA simulation, e.g.,
+        {'Hf':1, 'O':2, 'Vac':3}.
+    TEMPLATE_FILE_STR : str
+        A string to restore the template of `lat.in` which is a main
+        input file in ``ATAT``.
+
+    Parameters
+    ----------
+    ce_site : int
+        The concept of site used in ``MAPS`` or ``MMAPS`` in ``ATAT``
+        program.
+    ce_dirname : :obj: str, optional
+        A path of directory which contains information after running
+         ``MMAPS`` or ``MAPS``.
+    params_config_dict : dict, optional
+        A dict used to update DEFAULT_DICT of AbstractApp object.
     """
-    An app of HfO(2-x) system which is implemented from AbstractApp object
-    """
+
     DEFAULT_SETUP = {
         'NB_DEFECT':4,
         'NB_SITES': 64,
@@ -45,14 +86,6 @@ class AbstractApp(object):
 
     def __init__(self,ce_site=8, ce_dirname='./data/iter1',
                  params_config_dict=None):
-        """Initial function used to construct a HFO2App object
-
-        :param ce_site: the concept of site used in ATAT program.
-        :param ce_dirname: a directory contain information of MMAPS or MAPS running
-        :param ele_1st: host atom type
-        :param ele_2nd: point-defect atom type
-        :param params_config_dict: config dict used to update defect dict
-        """
 
         self.ce = CE(site=ce_site,
                          compare_crystal_cmd=compare_crystal_cmd,
@@ -66,12 +99,25 @@ class AbstractApp(object):
         #self.__get_energy_info_from_database()
 
     def update_ce(self, site=1, dirname=None):
-        """Function to update inner CE object
+        """Update inner CE object.
 
-        :param site:
-        :param dirname:
-        :return:
+        The parameters should contained the ``site`` information in ``MMAPS``
+        and a path of directory containing output file after a CE fitting.
+
+        Parameters
+        ----------
+        site: :obj: `int`, optional
+            The number of ``site`` in a crystal structure, which does not
+            contain a specific element instead of a site used to restore
+            different type of atoms to simulate alloy configurations in
+            ``ATAT``, more detail see ``lat.in`` file in ``ATAT``.
+        dirname: :obj: `str`, optional
+
+        Returns
+        -------
+        None
         """
+
         self.ce = CE(site=site)
         self.ce.fit(dirname=dirname)
 
@@ -102,11 +148,23 @@ class AbstractApp(object):
         self.PREVIOUS_COUNT = len(self.ENERGY_DICT)
 
     def transver_to_struct(self, element_lis):
-        """Function used to transveer list of number to str.out file in `ATAT` program.
+        """Convert element list to `ATAT` `str.out` file
 
-        Convert element list to ATAT str.out file
-        :param element_lis: list of number
-        :return: str, filename of ATAT structure file, default `str.out`
+        The chemistry symbol in ``element_lis`` would be substituted in
+        ``str.out`` file in ``ATAT``.
+
+        Parameters
+        ----------
+        element_lis : list
+            a list of chemistry symbol, e.g. ['Hf', 'Hf', 'O']
+        test_param1 : int
+            the first test parameter
+
+        Returns
+        -------
+        str
+            filename of ``ATAT`` structure file, default `str.out`
+
         """
         tmp_str = deepcopy(self.TEMPLATE_FILE_STR)
         struct_str = str(tmp_str).format(*element_lis)
@@ -120,6 +178,27 @@ class AbstractApp(object):
         return _str_out
 
     def ind_to_elis(self, individual):
+        """Convert a object used in GA to a object used in ``ATAT``.
+
+        This method is used to convert a list which contains number
+        to a list containing chemistry element, e.g., [2,2,1,3] to
+        ['Hf', 'Hf', 'O', 'Vac']
+
+        Parameters
+        ----------
+        individual: list
+            Convert a list of ``int`` to a list of chemistry element.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        NotImplementedError
+            This method must be implemented in subclass.
+
+        """
         raise NotImplementedError
 
     def evalEnergy(self, individual):
@@ -129,6 +208,14 @@ class AbstractApp(object):
     # Standard GA execute
     #-----------------------------------------------------------------------------
     def initial(self):
+        """Initialization for GA simulation.
+
+        Returns
+        -------
+        toolbox : Toolbox
+            A Toolbox object contains responding parameters used in GA.
+
+        """
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
 
@@ -152,20 +239,72 @@ class AbstractApp(object):
         return self.toolbox
 
     def run(self,iter_idx=1, target_epoch=0):
+        """
+
+        Parameters
+        ----------
+        iter_idx : int
+            The index of GA-to-CE iteration, in which a DFT calculation is
+            usually executed for update ``eci.out`` file in ``ATAT``.
+        target_epoch : int
+            The repeat times of identical simulation of GA, for which the
+            results of GA simulation is relevant with random number, thus
+            a different GA simulation maybe select a different ground-state
+            configuration. This is useful especially in complex system with
+            substantial ``sites`` to substitute for different configurations.
+
+        Returns
+        -------
+            None
+
+        Raises
+        ------
+        NotImplementedError
+            If this method is not implemented, this type error would be raised.
+
+        """
         raise NotImplementedError
 
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     #utility function
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     def get_ce(self):
-        """
-        Function used to get the CE object contained in HFO2App object
-        :return: CE object
+        """obtain inner ce object
+
+        Returns
+        -------
+            CE object
+
         """
         return self.ce
 
 
 class AbstractRunner(object):
+    """Abstract Runner for running a GACE simulation.
+
+    This object is used to execute a GACE simulation, user only need to
+    implement several interfaces to custom their application.
+
+    Attributes
+    ----------
+    app : AbstractApp
+        A subclass object of AbstractApp.
+    iter_idx : int
+        Index of GA-to-CE iteration.
+
+    Parameters
+    ----------
+    app : subclass of AbstractApp
+        A subclass object of AbstractApp, default is `None`.
+    iter_idx : int
+        Index of GA-to-CE iteration, default is `None`.
+
+    Raises
+    ------
+    NotImplementedError
+        If `run()` or `print_gs()` method is not implemented by subclass of
+        `AbstractRunner`, this type of error would be raised.
+    """
     __app = None
     __iter_idx = None
 
@@ -195,9 +334,36 @@ class AbstractRunner(object):
     # Standard GACE route
     # -----------------------------------------------------------------------------
     def run(self):
+        """Main runction for running GACE simulation.
+
+        Returns
+        -------
+            None
+
+        Raises
+        ------
+        NotImplementedError
+            if this function is not implemented in their subclass, this type
+            error would be raised.
+        """
         raise NotImplementedError
 
     def print_gs(self):
+        """Function used to check ground-state configurations, to obtain their
+        formation energy predicted by CE, and to determine whether a DFT
+        calculation is needed to executed for next GA-to-CE iteration.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        NotImplementedError
+            if this function is not implemented in their subclass, this type
+            error would be raised.
+
+        """
         raise NotImplementedError
 
 

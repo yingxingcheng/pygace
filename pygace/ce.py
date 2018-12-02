@@ -18,18 +18,36 @@ import subprocess
 #from collections import Counter
 #from ase import Atom
 
-# ENV = 'ICME'
-# if ENV == 'ICME':
-#     COMPARE_CRYSTAL = '/public/lgzhu-ICME/yxcheng/bin/CompareCrystal '
-#     CORRDUMP = '/public/lgzhu-ICME/yxcheng/software/atat/corrdump '
-# else:
-#     COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
-#     CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
 
 # interface to ATAT
 class CE(object):
+    """An wrapper for commends in ``ATAT``.
+
+    This class provides several commands that are commonly used in ``ATAT``.
+
+    Attributes
+    ----------
+    COMPARE_CRYSTAL : str
+        This string restore a command used to determine whether two
+        configurations are identical in symmetry.
+    CORRDUMP : str
+        This string restore the command of `corrdump` in ``ATAT``.
+    clster_info : str
+        Filename of cluster information, default is ``clusters.out``
+        in ``ATAT``.
+    count : int
+    eci_out : str
+    lat_in : str
+    per_atom_energy : dict
+    site : int
+    work_path : str
+
+
+    Parameters
+    ----------
     """
-    an interface of atat ce method
+    """
+    
     """
     COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
     CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
