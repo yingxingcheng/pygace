@@ -11,7 +11,8 @@ if __name__ == "__main__":
     setup(
         name='pygace',
         version='1.0.0',
-        description='python framework genetic algorithms based cluster expansion.',
+        description='Ground-state structures searching based on '
+                    'genetic algorithms and cluster expansion.',
         long_description=open(os.path.join(module_dir, 'README.md')).read(),
         url='https://gitee.com/buaaer/pygace',
         author='yxcheng',
