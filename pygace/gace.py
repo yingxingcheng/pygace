@@ -10,16 +10,11 @@ Examples
 """
 
 from __future__ import print_function, absolute_import, division
-import random
-from deap import base
-from deap import creator
-from deap import tools
+from deap import base, creator, tools
+from copy import deepcopy
+import os, uuid, pickle, random
 
 from pygace.ce import CE
-from copy import deepcopy
-import os
-import uuid, pickle
-
 from pygace.ga import  gaceCrossover, gaceMutShuffleIndexes
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 
@@ -204,9 +199,9 @@ class AbstractApp(object):
     def evalEnergy(self, individual):
         raise  NotImplementedError
 
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     # Standard GA execute
-    #-----------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     def initial(self):
         """Initialization for GA simulation.
 
@@ -230,7 +225,7 @@ class AbstractApp(object):
                          list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", lambda indiv: self.evalEnergy(indiv))
-        #toolbox.register("mate", tools.cxPartialyMatched)
+        # toolbox.register("mate", tools.cxPartialyMatched)
         self.toolbox.register("mate", gaceCrossover,select=3,cross_num=8)
         # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=2.0 / NB_SITES)
         self.toolbox.register("mutate", gaceMutShuffleIndexes, indpb=0.015)
@@ -330,9 +325,9 @@ class AbstractRunner(object):
     def iter_idx(self,iter_idx):
         self.__iter_idx = iter_idx
 
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Standard GACE route
-    # -----------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def run(self):
         """Main runction for running GACE simulation.
 

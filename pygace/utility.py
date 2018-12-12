@@ -12,17 +12,57 @@ from itertools import combinations
 import os, shutil, subprocess
 
 def save_to_pickle(f,python_obj):
+    """
+    Save python object in pickle file.
+
+    Parameters
+    ----------
+    f : fileobj
+        File object to restore python object
+    python_obj : obj
+        Object need to be saved.
+
+    Returns
+    -------
+    None
+
+    """
     pickle.dump(python_obj, f, pickle.HIGHEST_PROTOCOL)
 
 def get_num_lis(nb_Nb, nb_site):
+    """
+    Get number list by given the number point defect and site defined in
+    lattice file
+
+    Parameters
+    ----------
+    nb_Nb : the number of point defect
+    nb_site : int
+        The number of site defined in lattice file
+
+    Yields
+    ------
+    All combinations.
+
+    """
     for i in  combinations(range(nb_site),nb_Nb):
         yield  i
 
 def reverse_dict(d):
     """
-    reverse dict key:value to value:key
-    :param d:
-    :return:
+    Exchange `key` and `value` of given dict
+
+    Parameters
+    ----------
+    d : dict
+        A dict needed to be converted.
+
+    Returns
+    -------
+    Dict
+        The new dict in which `key` and `value` are exchanged with respect to
+        original dict.
+
     """
     tmp_d = {}
     for _k, _v in d.items():
@@ -30,7 +70,38 @@ def reverse_dict(d):
     return tmp_d
 
 
-def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ', str_template=None,**kwargs):
+def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
+                    str_template=None,**kwargs):
+    """
+    To determine whether structures are identical based crystal symmetry
+    analysis. The program used in this package is based on ``XXX`` library
+    which developed by XXX.
+
+    Parameters
+    ----------
+    str1 : str
+        The first string used to represent elements .
+    str2 : str
+        The second string used to represent elements.
+    compare_crystal_cmd : str
+        The program developed to determine whether two
+        crystal structures are identical, default `CompareCrystal`.
+    str_template : str
+        String template for the definition of lattice site.
+    kwargs : dict arguments
+        Other arguments used in `compare_crystal_cmd`.
+
+    Returns
+    -------
+    bool
+        True for yes and False for no.
+
+    References
+    ----------
+
+    [1] xxxxx
+
+    """
     assert(len(str1)==len(str2))
     ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
     at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
@@ -97,8 +168,8 @@ class EleIndv(object):
         shutil.copyfile(str_name,os.path.join(cal_dir,dist_fname))
         shutil.copyfile(os.path.join(self.ce_object.work_path,'vasp.wrap'),
                         os.path.join(cal_dir,'vasp.wrap'))
-        #args = 'runstruct_vasp -nr '
-        #s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        # args = 'runstruct_vasp -nr '
+        # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
         # runstruct_vasp -nr
 
     def is_correct(self):

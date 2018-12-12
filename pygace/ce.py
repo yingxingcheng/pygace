@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 from copy import deepcopy
 import numpy as np
-import os.path, os
+import os.path
 from pymatgen.io.atat import Mcsqs
 #from pymatgen.io.ase import AseAtomsAdaptor
 import subprocess
@@ -19,7 +19,6 @@ import subprocess
 #from ase import Atom
 
 
-# interface to ATAT
 class CE(object):
     """An wrapper for commends in ``ATAT``.
 
@@ -45,12 +44,14 @@ class CE(object):
 
     Parameters
     ----------
+    lat_in : str
+    sit : int
+    corrdump_cmd : str
+    compare_crystal_cmd : str
     """
-    """
-    
-    """
-    COMPARE_CRYSTAL = '/home/yxcheng/bin/CompareCrystal '
-    CORRDUMP = '/home/yxcheng/usr/local/atat/bin/corrdump '
+
+    COMPARE_CRYSTAL = None
+    CORRDUMP = None
 
     def __init__(self, lat_in=None, site=16,
                  corrdump_cmd=None,compare_crystal_cmd=None):
@@ -89,33 +90,62 @@ class CE(object):
             for r, a in zip(_ref_energy, _atom_type):
                 self.per_atom_energy[a] = r
 
-        if 'Hf_pv' in self.per_atom_energy.keys():
-            self.per_atom_energy['Hf'] = self.per_atom_energy['Hf_pv']
-
-        if 'Vac' in self.per_atom_energy.keys():
-            self.per_atom_energy['Au'] = self.per_atom_energy['Vac']
-
-        if 'Nb_sv' in self.per_atom_energy.keys():
-            self.per_atom_energy['Nb'] = self.per_atom_energy['Nb_sv']
-
-        if 'Ti_sv' in self.per_atom_energy.keys():
-            self.per_atom_energy['Ti'] = self.per_atom_energy['Ti_sv']
-
-        if 'Sr_sv' in self.per_atom_energy.keys():
-            self.per_atom_energy['Sr'] = self.per_atom_energy['Sr_sv']
+        # Ensure element plus '_pv' or '_sv' suffix is valid in ase Atoms
+        # or other atoms object, e.g., 'Hf_pv' is correct element type in
+        # MAPS but invalid type which cannot be recognized by ase Atoms. Also,
+        # the 'Vac' cannot be found a substitute type in ase Atoms, therefore,
+        # using 'Au' to represent 'Vac' in current program.
+        # TODO: change element substitute for 'Vac" which is valid element type
+        # TODO: in ATAT --by yxcheng
+        for k in self.per_atom_energy.keys():
+            if '_pv' in k or '_sv' in k:
+                ele = k.split('_')[0]
+                self.per_atom_energy[ele] = self.per_atom_energy[k]
+            elif 'Vac' in k:
+                self.per_atom_energy['Au'] = self.per_atom_energy[k]
+            else:
+                pass
 
     def predict(self, x):
         """
-        x is similar as a str.out file in atat
+
+        Parameters
+        ----------
+        x : str
+            'x' is a name of lattice structure, such as ``str.out`` in ``ATAT``.
+
+        Returns
+        -------
+        str
+            Energy predicted by corrdump command in ``ATAT``
         """
         _args = '{0} -c -s={1} -eci={2} -l={3} -cf={4}'.format(
             self.CORRDUMP,x, self.eci_out,self.lat_in,self.cluster_info)
         _y = self.corrdump(_args)
         return _y
 
-    def mmaps(self, dirname, args, cal=False):
+    def mmaps(self, dirname, cal=False, *args, **kwargs):
         """
-        call atat mmaps command
+        Call ``MMAPS`` command in system.
+
+        Parameters
+        ----------
+        dirname : str
+            Directory name of ``MMAPS`` command running. Usually, it contains a
+            ``lat.in`` file, ``vasp.wrap`` or other wrap file for different
+            first-principles calculation.
+        cal : bool
+            Determine whether to run a CE fitting. If `False`, the function
+            will return when clusters information is obtained, and vice versa
+            CE fitting is running until users stop it.
+        args : position arg
+            Position arguments for ``MMAPS`` command.
+        kwargs : dict arg
+            Dict arguments for ``MMAPS`` command.
+
+        Returns
+        -------
+            None
         """
         # 1. cd work path
         # 2. run mmaps with self.lat_in
@@ -129,26 +159,56 @@ class CE(object):
         else:
             print('please run mmaps first!')
         os.chdir(_curr_path)
-        # print('mmaps work path is :',dirname)
-        # print('mmaps arguments is :',args)
-        # print('mmaps run successful!')
 
-    def corrdump(self, args):
+    def corrdump(self, cmd):
         """
-        call atat corrdump command
-        """
-        # print('corrdum arguments is :', args)
-        # call corrdump with arguments directly
+        Obtain energy predicted by ``corrdump`` command in ``ATAT``.
 
-        s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        Parameters
+        ----------
+        cmd : str
+            Shell command which call system ``corrdump`` command of ``ATAT``.
+
+        Returns
+        -------
+        float
+            Energy predicted by ``corrdump`` command.
+        """
+        s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         stdout, stderr = s.communicate()
-        #         print(stdout,stderr)
         ref_energy = float(str(stdout).strip('\n'))
         return ref_energy
-        # return 0.001
 
     @staticmethod
     def compare_crystal(str1,str2,compare_crystal_cmd=None,**kwargs):
+        """
+        To determine whether structures are identical based crystal symmetry
+        analysis. The program used in this package is based on ``XXX`` library
+        which developed by XXX.
+
+        Parameters
+        ----------
+        str1 : str
+            The first string used to represent elements .
+        str2 : str
+            The second string used to represent elements.
+        compare_crystal_cmd : str
+            The program developed to determine whether two
+            crystal structures are identical, default `None`.
+        kwargs : dict arguments
+            Other arguments used in `compare_crystal_cmd`.
+
+        Returns
+        -------
+        bool
+            True for yes and False for no.
+
+        References
+        ----------
+
+        [1] xxxxx
+
+        """
         if compare_crystal_cmd is None:
             compare_crystal_cmd = 'CompareCrystal '
 
@@ -156,7 +216,8 @@ class CE(object):
         ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
         at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
         verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
-        args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
+        args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} ' \
+                                       '--verbos {4}'
         args = args.format(str1,str2,ct,at,verbos)
         s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
         stdout,stderr= s.communicate()
@@ -167,17 +228,43 @@ class CE(object):
             return True
 
 
-    def get_total_energy(self, x, is_corrdump=False,is_ref=False,site_repeat=-1,sum_corr=0.0,delete_file=True):
+    def get_total_energy(self, x, is_corrdump=False,is_ref=False,
+                         site_repeat=-1,sum_corr=0.0,delete_file=True):
         """
-        return absolute energy
-        """
-        # get E_per_atom from ref_energy.out
-        # get C_atom from atoms.out
-        # get supercell_size from str.out and lat.in
-        # get E_corrdump from corrdump
+        Calculate absolute energy of a crystal structure like first-principles
+        calculation software package computed.
 
-        # E_tot = ( sum(C_atom * E_per_atom) * site_count + \
-        # E_corrdump ) * supercell_size
+        Parameters
+        ----------
+        x : str
+            String for filename of lattice crystal, default ``str.out``.
+        is_corrdump : bool
+            Determine whether function use energy computed by ``corrdump``
+            command to replace absolute energy, default `False`.
+        is_ref : bool
+            Determine whether function use relative energy provided by users.
+        site_repeat : int
+            This variable should be used seriously when a lattice structure
+            cannot map parent lattice.
+        sum_corr : float
+            If `is_ref` is `True` this value will be input as energy predicted
+            by ``corrdump`` command.
+        delete_file :
+            Whether to delete tmp file generated by program.
+
+        Returns
+        -------
+        float :
+            Total energy or corrdump energy.
+
+        """
+        # Calculation formula:
+        # 1. get E_per_atom from ref_energy.out
+        # 2. get C_atom from atoms.out
+        # 3. get supercell_size from str.out and lat.in
+        # 4. get E_corrdump from corrdump
+        # 5. E_tot = ( sum(C_atom * E_per_atom) * site_count + \
+        #    E_corrdump ) * supercell_size
         if is_corrdump:
             if site_repeat > 0 and type(site_repeat) is int:
                 e_corrdump = self.predict(x) * site_repeat
@@ -190,7 +277,6 @@ class CE(object):
         else:
             e_corrdump = self.predict(x)
 
-
         # get C_atom from str.out
         with open(x, 'r') as f:
             _struct_string = f.read()
@@ -199,8 +285,14 @@ class CE(object):
             _lat_in_string = [line.split(',')[0] for line in _lat_in_string]
             _lat_in_string = '\n'.join(_lat_in_string)
 
-        _str_out = Mcsqs.structure_from_string(_struct_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au').replace('Sr_sv','Sr').replace('Ti_sv','Ti').replace('Nb_sv','Nb'))
-        _lat_in = Mcsqs.structure_from_string(_lat_in_string.replace('Hf_pv', 'Hf').replace('Vac', 'Au').replace('Sr_sv','Sr').replace('Ti_sv','Ti').replace('Nb_sv','Nb'))
+        _str_out = Mcsqs.structure_from_string(
+            _struct_string.replace('_pv', '').
+                replace('_sv', '').
+                replace('Vac', 'Au'))
+        _lat_in = Mcsqs.structure_from_string(
+            _lat_in_string.replace('_pv', '').
+                replace('_sv', '').
+                replace('Vac','Au'))
 
         _count_atom = {}
         num = 0
@@ -209,8 +301,7 @@ class CE(object):
             num += _count_atom[s]
 
         # get supercell size from lat.in
-        super_size = _str_out.volume / _lat_in.volume
-        #print('super_size is ', super_size)
+        super_size = _str_out.volume / float(_lat_in.volume)
 
         sum_c_per = 0.0
         for a, e in self.per_atom_energy.items():
