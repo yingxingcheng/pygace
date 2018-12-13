@@ -1,22 +1,32 @@
 # -*- coding:utf-8 -*-
+#    This file is part of pygace.
+#
+#    pygace is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    pygace is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public
+#    License along with pygace. If not, see <http://www.gnu.org/licenses/>.
+"""The module wrapper cluster expansion method (CE) implemented in ``MMAPS`` in
+``ATAT``.
 """
-__title__ = ''
-__function__ = 'This module is used for XXX.'
-__author__ = 'yxcheng'
-__mtime__ = '18-5-16'
-__mail__ = 'yxcheng@buaa.edu.cn'
-"""
-import warnings
-warnings.filterwarnings("ignore")
 
-from copy import deepcopy
 import numpy as np
 import os.path
 from pymatgen.io.atat import Mcsqs
-#from pymatgen.io.ase import AseAtomsAdaptor
 import subprocess
-#from collections import Counter
-#from ase import Atom
+
+__author__ = "Yingxing Cheng"
+__email__ ="yxcheng@buaa.edu.cn"
+__maintainer__ = "Yingxing Cheng"
+__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__version__ = "2018.12.13"
 
 
 class CE(object):
@@ -34,20 +44,30 @@ class CE(object):
     clster_info : str
         Filename of cluster information, default is ``clusters.out``
         in ``ATAT``.
-    count : int
     eci_out : str
+        File name of ``eci.out`` in ``ATAT``.
     lat_in : str
+        File name of `lat.in` in ``ATAT``.
     per_atom_energy : dict
+        A dict restore element type and their responding energy defined in
+        ``atoms.out`` file in ``ATAT``
     site : int
+        The site in which different can occupy.
     work_path : str
+        The directory of ``MMAPS`` or ``MAPS`` running.
 
 
     Parameters
     ----------
     lat_in : str
-    sit : int
+        File name of ``lat.in`` in ``ATAT``.
+    site : int
+        The site in which different can occupy.
     corrdump_cmd : str
+        Command of ``corrdump`` in ``ATAT``, default is 'corrdump'
     compare_crystal_cmd : str
+        Command of program which is used to determine whether two crystal
+        structures are identical using symmetry analysis.
     """
 
     COMPARE_CRYSTAL = None
@@ -55,7 +75,6 @@ class CE(object):
 
     def __init__(self, lat_in=None, site=16,
                  corrdump_cmd=None,compare_crystal_cmd=None):
-        self.count = 0
         self.lat_in = lat_in
         self.site = site
         if corrdump_cmd:
@@ -73,6 +92,20 @@ class CE(object):
             os.path.abspath(self.work_path), 'clusters.out')
 
     def fit(self, dirname='./.tmp_atat_ce_dir'):
+        """
+        Obtain all information of a directory in which a correct calculation of
+        CE fitting has been performed.
+
+        Parameters
+        ----------
+        dirname : str
+            Which directory of the CE running.
+
+        Returns
+        -------
+        None
+
+        """
         _dirname = os.path.abspath(dirname)
         if not os.path.exists(_dirname):
             os.makedirs(_dirname)
@@ -108,6 +141,7 @@ class CE(object):
 
     def predict(self, x):
         """
+        Predict energy by given file name of structure.
 
         Parameters
         ----------
@@ -203,11 +237,6 @@ class CE(object):
         bool
             True for yes and False for no.
 
-        References
-        ----------
-
-        [1] xxxxx
-
         """
         if compare_crystal_cmd is None:
             compare_crystal_cmd = 'CompareCrystal '
@@ -258,6 +287,7 @@ class CE(object):
             Total energy or corrdump energy.
 
         """
+        #-----------------------------------------------------------------------
         # Calculation formula:
         # 1. get E_per_atom from ref_energy.out
         # 2. get C_atom from atoms.out
@@ -265,6 +295,8 @@ class CE(object):
         # 4. get E_corrdump from corrdump
         # 5. E_tot = ( sum(C_atom * E_per_atom) * site_count + \
         #    E_corrdump ) * supercell_size
+        #-----------------------------------------------------------------------
+
         if is_corrdump:
             if site_repeat > 0 and type(site_repeat) is int:
                 e_corrdump = self.predict(x) * site_repeat

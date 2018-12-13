@@ -4,18 +4,10 @@ pygace\.examples\.hfo2 package
 Submodules
 ----------
 
-pygace\.examples\.hfo2\.new\_gace module
-----------------------------------------
+pygace\.examples\.hfo2\.hfo2\_gace module
+-----------------------------------------
 
-.. automodule:: pygace.examples.hfo2.new_gace
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pygace\.examples\.hfo2\.new\_gace\_bak module
----------------------------------------------
-
-.. automodule:: pygace.examples.hfo2.new_gace_bak
+.. automodule:: pygace.examples.hfo2.hfo2_gace
     :members:
     :undoc-members:
     :show-inheritance:

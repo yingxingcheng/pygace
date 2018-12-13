@@ -1,16 +1,51 @@
 # -*- coding:utf-8 -*-
-"""
-__title__ = ''
-__function__ = 'This module is used for XXX.'
-__author__ = 'yxcheng'
-__mtime__ = '18-5-21'
-__mail__ = 'yxcheng@buaa.edu.cn'
+#    This file is part of pygace.
+#
+#    pygace is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    pygace is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public
+#    License along with pygace. If not, see <http://www.gnu.org/licenses/>.
+"""The module contains genetic algorithms and relevant operator used in GA, e.g.,
+crossover operator, mutation operator.
 """
 
 import random, os, os.path, pickle
 from deap import tools
 
+__author__ = "Yingxing Cheng"
+__email__ ="yxcheng@buaa.edu.cn"
+__maintainer__ = "Yingxing Cheng"
+__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__version__ = "2018.12.13"
+
 def gaceVarAnd(population, toolbox, cxpb):
+    """
+    Execute crossover and mutation operation in genetic algorithm running
+    process.
+
+    Parameters
+    ----------
+    population : list
+        The population of all individual.
+    toolbox : Toolbox object
+        The `Toolbox` object defined in ``DEAP``.
+    cxpb : float
+        The probability or crossover.
+
+    Returns
+    -------
+    list
+        The new generation.
+
+    """
     offspring = [toolbox.clone(ind) for ind in population]
 
     # Apply crossover and mutation on the offspring
@@ -28,6 +63,37 @@ def gaceVarAnd(population, toolbox, cxpb):
 
 def gaceGA(population, toolbox, cxpb, ngen, stats=None,
              halloffame=None, verbose=True,checkpoint = None,freq=10):
+    """
+    Genetic algorithm (GA) used in ``pygace``. Users can define their algorithms
+    based on ``DEAP`` package or other GA framework.
+
+    Parameters
+    ----------
+    population : list
+        A list represent population consists of all individual.
+    toolbox : toolbox object
+        ``DEAP`` toolbox object
+    cxpb : float
+        The probability of crossover happens.
+    ngen : int
+        The number of generations.
+    stats :
+        The random state of simulation.
+    halloffame : list
+        Restored individual.
+    verbose : bool
+        Whether to show more message of running.
+    checkpoint : str
+        The filename of checkpoint file.
+    freq : int
+        The number that determine how many step to write a checkpoint.
+
+    Returns
+    -------
+    tuple
+        A tuple of population and log file.
+
+    """
     if checkpoint and os.path.exists(checkpoint):
         with open(checkpoint,'r') as cp_file:
             cp = pickle.load(cp_file)
@@ -57,7 +123,7 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
     record = stats.compile(population) if stats else {}
     logbook.record(gen=0, nevals=len(invalid_ind), **record)
     if verbose:
-        print logbook.stream
+        print(logbook.stream)
 
     # Begin the generational process
     for gen in range(start_gen+1, ngen + 1):
@@ -84,7 +150,7 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
         record = stats.compile(population) if stats else {}
         logbook.record(gen=gen, nevals=len(invalid_ind), **record)
         if verbose:
-            print logbook.stream
+            print(logbook.stream)
 
         if gen % freq == 0 and checkpoint is not None:
             cp = dict(population=population,generation=gen, halloffame=halloffame,
@@ -98,20 +164,25 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
 
 def gaceMutShuffleIndexes(individual, indpb):
     """Shuffle the attributes of the input individual and return the mutant.
-    The *individual* is expected to be a :term:`sequence`. The *indpb* argument is the
-    probability of each attribute to be moved. Usually this mutation is applied on
-    vector of indices.
+    The *individual* is expected to be a :term:`sequence`. The *indpb* argument
+    is the probability of each attribute to be moved. Usually this mutation is
+    applied on vector of indices.
 
-    :param individual: Individual to be mutated.
-    :param indpb: Independent probability for each attribute to be exchanged to
-                  another position.
-    :returns: A tuple of one individual.
+    Parameters
+    ----------
+    individual : Individual object
+        Individual to be mutated.
+    indpb : float
+        Independent probability for each attribute to be exchanged to another
+        position.
 
-    This function uses the :func:`~random.random` and :func:`~random.randint`
-    functions from the python base :mod:`random` module.
+    Returns
+    -------
+    tuple
+        A tuple of one individual.
     """
     size = len(individual)
-    for i in xrange(size):
+    for i in range(size):
         if random.random() < indpb:
             index1 = random.randint(0, size -1)
             index2 = random.randint(0, size -1)
@@ -119,19 +190,22 @@ def gaceMutShuffleIndexes(individual, indpb):
 
     return individual,
 
+
 class Individual(object):
+    """
+    A wrapper class for individual in GA.
+
+    Parameters
+    ----------
+    gene_length : int
+        The length of gene.
+    fitness : float
+        The fitness value of gene
+    """
 
     valid_type = ['Vac','Replace']
 
-    def __init__(self, gene_length=64, fitness=0):
-        """
-
-        :param gene_length:
-        :param fitness:
-        :param type:  'Vac', 'Replace'
-        :param args:
-        :param kwargs:
-        """
+    def __init__(self, gene_length=64, fitness=0.0):
         self.gene_length = gene_length
         self.fitness = fitness
         self.genes = [0] * self.gene_length
@@ -139,20 +213,61 @@ class Individual(object):
     def generate_individual(self):
         """
         Greate a random individual
-        :return:
+
+        Returns
+        -------
+        None
         """
         solution = [num for num in range(0, self.gene_length)]
         random.shuffle(solution)
         self.genes = solution[:]
 
     def get_gene(self, index):
+        """
+        Obtain gene in the position of `index`.
+
+        Parameters
+        ----------
+        index : int
+            The index of position.
+
+        Returns
+        -------
+        int
+            The gene
+
+        """
         return self.genes[index]
 
     def set_gene(self, index, value):
+        """
+        Set gene in position of `index`.
+
+        Parameters
+        ----------
+        index : int
+            The index of position.
+        value : float
+            The value of gene.
+
+        Returns
+        -------
+        None
+
+        """
         self.genes[index] = value
         self.fitness = 0
 
     def size(self):
+        """
+        Return the length of individual.
+
+        Returns
+        -------
+        int
+            The length of individual
+
+        """
         return len(self.genes)
 
 
@@ -165,45 +280,84 @@ class Individual(object):
     def __getitem__(self, item):
         return self.genes[item]
 
+
+def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
+    """
+    Executes a crossover specified by crossover type `crossover_type`and the
+    number of crossover `cross_num` on the input :term:`sequence` individuals.
+    The two individuals are modified in place and both keep their original
+    length.
+
+    Parameters
+    ----------
+    indiv1 : Individual object
+        The first individual participating in the crossover.
+    indiv2 : Individual object
+        The second individual participating in the crossover.
+    crossover_type : int
+        The type of crossover method.
+        ``1``: Partially-mapped crossover (PMX)
+        ``2``: Order Crossover (OX1)
+        ``3``: Position based crossover (POS)
+        ``4``: Order based Crossover (OX2)
+        ``5``: Cycle crossover (CX)
+        ``6``: Subtour exchange crossover (SXX)
+
+    cross_num : int
+        The number of crossover which determine the number exchange in each
+        crossover operation.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals.
+
+    """
+    methods = (partial_mapped_crossover,order_crossover,
+               position_based_crossover,order_based_crossover,
+               cycle_crossover, subtour_exchange_crossover
+               )
+    return methods[crossover_type%(len(methods)+1)](indiv1,indiv2,cross_num)
+
 def transfer_from(ind):
     _tmp = Individual(gene_length=len(ind))
     _tmp.genes[:] = ind[:]
     return _tmp
 
-def gaceCrossover(indiv1, indiv2,select=1,cross_num=8):
-    """
-    Crossover individuals
-    :param indiv1:
-    :param indiv2:
-    :return:
-    """
 
-    if select == 1:
-        return partial_mapped_crossover(indiv1,indiv2,cross_num)
-    elif select == 2:
-        return order_crossover(indiv1,indiv2,cross_num)
-    elif select ==3:
-        return position_based_crossover(indiv1,indiv2,cross_num)
-    elif select ==4:
-        return order_based_crossover(indiv1,indiv2,cross_num)
-    elif select == 5:
-        return cycle_crossover(indiv1,indiv2,cross_num)
-    elif select ==6:
-        return subtour_exchange_crossover(indiv1,indiv2,cross_num)
-    else:
-        return partial_mapped_crossover(indiv1,indiv2,cross_num)
-
-def partial_mapped_crossover(ind1, ind2,cross_number):
+def partial_mapped_crossover(ind1, ind2, cross_number):
     """
-    partial mapped crossover algorithm
-    parent1: [1,2,|3,4,5,6|,7,8,9]
-    parent2: [5,4,|6,9,2,1|,7,8,3]
+    Partially-mapped crossover (PMX).
 
-    child1: [3,5,|6,9,2,1|,7,8,4]
-    child2: [2,9,|3,4,5,6|,7,8,1]
-    :param indiv1:
-    :param indiv2:
-    :return: child1
+    The algorithm:
+    parent1: ``[1,2,|3,4,5,6|,7,8,9]``
+    parent2: ``[5,4,|6,9,2,1|,7,8,3]``
+
+    child1: ``[3,5,|6,9,2,1|,7,8,4]``
+    child2: ``[2,9,|3,4,5,6|,7,8,1]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover which determine the number exchange in each
+        crossover operation.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Goldberg, D.; Lingle, R.; Alleles, L. the Travelling Salesman Problem.
+    Proceedings of the 1st International Conference on Genetic Algorithms and
+    their Applications, J.J. Grefenstette (ed.). Carneige-Mellon University,
+    Pittsburgh, 1985.
+
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -237,14 +391,35 @@ def partial_mapped_crossover(ind1, ind2,cross_number):
 
 def order_crossover(ind1, ind2,cross_number):
     """
-    order crossover
-    parent1: [1,2,|3,4,5,6|,7,8,9]
-    parent2: [5,7,4,9,1,3,6,2,8]
+    Order crossover (OX1)
 
-    child1: [7,9,|3,4,5,6|,1,2,8]
-    :param indiv1:
-    :param indiv2:
-    :return:
+    order crossover algorithm:
+    parent1: ``[1 2 |3 4 5 6| 7 8 9]``
+    parent2: ``[5 7 |4 9 1 3| 6 2 8]``
+
+    child1: ``[7 9 |3 4 5 6| 1 2 8]``
+    child2: ``[2 5 |4 9 1 3| 6 7 8]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover which determine the number exchange in each
+        crossover operation.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Davis, L. Applying Adaptive Algorithms to Epistatic Domains. Proceedings
+    of the 9th International Joint Conference on Artificial Intelligence -
+    Volume 1. San Francisco, CA, USA, 1985; pp 162-164.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -276,13 +451,33 @@ def order_crossover(ind1, ind2,cross_number):
 
 def position_based_crossover(ind1, ind2, cross_number):
     """
-    parent1: [1,|2,3,4,|5,|6,7,8,|9]
-    parent2: [5,4,6,4,1,9,2,7,8]
+    Position-based crossover (PBC)
 
-    child1: [4,|2,3,1,|5,|6,7,8,|9]
-    :param indiv1:
-    :param indev2:
-    :return:
+    PBC algorithm:
+    parent1: ``[1 |2 3 4 |5 |6 7 8 |9]``
+    parent2: ``[5 |4 6 4 |1 |9 2 7 |8]``
+
+    child1: ``[4 |2 3 1 |5 |6 7 8 |9]``
+    child2: ``[2 |4 3 5 |1 |9 6 7 |8]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover which determine the number exchange in each
+        crossover operation.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -315,15 +510,33 @@ def position_based_crossover(ind1, ind2, cross_number):
 
 def order_based_crossover(ind1, ind2, cross_number):
     """
-    parent1 [1,|2,3,4,|5,|6,7,8,|9]
-    parent2 [5,4,6,3,1,9,2,7,8]
+    Order based Crossover (OX2).
 
-    proto-child [ ,4, ,3,1, , ,7,8]
-    + selected in parent1
-    => child1 [2,4,5,3,1,6,9,7,8]
-    :param indiv1:
-    :param indiv2:
-    :return: child1
+    OX2 algorithm:
+    parent1 ``[1 |2 3 4 |5 |6 7 8 |9]``
+    parent2 ``[5 |4 6 3 |1 |9 2 7 |8]``
+
+    child1 ``[2 |4 5 |3 |1 6 9 |7 |8]``
+    child2 ``[4 |2 |3 1 |5 |6 |7 9 8]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover which determine the number exchange in each
+        crossover operation.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -354,12 +567,35 @@ def order_based_crossover(ind1, ind2, cross_number):
 
 def cycle_crossover(ind1, ind2, cross_number):
     """
-    parent1: [1,2,3,4,5,6,7,8,9]
-    parent2: [5,4,6,9,2,3,7,8,1]
+    Cycle crossover (CX).
 
-    :param indiv1:
-    :param indiv2:
-    :return:
+    CX algorithm:
+    parent1: ``[|1 |2 3 |4 |5 6 7 8 |9]``
+    parent2: ``[|5 |4 6 |9 |2 3 7 8 |1]``
+
+    child1: ``[|1 |2 6 |4 |5 3 7 8 |9]``
+    child2: ``[|5 |4 3 |9 |2 6 7 8 |1]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover is not used in this algorithm.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Oliver, I.; Smith, D.; Holland, J. A study of permutation crossover
+    operators on the traveling salesman problem. Proceedings of the 2nd
+    International Conference on Genetic Algorithms, J.J. Grefenstette (ed.).
+    Hillsdale, New Jersey, 1987; pp 224-230.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -385,12 +621,33 @@ def cycle_crossover(ind1, ind2, cross_number):
 
 def subtour_exchange_crossover(ind1, ind2, cross_number):
     """
-    parent1: [1,2,3,4,5,6,7,8,9]
-    parent2: [3,4,9,7,8,5,2,1,6]
+    Subtour exchange crossover (SXX).
 
-    offspring1: [1,2,3,4,7,5,6,8,9]
-    offspring2: [3,4,9,5,8,6,2,1,7]
-    :return:
+    SXX algorithm:
+    parent1: ``[1 2 3 |4 5 6 7| 8 9]``
+    parent2: ``[3 |4 9 |7 8 |5 2 1 |6]``
+
+    child1: ``[1 2 3 |4 7 5 6| 8 9]``
+    child2: ``[3 |4 9 |5 8 |6 2 1 |7]``
+
+    Parameters
+    ----------
+    ind1 : iteration object
+        The first individual participating in the crossover.
+    ind2 : iteration object
+        The second individual participating in the crossover.
+    cross_number : int
+        The number of crossover is not used in this algorithm.
+
+    Returns
+    -------
+    tuple
+        A tuple of two individuals
+
+    References
+    ----------
+    Yamamura, M.; Ono, T.; Kobayashi, S. Japanese Society for Artificial
+    Intelligence.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -412,7 +669,7 @@ def subtour_exchange_crossover(ind1, ind2, cross_number):
     for value in value_list_in_indiv1:
         select_dict_in_indiv2[indiv2.genes.index(value)] = value
 
-    # sort using key as key
+    # sort using key in dict as the parameter `key` in set
     tmp_sorted_list = sorted(select_dict_in_indiv2.keys())
     for i, index in enumerate(tmp_sorted_list):
         new_sol.set_gene(

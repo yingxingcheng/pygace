@@ -1,10 +1,19 @@
 # -*- coding:utf-8 -*-
-"""
-__title__ = ''
-__function__ = 'This module is used for test of SrTi(1-x)Nb(x)O3 system.'
-__author__ = 'yxcheng'
-__mtime__ = '18-5-16'
-__mail__ = 'yxcheng@buaa.edu.cn'
+#    This file is part of pygace.
+#
+#    pygace is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    pygace is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public
+#    License along with pygace. If not, see <http://www.gnu.org/licenses/>.
+"""A GA-to-CE example given in this module.
 """
 
 from __future__ import print_function
@@ -19,10 +28,43 @@ from pygace.ga import gaceGA, gaceCrossover
 from pygace.utility import  EleIndv, reverse_dict, get_num_lis
 from pygace.gace import AbstractApp, AbstractRunner
 
+__author__ = "Yingxing Cheng"
+__email__ ="yxcheng@buaa.edu.cn"
+__maintainer__ = "Yingxing Cheng"
+__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__version__ = "2018.12.13"
+
 
 class STOApp(AbstractApp):
     """
-    An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp object
+    An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp
+    object
+
+    Attributes
+    ----------
+    This object is used to execute a GACE simulation, user only need to
+    implement several interfaces to custom their application.
+
+    Attributes
+    ----------
+    app : AbstractApp
+        A subclass object of AbstractApp.
+    iter_idx : int
+        Index of GA-to-CE iteration.
+
+    Parameters
+    ----------
+    ce_site: int
+        the concept of site used in ATAT program.
+    ce_dirname: str
+        The name of a directory which contain information of MMAPS or MAPS
+        running
+    ele_1st: str
+        The first type of element in the ``site`` in ``ATAT``.
+    ele_2nd: str
+        The second type of element in the ``site`` in ``ATAT``.
+    params_config_dict: dirt
+        Parameter dict used to custom GACE AbstractApp.
     """
     DEFAULT_SETUP = {
         'NB_DEFECT': 12,
@@ -39,16 +81,7 @@ class STOApp(AbstractApp):
     def __init__(self,ce_site=1, ce_dirname='./data/iter0',
                  ele_1st = 'Ti_sv', ele_2nd = 'Nb_sv',
                  params_config_dict=None):
-        """Initial function used to construct a STOApp object
-
-        :param ce_site: the concept of site used in ATAT program.
-        :param ce_dirname: a directory contain information of MMAPS or MAPS running
-        :param ele_1st: host atom type
-        :param ele_2nd: point-defect atom type
-        :param params_config_dict: config dict used to update defect dict
-        """
         super(STOApp,self).__init__(ce_site,ce_dirname, params_config_dict)
-
         self.params_config_dict['FIRST_ELEMENT'] = ele_1st
         self.params_config_dict['SECOND_ELEMENT'] = ele_2nd
 
@@ -56,20 +89,37 @@ class STOApp(AbstractApp):
 
 
     def update_ce(self, site=1, dirname='./data/iter0'):
-        """Function to update inner CE object
+        """
+        Function to update inner CE object
 
-        :param site:
-        :param dirname:
-        :return:
+        Parameters
+        ----------
+        site : int, optional
+            The site defined in ``lat.in`` which is one of input files in ATAT.
+        dirname : str
+            The name of directory contain running results of ``MMAPS``.
+
+        Returns
+        -------
+        None
+
         """
         super(STOApp,self).update_ce(site=site,dirname=dirname)
 
     def ind_to_elis(self, individual):
         """
-        convert individual (number list) to element list
-        :param individual:
-        :return:
+        Convert individual (number list) to element list.
+
+        Parameters
+        ----------
+        individual
+
+        Returns
+        -------
+        list
+            A list of element symbol string.
         """
+
         # a function that convert `number list` to `element list`
         tmp_f = lambda x: self.params_config_dict['SECOND_ELEMENT'] \
             if x < self.params_config_dict['NB_DEFECT'] else \
@@ -78,11 +128,23 @@ class STOApp(AbstractApp):
         return element_lis
 
     def evalEnergy(self, individual):
-        """Evaluation function for the ground-state searching problem.
+        """
+        Evaluation function for the ground-state searching problem.
 
         The problem is to determine a configuration of n vacancies
         on a crystalline structures such that the energy of crystalline
         structures can obtain minimum value.
+
+        Parameters
+        ----------
+        individual
+
+        Returns
+        -------
+        tuple
+            A tuple contains energy in the first position, which is compatible
+            with ``DEAP``.
+
         """
         element_lis = self.ind_to_elis(individual)
         types_lis = [str(self.type_dict[i]) for i in element_lis]
@@ -107,6 +169,25 @@ class STOApp(AbstractApp):
         return energy,
 
     def single_run(self, ce_iter, ga_iter):
+        """
+        A single running task.
+
+        Parameters
+        ----------
+        ce_iter : str
+            How many times should a simulation repeat for statistic error(
+            different grouond-state in different running iterations with
+            identical parameter setting).
+        ga_iter : int
+            How many times should a GA simulation repeat in each GA-to-CE
+            iteration.
+
+        Returns
+        -------
+        tuple
+            A tuple of pupulation, random states and hall of fame.
+
+        """
         pop = self.toolbox.population(n=150)
         hof = tools.HallOfFame(1)
         stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -119,12 +200,32 @@ class STOApp(AbstractApp):
                                         'checkpoint_name_CE-{0}_GA-{1}_NB-{2}.pkl')
         res = gaceGA(pop, self.toolbox, cxpb=0.5,ngen=90,
                      stats=stats,halloffame=hof, verbose=True,
-                     checkpoint=checkpoint_fname.format(ce_iter,ga_iter,self.params_config_dict['NB_DEFECT']))
+                     checkpoint=checkpoint_fname.format(ce_iter,ga_iter,
+                                                        self.params_config_dict['NB_DEFECT']))
 
         pop = res[0]
         return pop, stats, hof
 
     def multiple_run(self, ce_iter,ga_iters):
+        """
+        For multiple tasks
+
+        Parameters
+        ----------
+        ce_iter : int
+            How many times should a simulation repeat for statistic error(
+            different grouond-state in different running iterations with
+            identical parameter setting).
+        ga_iters : int
+            How many times should a GA simulation repeat in each GA-to-CE
+            iteration.
+
+        Returns
+        -------
+        list
+            A list contain the results of running
+
+        """
         all_min = []
         all_best_son = []
         for i in range(ga_iters):
@@ -151,15 +252,31 @@ class STOApp(AbstractApp):
 
 
     def run(self,iter_idx=0, target_epoch=50):
+        """
+        Main function to run a GACE simulation which will be called by
+        `AbstractRunner`.
+
+        Parameters
+        ----------
+        iter_idx : int
+            Determine which iteration the ECI is used in.
+        target_epoch : int
+            Iteration in GA simulation.
+
+        Returns
+        -------
+        None
+
+        """
         toolbox = self.initial()
         toolbox.unregister("mate")
-        toolbox.register("mate", gaceCrossover, select=1,cross_num=8)
+        toolbox.register("mate", gaceCrossover, crossover_type=1,cross_num=8)
 
         ground_states = []
         ground_states.extend(self.multiple_run(iter_idx, target_epoch))
 
-        checkpoint = 'ground_states_{1}_{0}.pkl'.format(self.params_config_dict['NB_DEFECT'],
-                                                        iter_idx)
+        checkpoint = 'ground_states_{1}_{0}.pkl'.format(
+            self.params_config_dict['NB_DEFECT'],iter_idx)
         with open(checkpoint, 'wb') as cp_file:
             pickle.dump(ground_states, cp_file)
 
@@ -169,13 +286,22 @@ class STOApp(AbstractApp):
 
     def create_dir_for_DFT(self, task_fname='./DFT_task.dat'):
         """
-        Function to create directories for DFT calculation for ground-state configurations
-        candidates in each GA iteration. This function is used to God_view function. The identical
-        functional method in a standard GACE iteration is included `print_gs` member function in
-        STOApp.
-        :param task_fname: name of a file containing directories for DFT calculations.
-        :return: None
+        Function to create directories for DFT calculation for ground-state
+        configurations candidates in each GA iteration. This function is used
+        to God_view function. The identical functional method in a standard
+        GACE iteration is included `print_gs` member function in STOApp.
+
+        Parameters
+        ----------
+        task_fname : str
+            Name of file restoring the directory in which DFT task should be
+            performed.
+
+        Returns
+        -------
+        None
         """
+
         with open(task_fname, 'r') as fin:
             dirlis = fin.readlines()
 
@@ -195,6 +321,25 @@ class STOApp(AbstractApp):
             t1.dft_energy()
 
 class Runner(AbstractRunner):
+    """A runner for running a GACE simulation.
+
+    This object is used to execute a GACE simulation in STO system.
+
+    Attributes
+    ----------
+    app : STOApp
+        A subclass object of HFO2App.
+    iter_idx : int
+        Index of GA-to-CE iteration.
+
+    Parameters
+    ----------
+    app : subclass of STOApp
+        A subclass object of STOApp, default is `None`.
+    iter_idx : int
+        Index of GA-to-CE iteration, default is `None`.
+
+    """
 
     def __init__(self, app=None,iter_idx=None):
         super(Runner,self).__init__(app,iter_idx)
@@ -203,20 +348,44 @@ class Runner(AbstractRunner):
     # Standard GACE route
     #-----------------------------------------------------------------------------
     def run(self):
+        """
+        Main function to run GA-to-CE iterations.
+
+        Returns
+        -------
+        None
+        """
         self.god_view()
         pass
 
     def print_gs(self):
+        """
+        Function used to extract ground-state information from pickle file
+        saved during GACE running.
+
+        Returns
+        -------
+        None
+        """
         self.create_dir_for_DFT()
 
     def create_dir_for_DFT(self, task_fname='./DFT_task.dat'):
         """
-        Function to create directories for DFT calculation for ground-state configurations
-        candidates in each GA iteration. This function is used to God_view function. The identical
-        functional method in a standard GACE iteration is included `print_gs` member function in
-        STOApp.
-        :param task_fname: name of a file containing directories for DFT calculations.
-        :return: None
+        Function to create directories for DFT calculation for ground-state
+        configurations candidates in each GA iteration. This function is used
+        to God_view function. The identical functional method in a standard
+        GACE iteration is included `print_gs` member function in STOApp.
+
+        Parameters
+        ----------
+        task_fname : str
+            The name of file contain the information of directory in which
+            DFT task should be performed.
+
+        Returns
+        -------
+        None
+
         """
         with open(task_fname, 'r') as fin:
             dirlis = fin.readlines()
@@ -241,24 +410,34 @@ class Runner(AbstractRunner):
     #-----------------------------------------------------------------------------
     def god_view(self):
         """
-        In some cases, the number of all candidate configurations in sample space is limited, and we can enumerate
-        these configurations one by one to calculate CE energis, which is a fast and efficient way to obtain potential
-        ground-state structures than standard genetic algorithms selection.
-        :param iter_idx: the time of iteration.
-        :return: None
-        """
-        # sto_apps = []
-        # for i in range(iter_idx+1):
-        #     sto_apps.append(STOApp(ce_site=1,ce_dirname='./data/iter{0}'.format(iter_idx)))
+        In some cases, the number of all candidate configurations in sample
+        space is limited, and we can enumerate these configurations one by one
+        to calculate CE energis, which is a fast and efficient way to obtain
+        potential ground-state structures than standard genetic algorithms selection.
 
+        Returns
+        -------
+        None
+        """
         def get_all_by_violent(nb_Nb,sto_app):
             """
             get all possibilities with ce energy by specified the number of
             point-defect atom and which app is used.
-            :param nb_Nb:
-            :param sto_app:
-            :return:
+
+            Parameters
+            ----------
+            nb_Nb : int
+                The number of 'Nb' atom.
+            sto_app : STOApp object
+                The GACE object in STO system.
+
+            Returns
+            -------
+            list
+                A list contain all combination of numbers which represents
+                'Nb' or 'Ti' atom.
             """
+
             res = {}
             for atom_idx_lis in get_num_lis(nb_Nb,nb_site=15):
                 test1 = ['Ti_sv'] * 15
@@ -274,19 +453,31 @@ class Runner(AbstractRunner):
 
         def F(iter, nb, sto_app, pre_iter_res_num_energy_lis):
             """
-            a helper function is used to obtain previous iterations execution information.
-            :param iter: the time of iteration
-            :param nb: the number of point-defect
-            :param sto_app: STOApp object
-            :param pre_iter_res_num_energy_lis: a list of dicts of number and energy of all previous iterations
-            :return: list
+            A function used to determine whether to run DFT calculation based
+            previous GA-to-CE iteration and current running results.
+
+            Parameters
+            ----------
+            iter : int
+                the index of GA-to-Ce iteration.
+            nb : int
+                The number of point defect.
+            sto_app : STOAPP object
+                STOApp object for GA-to-CE running in STO system.
+            pre_iter_res_num_energy_lis : list
+                A list of dicts of number and energy of all previous iterations
+
+            Returns
+            -------
+            list
             """
             pickle_name_iter0 = 'god_view/god_view_res_iter{0}_NB{1}.pickle'.format(iter, nb)
             pickle_name_iter0 = os.path.abspath(pickle_name_iter0)
             if os.path.exists(pickle_name_iter0):
                 ## read from pickle
                 with open(pickle_name_iter0, 'rb') as fin_iter0:
-                    _iter0_num_energy, iter0_unique_energy_num, iter0_unique_num_energy, li0 = pickle.load(
+                    _iter0_num_energy, iter0_unique_energy_num, \
+                    iter0_unique_num_energy, li0 = pickle.load(
                         fin_iter0)
             else:
                 _iter0_num_energy = get_all_by_violent(nb_Nb=nb, sto_app=sto_app)
@@ -305,19 +496,29 @@ class Runner(AbstractRunner):
                 iter0_unique_num_energy = deepcopy(pre_iter_res_num_energy)
                 iter0_unique_energy_num = reverse_dict(iter0_unique_num_energy)
                 li0 = [(iter0_unique_energy_num[v], v) for v in
-                       sorted(iter0_unique_num_energy.values(), key=lambda x: float(x))]
+                       sorted(iter0_unique_num_energy.values(),
+                              key=lambda x: float(x))]
 
                 with open(pickle_name_iter0, 'wb') as fout_iter0:
                     pickle.dump((_iter0_num_energy, iter0_unique_energy_num,
-                                 iter0_unique_num_energy, li0), fout_iter0, pickle.HIGHEST_PROTOCOL)
+                                 iter0_unique_num_energy, li0),
+                                fout_iter0, pickle.HIGHEST_PROTOCOL)
             return iter0_unique_num_energy, li0, iter0_unique_energy_num
 
         def get_all_unique_number(iter_idx):
             """
-            write execution result to file and obtain ground-state configuration and its CE energies if there is no
-             responding pickle file exists.
-            :param iter_idx: the index of iteration
-            :return: None
+            write execution result to file and obtain ground-state configuration
+            and its CE energies if there is no responding pickle file exists.
+
+            Parameters
+            ----------
+            iter_idx : int
+                the index of GA-to-CE iteration.
+
+            Returns
+            -------
+            None
+
             """
             god_view_res_path = 'god_view'
             if not os.path.exists(god_view_res_path):
@@ -367,12 +568,21 @@ if __name__ == "__main__":
 
     def get_single_res(num_lis ,sto_app):
         """
-        A tool function which is used to obtain CE energies and CE reference energies of a configuration by give a
-        list of number. A STOApp object should be given.
-        :param num_lis: list of number
-        :param sto_app: STOApp object
-        :return:
+        Obtain CE energy of single individual.
+
+        Parameters
+        ----------
+        num_lis : list
+            A list consists of numbers which represents different type of
+            point defect.
+        sto_app : STOApp
+            A STOApp to run GA-to-CE.
+
+        Returns
+        -------
+        list
         """
+
         res = {}
         test1 = ['Ti_sv'] * 15
         for i in num_lis:
@@ -383,11 +593,21 @@ if __name__ == "__main__":
 
     def get_bunch_res_gs(num_lis ,sto_app):
         """
-        A tool function which is used to obtain CE energies and CE reference energies of a configuration
-         by give a list of number. A STOApp object should be given.
-        :param num_lis: list of number
-        :param sto_app: STOApp object
-        :return: tuple of number of point-defect, CE energies and CE reference energies.
+        A tool function which is used to obtain CE energies and CE reference
+        energies of a configuration by give a list of number. A STOApp object
+        should be given.
+
+        Parameters
+        ----------
+        num_lis : list
+            A list consists of numbers which represents different type of
+            point defect.
+        sto_app : STOApp
+            A STOApp to run GA-to-CE.
+
+        Returns
+        -------
+        tuple
         """
         test1 = ['Ti_sv'] * 15
 
@@ -403,11 +623,20 @@ if __name__ == "__main__":
 
     def get_app(iter_idx):
         """
-        Obtain a SrTiO3 application (sto_app) by specified iteration index, for example, if a iter_idx of 3 is given,
-        a STOApp which initialize by `./data/iter3/` will be return. iter_idx should site [0,6], of which 6 is a
-        test STOApp, and 5 is the responding final results in this simulation.
-        :param iter_idx: the time of iteration
-        :return: STOApp object
+        Obtain a SrTiO3 application (sto_app) by specified iteration index,
+        for example, if a iter_idx of 3 is given, a STOApp which initialize by
+        `./data/iter3/` will be return. iter_idx should site [0,6], of which 6
+        is a test STOApp, and 5 is the responding final results in this
+        simulation.
+
+        Parameters
+        ----------
+        iter_idx : int
+            The index of GA-to-CE iterations.
+
+        Returns
+        -------
+        STOApp
         """
         assert(type(iter_idx) is int and iter_idx <=6 and iter_idx >= 0)
         sto_apps = []
@@ -417,10 +646,20 @@ if __name__ == "__main__":
 
     def show_results(iter_idx=1):
         """
-        Show information by given iteration, for example `iter_idx = 3` means when GACE executes iteration of 3,
-        all structures predicted by GACE and energies would be presented. Also, the structures whose energies may
-        be lower than previous ground-state structures will be computed by DFT for correction.
-        :return: None
+        Show information by given iteration, for example `iter_idx = 3` means
+        when GACE executes iteration of 3, all structures predicted by GACE and
+        energies would be presented. Also, the structures whose energies may
+        be lower than previous ground-state structures will be computed by DFT
+        for correction.
+
+        Parameters
+        ----------
+        iter_idx : the index of GA-to-CE iterations.
+
+        Returns
+        -------
+        None
+
         """
         runner = Runner(get_app(iter_idx),iter_idx)
         #Runner.god_view(iter_idx)
@@ -430,9 +669,14 @@ if __name__ == "__main__":
 
     def data_process():
         """
-        Obtain ground-state structures from iter5 which is the last iteration of GACE. This give a comparison between
-        DFT energies and CE energies of ground-state structures.
-        :return: None
+        Obtain ground-state structures from iter5 which is the last iteration of
+         GACE. This give a comparison between DFT energies and CE energies
+         of ground-state structures.
+
+        Returns
+        -------
+        None
+
         """
         import numpy as np
 

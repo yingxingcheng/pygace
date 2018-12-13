@@ -10,11 +10,11 @@ Welcome to pygace's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-modules.rst
-pygace.examples.hfo2.rst
-pygace.examples.rst
-pygace.examples.sto.rst
-pygace.rst
+modules
+pygace.examples.hfo2
+pygace.examples
+pygace.examples.sto
+pygace
 
 
 Indices and tables

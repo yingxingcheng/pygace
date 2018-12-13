@@ -1,15 +1,30 @@
 # -*- coding:utf-8 -*-
-"""
-__title__ = ''
-__function__ = 'This module is used for XXX.'
-__author__ = 'yxcheng'
-__mtime__ = '18-11-26'
-__mail__ = 'yxcheng@buaa.edu.cn'
+#    This file is part of pygace.
+#
+#    pygace is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    pygace is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public
+#    License along with pygace. If not, see <http://www.gnu.org/licenses/>.
+"""There are some general helper function defined in this module.
 """
 
 import pickle
 from itertools import combinations
 import os, shutil, subprocess
+
+__author__ = "Yingxing Cheng"
+__email__ ="yxcheng@buaa.edu.cn"
+__maintainer__ = "Yingxing Cheng"
+__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__version__ = "2018.12.13"
 
 def save_to_pickle(f,python_obj):
     """
@@ -94,12 +109,11 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
     Returns
     -------
     bool
-        True for yes and False for no.
 
     References
     ----------
 
-    [1] xxxxx
+    xxxxx
 
     """
     assert(len(str1)==len(str2))
@@ -119,6 +133,25 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
         return True
 
 class EleIndv(object):
+    """
+    A class that use list chemistry element to represent individual.
+
+    Attributes
+    ----------
+    app: AbstractApp
+        An application handling GACE running process.
+    ele_lis: list
+        A list of chemistry element string.
+
+    Parameters
+    ----------
+    ele_lis : list
+        A list of chemistry element.
+    app : AbstractApp
+        An application of GACE which is used to obtain ground-state
+        structures based generic algorithm and cluster expansion method.
+
+    """
 
     def __init__(self, ele_lis, app=None):
         self.ele_lis = ele_lis
@@ -134,10 +167,18 @@ class EleIndv(object):
         return self.app.get_ce()
 
     def set_app(self,app):
-        self.sto_app = app
+        self.app = app
 
     @property
     def ce_energy(self):
+        """
+        The absolute energy predicted by CE.
+
+        Returns
+        -------
+        float
+            CE absolute energy.
+        """
         if self.app is None:
             raise RuntimeError
 
@@ -146,6 +187,14 @@ class EleIndv(object):
 
     @property
     def ce_energy_ref(self):
+        """
+        The relative energy predicted by CE.
+
+        Returns
+        -------
+        float
+            CE relative energy
+        """
         if self.app is None:
             raise RuntimeError
 
@@ -153,6 +202,23 @@ class EleIndv(object):
             self.app.transver_to_struct(self.ele_lis),is_corrdump=True))
 
     def dft_energy(self,iters=None):
+        """
+        The DFT energy of individual represented by element list.
+
+        Parameters
+        ----------
+        iters : int
+            Specific which iteration DFT energy are computed.
+
+        Returns
+        -------
+        float or None
+            If the directory of DFT calculated exists and the calculation has
+            been finished the DFT energy will be return, or a new DFT
+            calculation directory will be created and first-principles
+            calculation should be performed in this directory.
+
+        """
         str_name = self.app.transver_to_struct(self.ele_lis)
         if iters is None:
             iters = 'INF'
@@ -161,7 +227,8 @@ class EleIndv(object):
         if len(idx) == 0:
             idx = ['perfect','struct']
         random_fname =  '_'.join(idx)
-        cal_dir = os.path.join(self.app.params_config_dict['DFT_CAL_DIR'],'iter'+str(iters),random_fname)
+        cal_dir = os.path.join(self.app.params_config_dict['DFT_CAL_DIR'],
+                               'iter'+str(iters),random_fname)
         if not os.path.exists(cal_dir):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
@@ -174,8 +241,12 @@ class EleIndv(object):
 
     def is_correct(self):
         """
-        return whether are the dft energy and the ce energy of indv equivalent
-        :return: bool
+        Determine whether the dft energy and the ce energy of indv equivalent
+        are identical within error.
+
+        Returns
+        -------
+        bool
         """
         raise NotImplementedError
 
