@@ -10,16 +10,15 @@ if __name__ == "__main__":
     print(module_dir)
     setup(
         name='pygace',
-        version='1.0.0',
+        version='2018.12.13',
         description='Ground-state structures searching based on '
                     'genetic algorithms and cluster expansion.',
         long_description=open(os.path.join(module_dir, 'README.md')).read(),
         url='https://gitee.com/buaaer/pygace',
         author='yxcheng',
         author_email='yxcheng@buaa.edu.cn',
-        license='modified BSD',
+        license='GNU',
         packages=find_packages(),
-        #package_data={'pygace': ['examples/*']},
         zip_safe=False,
         install_requires=['deap>=1.2.2','ase>=3.14.1','pymatgen>=2017.10.16'],
         extras_require={},
@@ -33,7 +32,4 @@ if __name__ == "__main__":
                      'Operating System :: OS Independent',
                      'Topic :: Other/Nonlisted Topic',
                      'Topic :: Scientific/Engineering'],
-        test_suite='nose.collector',
-        tests_require=['nose'],
-        #scripts=[os.path.join('scripts', f) for f in os.listdir(os.path.join(module_dir, 'scripts'))]
     )

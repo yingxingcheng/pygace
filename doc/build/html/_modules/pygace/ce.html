@@ -1,0 +1,456 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.ce &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2018.12.13',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pygace.ce</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">#    This file is part of pygace.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU Lesser General Public License as</span>
+<span class="c1">#    published by the Free Software Foundation, either version 3 of</span>
+<span class="c1">#    the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="c1">#    GNU Lesser General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU Lesser General Public</span>
+<span class="c1">#    License along with pygace. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;The module wrapper cluster expansion method (CE) implemented in ``MMAPS`` in</span>
+<span class="sd">``ATAT``.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.atat</span> <span class="k">import</span> <span class="n">Mcsqs</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__maintainer_email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
+
+
+<div class="viewcode-block" id="CE"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE">[docs]</a><span class="k">class</span> <span class="nc">CE</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An wrapper for commends in ``ATAT``.</span>
+
+<span class="sd">    This class provides several commands that are commonly used in ``ATAT``.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    COMPARE_CRYSTAL : str</span>
+<span class="sd">        This string restore a command used to determine whether two</span>
+<span class="sd">        configurations are identical in symmetry.</span>
+<span class="sd">    CORRDUMP : str</span>
+<span class="sd">        This string restore the command of `corrdump` in ``ATAT``.</span>
+<span class="sd">    clster_info : str</span>
+<span class="sd">        Filename of cluster information, default is ``clusters.out``</span>
+<span class="sd">        in ``ATAT``.</span>
+<span class="sd">    eci_out : str</span>
+<span class="sd">        File name of ``eci.out`` in ``ATAT``.</span>
+<span class="sd">    lat_in : str</span>
+<span class="sd">        File name of `lat.in` in ``ATAT``.</span>
+<span class="sd">    per_atom_energy : dict</span>
+<span class="sd">        A dict restore element type and their responding energy defined in</span>
+<span class="sd">        ``atoms.out`` file in ``ATAT``</span>
+<span class="sd">    site : int</span>
+<span class="sd">        The site in which different can occupy.</span>
+<span class="sd">    work_path : str</span>
+<span class="sd">        The directory of ``MMAPS`` or ``MAPS`` running.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lat_in : str</span>
+<span class="sd">        File name of ``lat.in`` in ``ATAT``.</span>
+<span class="sd">    site : int</span>
+<span class="sd">        The site in which different can occupy.</span>
+<span class="sd">    corrdump_cmd : str</span>
+<span class="sd">        Command of ``corrdump`` in ``ATAT``, default is &#39;corrdump&#39;</span>
+<span class="sd">    compare_crystal_cmd : str</span>
+<span class="sd">        Command of program which is used to determine whether two crystal</span>
+<span class="sd">        structures are identical using symmetry analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">COMPARE_CRYSTAL</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">CORRDUMP</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                 <span class="n">corrdump_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">compare_crystal_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lat_in</span> <span class="o">=</span> <span class="n">lat_in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="o">=</span> <span class="n">site</span>
+        <span class="k">if</span> <span class="n">corrdump_cmd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CORRDUMP</span> <span class="o">=</span> <span class="n">corrdump_cmd</span>
+        <span class="k">if</span> <span class="n">compare_crystal_cmd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">COMPARE_CRYSTAL</span> <span class="o">=</span> <span class="n">compare_crystal_cmd</span>
+
+    <span class="k">def</span> <span class="nf">__get_mess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat_in</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lat_in</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_path</span><span class="p">),</span> <span class="s1">&#39;lat.in&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eci_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_path</span><span class="p">),</span> <span class="s1">&#39;eci.out&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_info</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_path</span><span class="p">),</span> <span class="s1">&#39;clusters.out&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CE.fit"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="o">=</span><span class="s1">&#39;./.tmp_atat_ce_dir&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain all information of a directory in which a correct calculation of</span>
+<span class="sd">        CE fitting has been performed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dirname : str</span>
+<span class="sd">            Which directory of the CE running.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_dirname</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">_dirname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_path</span> <span class="o">=</span> <span class="n">_dirname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__get_mess</span><span class="p">()</span>
+
+        <span class="n">_ref_energy_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_path</span><span class="p">,</span> <span class="s1">&#39;ref_energy.out&#39;</span><span class="p">)</span>
+        <span class="n">_atoms_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_path</span><span class="p">,</span> <span class="s1">&#39;atoms.out&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_ref_energy_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_atoms_path</span><span class="p">):</span>
+            <span class="n">_ref_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">_ref_energy_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">_atom_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">_atoms_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bytes</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ref_energy</span><span class="p">,</span> <span class="n">_atom_type</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="c1"># Ensure element plus &#39;_pv&#39; or &#39;_sv&#39; suffix is valid in ase Atoms</span>
+        <span class="c1"># or other atoms object, e.g., &#39;Hf_pv&#39; is correct element type in</span>
+        <span class="c1"># MAPS but invalid type which cannot be recognized by ase Atoms. Also,</span>
+        <span class="c1"># the &#39;Vac&#39; cannot be found a substitute type in ase Atoms, therefore,</span>
+        <span class="c1"># using &#39;Au&#39; to represent &#39;Vac&#39; in current program.</span>
+        <span class="c1"># TODO: change element substitute for &#39;Vac&quot; which is valid element type</span>
+        <span class="c1"># TODO: in ATAT --by yxcheng</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;_pv&#39;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">or</span> <span class="s1">&#39;_sv&#39;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">ele</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="p">[</span><span class="n">ele</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s1">&#39;Vac&#39;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="p">[</span><span class="s1">&#39;Au&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="CE.predict"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Predict energy by given file name of structure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : str</span>
+<span class="sd">            &#39;x&#39; is a name of lattice structure, such as ``str.out`` in ``ATAT``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Energy predicted by corrdump command in ``ATAT``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_args</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> -c -s=</span><span class="si">{1}</span><span class="s1"> -eci=</span><span class="si">{2}</span><span class="s1"> -l=</span><span class="si">{3}</span><span class="s1"> -cf=</span><span class="si">{4}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CORRDUMP</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eci_out</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">lat_in</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_info</span><span class="p">)</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrdump</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="CE.mmaps"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.mmaps">[docs]</a>    <span class="k">def</span> <span class="nf">mmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">cal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call ``MMAPS`` command in system.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dirname : str</span>
+<span class="sd">            Directory name of ``MMAPS`` command running. Usually, it contains a</span>
+<span class="sd">            ``lat.in`` file, ``vasp.wrap`` or other wrap file for different</span>
+<span class="sd">            first-principles calculation.</span>
+<span class="sd">        cal : bool</span>
+<span class="sd">            Determine whether to run a CE fitting. If `False`, the function</span>
+<span class="sd">            will return when clusters information is obtained, and vice versa</span>
+<span class="sd">            CE fitting is running until users stop it.</span>
+<span class="sd">        args : position arg</span>
+<span class="sd">            Position arguments for ``MMAPS`` command.</span>
+<span class="sd">        kwargs : dict arg</span>
+<span class="sd">            Dict arguments for ``MMAPS`` command.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. cd work path</span>
+        <span class="c1"># 2. run mmaps with self.lat_in</span>
+        <span class="c1"># 3. go back previous path</span>
+        <span class="n">_curr_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">_dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">_dirname</span><span class="p">)</span>
+        <span class="c1"># TODO run mmaps</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;maps.log&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mmaps run successful!&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;please run mmaps first!&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">_curr_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CE.corrdump"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.corrdump">[docs]</a>    <span class="k">def</span> <span class="nf">corrdump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain energy predicted by ``corrdump`` command in ``ATAT``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">            Shell command which call system ``corrdump`` command of ``ATAT``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Energy predicted by ``corrdump`` command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="n">ref_energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ref_energy</span></div>
+
+<div class="viewcode-block" id="CE.compare_crystal"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.compare_crystal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">compare_crystal</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span><span class="n">str2</span><span class="p">,</span><span class="n">compare_crystal_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To determine whether structures are identical based crystal symmetry</span>
+<span class="sd">        analysis. The program used in this package is based on ``XXX`` library</span>
+<span class="sd">        which developed by XXX.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        str1 : str</span>
+<span class="sd">            The first string used to represent elements .</span>
+<span class="sd">        str2 : str</span>
+<span class="sd">            The second string used to represent elements.</span>
+<span class="sd">        compare_crystal_cmd : str</span>
+<span class="sd">            The program developed to determine whether two</span>
+<span class="sd">            crystal structures are identical, default `None`.</span>
+<span class="sd">        kwargs : dict arguments</span>
+<span class="sd">            Other arguments used in `compare_crystal_cmd`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True for yes and False for no.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">compare_crystal_cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">compare_crystal_cmd</span> <span class="o">=</span> <span class="s1">&#39;CompareCrystal &#39;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">str2</span><span class="p">))</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;ct&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ct&#39;</span><span class="p">]</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;at&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;at&#39;</span><span class="p">]</span>
+        <span class="n">verbos</span> <span class="o">=</span> <span class="s1">&#39;False&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;verbos&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;verbos&#39;</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">=</span>  <span class="n">compare_crystal_cmd</span> <span class="o">+</span>  <span class="s1">&#39; -f1 </span><span class="si">{0}</span><span class="s1"> -f2 </span><span class="si">{1}</span><span class="s1"> -c </span><span class="si">{2}</span><span class="s1"> -a </span><span class="si">{3}</span><span class="s1"> &#39;</span> \
+                                       <span class="s1">&#39;--verbos </span><span class="si">{4}</span><span class="s1">&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span><span class="n">str2</span><span class="p">,</span><span class="n">ct</span><span class="p">,</span><span class="n">at</span><span class="p">,</span><span class="n">verbos</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span><span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;Not&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="CE.get_total_energy"><a class="viewcode-back" href="../../pygace.html#pygace.ce.CE.get_total_energy">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">is_ref</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">site_repeat</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">sum_corr</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">delete_file</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate absolute energy of a crystal structure like first-principles</span>
+<span class="sd">        calculation software package computed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : str</span>
+<span class="sd">            String for filename of lattice crystal, default ``str.out``.</span>
+<span class="sd">        is_corrdump : bool</span>
+<span class="sd">            Determine whether function use energy computed by ``corrdump``</span>
+<span class="sd">            command to replace absolute energy, default `False`.</span>
+<span class="sd">        is_ref : bool</span>
+<span class="sd">            Determine whether function use relative energy provided by users.</span>
+<span class="sd">        site_repeat : int</span>
+<span class="sd">            This variable should be used seriously when a lattice structure</span>
+<span class="sd">            cannot map parent lattice.</span>
+<span class="sd">        sum_corr : float</span>
+<span class="sd">            If `is_ref` is `True` this value will be input as energy predicted</span>
+<span class="sd">            by ``corrdump`` command.</span>
+<span class="sd">        delete_file :</span>
+<span class="sd">            Whether to delete tmp file generated by program.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float :</span>
+<span class="sd">            Total energy or corrdump energy.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#-----------------------------------------------------------------------</span>
+        <span class="c1"># Calculation formula:</span>
+        <span class="c1"># 1. get E_per_atom from ref_energy.out</span>
+        <span class="c1"># 2. get C_atom from atoms.out</span>
+        <span class="c1"># 3. get supercell_size from str.out and lat.in</span>
+        <span class="c1"># 4. get E_corrdump from corrdump</span>
+        <span class="c1"># 5. E_tot = ( sum(C_atom * E_per_atom) * site_count + \</span>
+        <span class="c1">#    E_corrdump ) * supercell_size</span>
+        <span class="c1">#-----------------------------------------------------------------------</span>
+
+        <span class="k">if</span> <span class="n">is_corrdump</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">site_repeat</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">site_repeat</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="n">e_corrdump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">site_repeat</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e_corrdump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">e_corrdump</span>
+
+        <span class="k">if</span> <span class="n">is_ref</span><span class="p">:</span>
+            <span class="n">e_corrdump</span> <span class="o">=</span> <span class="n">sum_corr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e_corrdump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># get C_atom from str.out</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">_struct_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat_in</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">_lat_in_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">_lat_in_string</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_lat_in_string</span><span class="p">]</span>
+            <span class="n">_lat_in_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_lat_in_string</span><span class="p">)</span>
+
+        <span class="n">_str_out</span> <span class="o">=</span> <span class="n">Mcsqs</span><span class="o">.</span><span class="n">structure_from_string</span><span class="p">(</span>
+            <span class="n">_struct_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_pv&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>
+                <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_sv&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>
+                <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Vac&#39;</span><span class="p">,</span> <span class="s1">&#39;Au&#39;</span><span class="p">))</span>
+        <span class="n">_lat_in</span> <span class="o">=</span> <span class="n">Mcsqs</span><span class="o">.</span><span class="n">structure_from_string</span><span class="p">(</span>
+            <span class="n">_lat_in_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_pv&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>
+                <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_sv&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>
+                <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Vac&#39;</span><span class="p">,</span><span class="s1">&#39;Au&#39;</span><span class="p">))</span>
+
+        <span class="n">_count_atom</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">_str_out</span><span class="o">.</span><span class="n">symbol_set</span><span class="p">:</span>
+            <span class="n">_count_atom</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_str_out</span><span class="o">.</span><span class="n">indices_from_symbol</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="n">_count_atom</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
+        <span class="c1"># get supercell size from lat.in</span>
+        <span class="n">super_size</span> <span class="o">=</span> <span class="n">_str_out</span><span class="o">.</span><span class="n">volume</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">_lat_in</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+
+        <span class="n">sum_c_per</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">per_atom_energy</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">_count_atom</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">sum_c_per</span> <span class="o">+=</span> <span class="n">_count_atom</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">*</span> <span class="n">e</span>
+
+        <span class="k">if</span> <span class="n">site_repeat</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">site_repeat</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">e_corrdump</span> <span class="o">=</span> <span class="n">e_corrdump</span> <span class="o">*</span> <span class="n">site_repeat</span>
+            <span class="n">E_tot</span> <span class="o">=</span> <span class="p">(</span><span class="n">sum_c_per</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="p">)</span> <span class="o">*</span> <span class="n">super_size</span> <span class="o">+</span> <span class="n">e_corrdump</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">E_tot</span> <span class="o">=</span> <span class="p">(</span><span class="n">sum_c_per</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span> <span class="o">+</span> <span class="n">e_corrdump</span><span class="p">)</span> <span class="o">*</span> <span class="n">super_size</span>
+
+        <span class="k">if</span> <span class="n">delete_file</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">E_tot</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

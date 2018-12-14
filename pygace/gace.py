@@ -107,8 +107,8 @@ class AbstractApp(object):
         if params_config_dict:
             self.params_config_dict.update(params_config_dict)
 
-        self.__set_dir()
-        #self.__get_energy_info_from_database()
+        self.set_dir()
+        self.get_energy_info_from_database()
 
     def update_ce(self, site=1, dirname=None):
         """Update inner CE object.
@@ -133,14 +133,31 @@ class AbstractApp(object):
         self.ce = CE(site=site)
         self.ce.fit(dirname=dirname)
 
-    def __set_dir(self):
+    def set_dir(self):
+        """
+        Initial directory.
+
+        Returns
+        -------
+        None
+
+        """
         for _dir in (self.params_config_dict['TMP_DIR'],
                      self.params_config_dict['PICKLE_DIR'],
                      self.params_config_dict['TEST_RES_DIR']):
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
 
-    def __get_energy_info_from_database(self):
+    # TODO: optimize energy searching in memory
+    def get_energy_info_from_database(self):
+        """
+        Initial energy database
+
+        Returns
+        -------
+        None
+
+        """
 
         with open(self.params_config_dict['TEMPLATE_FILE'], 'r') as f:
             self.TEMPLATE_FILE_STR = f.read()

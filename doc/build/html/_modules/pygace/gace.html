@@ -1,0 +1,505 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.gace &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2018.12.13',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pygace.gace</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">#    This file is part of pygace.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU Lesser General Public License as</span>
+<span class="c1">#    published by the Free Software Foundation, either version 3 of</span>
+<span class="c1">#    the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="c1">#    GNU Lesser General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU Lesser General Public</span>
+<span class="c1">#    License along with pygace. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;GACE framework module</span>
+
+<span class="sd">This module provide abstract GACE object used to be implemented by users in</span>
+<span class="sd">their application, and it defines several interface which are called in</span>
+<span class="sd">concreate application.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">deap</span> <span class="k">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">tools</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">uuid</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">pygace.ce</span> <span class="k">import</span> <span class="n">CE</span>
+<span class="kn">from</span> <span class="nn">pygace.ga</span> <span class="k">import</span>  <span class="n">gaceCrossover</span><span class="p">,</span> <span class="n">gaceMutShuffleIndexes</span>
+<span class="kn">from</span> <span class="nn">pygace.config</span> <span class="k">import</span> <span class="n">corrdump_cmd</span><span class="p">,</span> <span class="n">compare_crystal_cmd</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__maintainer_email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
+
+
+<div class="viewcode-block" id="AbstractApp"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp">[docs]</a><span class="k">class</span> <span class="nc">AbstractApp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract application object for ``GACE`` framework.</span>
+
+<span class="sd">    AbstractApp initial process needs input parameters of CE simulation</span>
+<span class="sd">    and informatin of output directory. Also, the parameters for DFT</span>
+<span class="sd">    calculation should also be included in ``params_config_dict`` for</span>
+<span class="sd">    user custom.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ce : CE</span>
+<span class="sd">        CE object defined in `ce.CE`.</span>
+<span class="sd">    params_config_dict : dict</span>
+<span class="sd">        Parameters used in to construct CE object and other parameters used</span>
+<span class="sd">        in GACE simulation. User can custom this dict for their own needs.</span>
+<span class="sd">    energy_database_fname : str</span>
+<span class="sd">        Filename of file that restore energies for different configurations</span>
+<span class="sd">        to accelerate energy-calculation of a energy-unknown configuration.</span>
+<span class="sd">    toolbox : ToolBox</span>
+<span class="sd">        The ToolBox object defined in `deap.tools`.</span>
+<span class="sd">    DEFAULT_SETUP : dict</span>
+<span class="sd">        Class attribute which restores revelant parameters used in GA and</span>
+<span class="sd">        CE simulation process. See also `params_config_dict` for custom.</span>
+<span class="sd">    ENERGY_DICAT : dict</span>
+<span class="sd">        A dict in which key is list of num representing a configuration and</span>
+<span class="sd">        value is the fitness value of the configuration, e.g., total energy or</span>
+<span class="sd">        formation energy of point defects.</span>
+<span class="sd">    PREVIOUS_COUNT : int</span>
+<span class="sd">        A parameter used to restore the execution step of previous simulation</span>
+<span class="sd">        in order to run from previous stop step.</span>
+<span class="sd">    TYPES_ENERGY_DICT : dict</span>
+<span class="sd">        A dict restores different elements and their responding number index</span>
+<span class="sd">        in order to convert a element to a number in GA simulation, e.g.,</span>
+<span class="sd">        {&#39;Hf&#39;:1, &#39;O&#39;:2, &#39;Vac&#39;:3}.</span>
+<span class="sd">    TEMPLATE_FILE_STR : str</span>
+<span class="sd">        A string to restore the template of `lat.in` which is a main</span>
+<span class="sd">        input file in ``ATAT``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ce_site : int</span>
+<span class="sd">        The concept of site used in ``MAPS`` or ``MMAPS`` in ``ATAT``</span>
+<span class="sd">        program.</span>
+<span class="sd">    ce_dirname : :obj: str, optional</span>
+<span class="sd">        A path of directory which contains information after running</span>
+<span class="sd">         ``MMAPS`` or ``MAPS``.</span>
+<span class="sd">    params_config_dict : dict, optional</span>
+<span class="sd">        A dict used to update DEFAULT_DICT of AbstractApp object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEFAULT_SETUP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+        <span class="s1">&#39;NB_SITES&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s1">&#39;TEMPLATE_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;./data/lat_in.template&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TMP_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;pickle_bakup&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;res_dir&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;./dft_dirs&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">,</span>
+                 <span class="n">params_config_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ce</span> <span class="o">=</span> <span class="n">CE</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">ce_site</span><span class="p">,</span>
+                         <span class="n">compare_crystal_cmd</span><span class="o">=</span><span class="n">compare_crystal_cmd</span><span class="p">,</span>
+                         <span class="n">corrdump_cmd</span><span class="o">=</span><span class="n">corrdump_cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dirname</span><span class="o">=</span><span class="n">ce_dirname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">AbstractApp</span><span class="o">.</span><span class="n">DEFAULT_SETUP</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params_config_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params_config_dict</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_info_from_database</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AbstractApp.update_ce"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.update_ce">[docs]</a>    <span class="k">def</span> <span class="nf">update_ce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dirname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update inner CE object.</span>
+
+<span class="sd">        The parameters should contained the ``site`` information in ``MMAPS``</span>
+<span class="sd">        and a path of directory containing output file after a CE fitting.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        site: :obj: `int`, optional</span>
+<span class="sd">            The number of ``site`` in a crystal structure, which does not</span>
+<span class="sd">            contain a specific element instead of a site used to restore</span>
+<span class="sd">            different type of atoms to simulate alloy configurations in</span>
+<span class="sd">            ``ATAT``, more detail see ``lat.in`` file in ``ATAT``.</span>
+<span class="sd">        dirname: :obj: `str`, optional</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ce</span> <span class="o">=</span> <span class="n">CE</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dirname</span><span class="o">=</span><span class="n">dirname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractApp.set_dir"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.set_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initial directory.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TMP_DIR&#39;</span><span class="p">],</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">],</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_dir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">_dir</span><span class="p">)</span></div>
+
+    <span class="c1"># TODO: optimize energy searching in memory</span>
+<div class="viewcode-block" id="AbstractApp.get_energy_info_from_database"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.get_energy_info_from_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_energy_info_from_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initial energy database</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEMPLATE_FILE&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TEMPLATE_FILE_STR</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_database_fname</span> <span class="o">=</span> <span class="s1">&#39;energy_dict_</span><span class="si">{0}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_database_fname</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_database_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">e_db</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span> <span class="o">=</span> <span class="n">e_db</span>
+            <span class="c1"># print(&#39;energy database has {0} energies&#39;.format(len(ENERGY_DICT)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">TYPES_ENERGY_DICT</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">PREVIOUS_COUNT</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractApp.transver_to_struct"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.transver_to_struct">[docs]</a>    <span class="k">def</span> <span class="nf">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_lis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert element list to `ATAT` `str.out` file</span>
+
+<span class="sd">        The chemistry symbol in ``element_lis`` would be substituted in</span>
+<span class="sd">        ``str.out`` file in ``ATAT``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        element_lis : list</span>
+<span class="sd">            a list of chemistry symbol, e.g. [&#39;Hf&#39;, &#39;Hf&#39;, &#39;O&#39;]</span>
+<span class="sd">        test_param1 : int</span>
+<span class="sd">            the first test parameter</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            filename of ``ATAT`` structure file, default `str.out`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_str</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TEMPLATE_FILE_STR</span><span class="p">)</span>
+        <span class="n">struct_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_str</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">element_lis</span><span class="p">)</span>
+
+        <span class="n">random_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+        <span class="n">_str_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TMP_DIR&#39;</span><span class="p">],</span>
+                                <span class="s1">&#39;str_&#39;</span><span class="o">+</span> <span class="n">random_fname</span> <span class="o">+</span><span class="s1">&#39;.out&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_str_out</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_str_out</span></div>
+
+<div class="viewcode-block" id="AbstractApp.ind_to_elis"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.ind_to_elis">[docs]</a>    <span class="k">def</span> <span class="nf">ind_to_elis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a object used in GA to a object used in ``ATAT``.</span>
+
+<span class="sd">        This method is used to convert a list which contains number</span>
+<span class="sd">        to a list containing chemistry element, e.g., [2,2,1,3] to</span>
+<span class="sd">        [&#39;Hf&#39;, &#39;Hf&#39;, &#39;O&#39;, &#39;Vac&#39;]</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        individual: list</span>
+<span class="sd">            Convert a list of ``int`` to a list of chemistry element.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            This method must be implemented in subclass.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="AbstractApp.evalEnergy"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.evalEnergy">[docs]</a>    <span class="k">def</span> <span class="nf">evalEnergy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="k">raise</span>  <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1">#---------------------------------------------------------------------------</span>
+    <span class="c1"># Standard GA execute</span>
+    <span class="c1">#---------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="AbstractApp.initial"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.initial">[docs]</a>    <span class="k">def</span> <span class="nf">initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialization for GA simulation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        toolbox : Toolbox</span>
+<span class="sd">            A Toolbox object contains responding parameters used in GA.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">creator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;FitnessMin&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">Fitness</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,))</span>
+        <span class="n">creator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Individual&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="n">creator</span><span class="o">.</span><span class="n">FitnessMin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Toolbox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span>
+                         <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_SITES&#39;</span><span class="p">]),</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_SITES&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;individual&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">initIterate</span><span class="p">,</span>
+                         <span class="n">creator</span><span class="o">.</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">permutation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;population&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">initRepeat</span><span class="p">,</span>
+                         <span class="nb">list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">individual</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;evaluate&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">indiv</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">evalEnergy</span><span class="p">(</span><span class="n">indiv</span><span class="p">))</span>
+        <span class="c1"># toolbox.register(&quot;mate&quot;, tools.cxPartialyMatched)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">gaceCrossover</span><span class="p">,</span><span class="n">select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="c1"># toolbox.register(&quot;mutate&quot;, tools.mutShuffleIndexes, indpb=2.0 / NB_SITES)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mutate&quot;</span><span class="p">,</span> <span class="n">gaceMutShuffleIndexes</span><span class="p">,</span> <span class="n">indpb</span><span class="o">=</span><span class="mf">0.015</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">selTournament</span><span class="p">,</span> <span class="n">tournsize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span></div>
+
+<div class="viewcode-block" id="AbstractApp.run"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_epoch</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iter_idx : int</span>
+<span class="sd">            The index of GA-to-CE iteration, in which a DFT calculation is</span>
+<span class="sd">            usually executed for update ``eci.out`` file in ``ATAT``.</span>
+<span class="sd">        target_epoch : int</span>
+<span class="sd">            The repeat times of identical simulation of GA, for which the</span>
+<span class="sd">            results of GA simulation is relevant with random number, thus</span>
+<span class="sd">            a different GA simulation maybe select a different ground-state</span>
+<span class="sd">            configuration. This is useful especially in complex system with</span>
+<span class="sd">            substantial ``sites`` to substitute for different configurations.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If this method is not implemented, this type error would be raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1">#---------------------------------------------------------------------------</span>
+    <span class="c1">#utility function</span>
+    <span class="c1">#---------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="AbstractApp.get_ce"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractApp.get_ce">[docs]</a>    <span class="k">def</span> <span class="nf">get_ce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;obtain inner ce object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            CE object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span></div></div>
+
+
+<div class="viewcode-block" id="AbstractRunner"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractRunner">[docs]</a><span class="k">class</span> <span class="nc">AbstractRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract Runner for running a GACE simulation.</span>
+
+<span class="sd">    This object is used to execute a GACE simulation, user only need to</span>
+<span class="sd">    implement several interfaces to custom their application.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    app : AbstractApp</span>
+<span class="sd">        A subclass object of AbstractApp.</span>
+<span class="sd">    iter_idx : int</span>
+<span class="sd">        Index of GA-to-CE iteration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    app : subclass of AbstractApp</span>
+<span class="sd">        A subclass object of AbstractApp, default is `None`.</span>
+<span class="sd">    iter_idx : int</span>
+<span class="sd">        Index of GA-to-CE iteration, default is `None`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        If `run()` or `print_gs()` method is not implemented by subclass of</span>
+<span class="sd">        `AbstractRunner`, this type of error would be raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__app</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__iter_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">app</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="k">if</span> <span class="n">iter_idx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__iter_idx</span> <span class="o">=</span> <span class="n">iter_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__app</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iter_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iter_idx</span>
+
+    <span class="nd">@iter_idx</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">iter_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iter_idx</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__iter_idx</span> <span class="o">=</span> <span class="n">iter_idx</span>
+
+    <span class="c1"># --------------------------------------------------------------------------</span>
+    <span class="c1"># Standard GACE route</span>
+    <span class="c1"># --------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="AbstractRunner.run"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractRunner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Main runction for running GACE simulation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this function is not implemented in their subclass, this type</span>
+<span class="sd">            error would be raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="AbstractRunner.print_gs"><a class="viewcode-back" href="../../pygace.html#pygace.gace.AbstractRunner.print_gs">[docs]</a>    <span class="k">def</span> <span class="nf">print_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function used to check ground-state configurations, to obtain their</span>
+<span class="sd">        formation energy predicted by CE, and to determine whether a DFT</span>
+<span class="sd">        calculation is needed to executed for next GA-to-CE iteration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this function is not implemented in their subclass, this type</span>
+<span class="sd">            error would be raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

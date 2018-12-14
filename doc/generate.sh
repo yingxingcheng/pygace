@@ -7,3 +7,4 @@ sphinx-apidoc -o source ../pygace
 
 make clean
 make html
+make latex

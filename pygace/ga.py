@@ -164,7 +164,7 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
 
 def gaceMutShuffleIndexes(individual, indpb):
     """Shuffle the attributes of the input individual and return the mutant.
-    The *individual* is expected to be a :term:`sequence`. The *indpb* argument
+    The `individual` is expected to be a `sequence`. The `indpb` argument
     is the probability of each attribute to be moved. Usually this mutation is
     applied on vector of indices.
 
@@ -284,7 +284,7 @@ class Individual(object):
 def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
     """
     Executes a crossover specified by crossover type `crossover_type`and the
-    number of crossover `cross_num` on the input :term:`sequence` individuals.
+    number of crossover `cross_num` on the input `sequence` individuals.
     The two individuals are modified in place and both keep their original
     length.
 
@@ -295,13 +295,14 @@ def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
     indiv2 : Individual object
         The second individual participating in the crossover.
     crossover_type : int
-        The type of crossover method.
-        ``1``: Partially-mapped crossover (PMX)
-        ``2``: Order Crossover (OX1)
-        ``3``: Position based crossover (POS)
-        ``4``: Order based Crossover (OX2)
-        ``5``: Cycle crossover (CX)
-        ``6``: Subtour exchange crossover (SXX)
+        The type of crossover method:
+
+        + ``1``: Partially-mapped crossover (PMX)
+        + ``2``: Order Crossover (OX1)
+        + ``3``: Position based crossover (POS)
+        + ``4``: Order based Crossover (OX2)
+        + ``5``: Cycle crossover (CX)
+        + ``6``: Subtour exchange crossover (SXX)
 
     cross_num : int
         The number of crossover which determine the number exchange in each
@@ -327,14 +328,18 @@ def transfer_from(ind):
 
 def partial_mapped_crossover(ind1, ind2, cross_number):
     """
-    Partially-mapped crossover (PMX).
+    Partially-mapped crossover (PMX) operator was suggested by Goldberg and
+    Lingle (1985). It passes on ordering and value information from the
+    parent tours to the offspring tours. A portion of one parents's string
+    is mapped onto a portion of the other parent's string and the remaining
+    informatin is exchanged..
 
-    The algorithm:
-    parent1: ``[1,2,|3,4,5,6|,7,8,9]``
-    parent2: ``[5,4,|6,9,2,1|,7,8,3]``
+    The algorithm example:
 
-    child1: ``[3,5,|6,9,2,1|,7,8,4]``
-    child2: ``[2,9,|3,4,5,6|,7,8,1]``
+    + parent1: ``[1,2,|3,4,5,6|,7,8,9]``
+    + parent2: ``[5,4,|6,9,2,1|,7,8,3]``
+    + child1: ``[3,5,|6,9,2,1|,7,8,4]``
+    + child2: ``[2,9,|3,4,5,6|,7,8,1]``
 
     Parameters
     ----------
@@ -353,10 +358,12 @@ def partial_mapped_crossover(ind1, ind2, cross_number):
 
     References
     ----------
-    Goldberg, D.; Lingle, R.; Alleles, L. the Travelling Salesman Problem.
-    Proceedings of the 1st International Conference on Genetic Algorithms and
-    their Applications, J.J. Grefenstette (ed.). Carneige-Mellon University,
-    Pittsburgh, 1985.
+    More details about PMX can be seen in Ref. [#]_.
+
+    .. [#] Goldberg, D.; Lingle, R.; Alleles, L. the Travelling Salesman Problem.
+        Proceedings of the 1st International Conference on Genetic Algorithms and
+        their Applications, J.J. Grefenstette (ed.). Carneige-Mellon University,
+        Pittsburgh, 1985.
 
     """
     indiv1 = transfer_from(ind1)
@@ -391,14 +398,18 @@ def partial_mapped_crossover(ind1, ind2, cross_number):
 
 def order_crossover(ind1, ind2,cross_number):
     """
-    Order crossover (OX1)
+    Order crossover (OX1) operator was proposed by Davis (1985). The OX1 exploits
+    a property of the path representation, that the order of cities (not their
+    positions) are important. It constructs an offspring by choosing a subtour
+    of one parent and preserving the relative order of cities of the other
+    parent.
 
-    order crossover algorithm:
-    parent1: ``[1 2 |3 4 5 6| 7 8 9]``
-    parent2: ``[5 7 |4 9 1 3| 6 2 8]``
+    order crossover algorithm example:
 
-    child1: ``[7 9 |3 4 5 6| 1 2 8]``
-    child2: ``[2 5 |4 9 1 3| 6 7 8]``
+    + parent1: ``[1 2 |3 4 5 6| 7 8 9]``
+    + parent2: ``[5 7 |4 9 1 3| 6 2 8]``
+    + child1: ``[7 9 |3 4 5 6| 1 2 8]``
+    + child2: ``[2 5 |4 9 1 3| 6 7 8]``
 
     Parameters
     ----------
@@ -417,9 +428,11 @@ def order_crossover(ind1, ind2,cross_number):
 
     References
     ----------
-    Davis, L. Applying Adaptive Algorithms to Epistatic Domains. Proceedings
-    of the 9th International Joint Conference on Artificial Intelligence -
-    Volume 1. San Francisco, CA, USA, 1985; pp 162-164.
+    More details about OX1 can be seen Ref. [#]_.
+
+    .. [#] Davis, L. Applying Adaptive Algorithms to Epistatic Domains. Proceedings
+        of the 9th International Joint Conference on Artificial Intelligence -
+        Volume 1. San Francisco, CA, USA, 1985; pp 162-164.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -454,11 +467,11 @@ def position_based_crossover(ind1, ind2, cross_number):
     Position-based crossover (PBC)
 
     PBC algorithm:
-    parent1: ``[1 |2 3 4 |5 |6 7 8 |9]``
-    parent2: ``[5 |4 6 4 |1 |9 2 7 |8]``
 
-    child1: ``[4 |2 3 1 |5 |6 7 8 |9]``
-    child2: ``[2 |4 3 5 |1 |9 6 7 |8]``
+    + parent1: ``[1 |2 3 4 |5 |6 7 8 |9]``
+    + parent2: ``[5 |4 6 4 |1 |9 2 7 |8]``
+    + child1: ``[4 |2 3 1 |5 |6 7 8 |9]``
+    + child2: ``[2 |4 3 5 |1 |9 6 7 |8]``
 
     Parameters
     ----------
@@ -477,7 +490,9 @@ def position_based_crossover(ind1, ind2, cross_number):
 
     References
     ----------
-    Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
+    More details can be seen Ref. [#]_.
+
+    .. [#] Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -510,14 +525,16 @@ def position_based_crossover(ind1, ind2, cross_number):
 
 def order_based_crossover(ind1, ind2, cross_number):
     """
-    Order based Crossover (OX2).
+    Order based Crossover (OX2) operator selects at random several positions
+    in a parent tour, and the order of the cities in the selected positions
+    of this parent is imposed on the other parent.
 
-    OX2 algorithm:
-    parent1 ``[1 |2 3 4 |5 |6 7 8 |9]``
-    parent2 ``[5 |4 6 3 |1 |9 2 7 |8]``
+    OX2 algorithm example:
 
-    child1 ``[2 |4 5 |3 |1 6 9 |7 |8]``
-    child2 ``[4 |2 |3 1 |5 |6 |7 9 8]``
+    + parent1 ``[1 |2 3 4 |5 |6 7 8 |9]``
+    + parent2 ``[5 |4 6 3 |1 |9 2 7 |8]``
+    + child1 ``[2 |4 5 |3 |1 6 9 |7 |8]``
+    + child2 ``[4 |2 |3 1 |5 |6 |7 9 8]``
 
     Parameters
     ----------
@@ -536,7 +553,9 @@ def order_based_crossover(ind1, ind2, cross_number):
 
     References
     ----------
-    Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
+    More details about OX2 can be seen Ref. [#]_.
+
+    .. [#] Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -570,11 +589,11 @@ def cycle_crossover(ind1, ind2, cross_number):
     Cycle crossover (CX).
 
     CX algorithm:
-    parent1: ``[|1 |2 3 |4 |5 6 7 8 |9]``
-    parent2: ``[|5 |4 6 |9 |2 3 7 8 |1]``
 
-    child1: ``[|1 |2 6 |4 |5 3 7 8 |9]``
-    child2: ``[|5 |4 3 |9 |2 6 7 8 |1]``
+    + parent1: ``[|1 |2 3 |4 |5 6 7 8 |9]``
+    + parent2: ``[|5 |4 6 |9 |2 3 7 8 |1]``
+    + child1: ``[|1 |2 6 |4 |5 3 7 8 |9]``
+    + child2: ``[|5 |4 3 |9 |2 6 7 8 |1]``
 
     Parameters
     ----------
@@ -592,10 +611,12 @@ def cycle_crossover(ind1, ind2, cross_number):
 
     References
     ----------
-    Oliver, I.; Smith, D.; Holland, J. A study of permutation crossover
-    operators on the traveling salesman problem. Proceedings of the 2nd
-    International Conference on Genetic Algorithms, J.J. Grefenstette (ed.).
-    Hillsdale, New Jersey, 1987; pp 224-230.
+    More details can bee seen Ref. [#]_.
+
+    .. [#] Oliver, I.; Smith, D.; Holland, J. A study of permutation crossover
+        operators on the traveling salesman problem. Proceedings of the 2nd
+        International Conference on Genetic Algorithms, J.J. Grefenstette (ed.).
+        Hillsdale, New Jersey, 1987; pp 224-230.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
@@ -624,11 +645,11 @@ def subtour_exchange_crossover(ind1, ind2, cross_number):
     Subtour exchange crossover (SXX).
 
     SXX algorithm:
-    parent1: ``[1 2 3 |4 5 6 7| 8 9]``
-    parent2: ``[3 |4 9 |7 8 |5 2 1 |6]``
 
-    child1: ``[1 2 3 |4 7 5 6| 8 9]``
-    child2: ``[3 |4 9 |5 8 |6 2 1 |7]``
+    + parent1: ``[1 2 3 |4 5 6 7| 8 9]``
+    + parent2: ``[3 |4 9 |7 8 |5 2 1 |6]``
+    + child1: ``[1 2 3 |4 7 5 6| 8 9]``
+    + child2: ``[3 |4 9 |5 8 |6 2 1 |7]``
 
     Parameters
     ----------
@@ -646,8 +667,10 @@ def subtour_exchange_crossover(ind1, ind2, cross_number):
 
     References
     ----------
-    Yamamura, M.; Ono, T.; Kobayashi, S. Japanese Society for Artificial
-    Intelligence.
+    More details about SXX can be seen Ref. [#]_.
+
+    .. [#] Yamamura, M.; Ono, T.; Kobayashi, S. Japanese Society for Artificial
+        Intelligence.
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)

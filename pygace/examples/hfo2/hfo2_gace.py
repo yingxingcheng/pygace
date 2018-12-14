@@ -30,6 +30,7 @@ from pygace.ga import gaceGA, gaceCrossover
 from pygace.utility import  EleIndv,  compare_crystal
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 from pygace.gace import AbstractRunner, AbstractApp
+from pygace.config import RUN_MODE
 
 __author__ = "Yingxing Cheng"
 __email__ ="yxcheng@buaa.edu.cn"
@@ -37,14 +38,15 @@ __maintainer__ = "Yingxing Cheng"
 __maintainer_email__ ="yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
-DEBUG = True
+if 'DEBUG' in RUN_MODE:
+    DEBUG = True
+else:
+    DEBUG = False
 
 class HFO2App(AbstractApp):
     """
     An app of HfO(2-x) system which is implemented from AbstractApp object
 
-    Attributes
-    ----------
     This object is used to execute a GACE simulation, user only need to
     implement several interfaces to custom their application.
 
@@ -87,6 +89,7 @@ class HFO2App(AbstractApp):
                  params_config_dict=None):
         super(HFO2App,self).__init__(ce_site=ce_site,ce_dirname=ce_dirname,
                                      params_config_dict=params_config_dict)
+        self.params_config_dict.update(HFO2App.DEFAULT_SETUP)
         self.params_config_dict['FIRST_ELEMENT'] = ele_1st
         self.params_config_dict['SECOND_ELEMENT'] = ele_2nd
 
@@ -144,6 +147,8 @@ class HFO2App(AbstractApp):
 
         Returns
         -------
+        float
+            Fittness value
         """
         element_lis = self.ind_to_elis(individual)
         types_lis = [str(self.type_dict[i]) for i in element_lis]
@@ -367,8 +372,7 @@ class Runner(AbstractRunner):
 
     """
     #app = HFO2App(ce_site=8, ce_dirname='./data/iter1')
-    app = None
-    iter_idx = 1
+    #iter_idx = 1
 
     def __init__(self, app=None, iter_idx=None):
         super(Runner,self).__init__(app,iter_idx)
@@ -489,7 +493,7 @@ class Runner(AbstractRunner):
         bool
 
         Raises:
-        RuntimeError:
+        RuntimeError
             when the number of point defect (oxygen vacancy here) is not equal
             in two iteration.
 
@@ -517,7 +521,7 @@ class Runner(AbstractRunner):
     def str2energy(self,string):
         """
         Obtain energy from string consists of numbers joined by '_', e.g.,
-        '1_2_3_19_', in which the number is the position index in lattic
+        ``'1_2_3_19_'``, in which the number is the position index in lattice
         structure template file.
 
         Parameters

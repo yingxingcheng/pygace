@@ -1,0 +1,525 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.examples.sto package &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2018.12.13',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pygace.examples.hfo2 package" href="pygace.examples.hfo2.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pygace-examples-sto-package">
+<h1>pygace.examples.sto package<a class="headerlink" href="#pygace-examples-sto-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pygace.examples.sto.sto_gace">
+<span id="pygace-examples-sto-sto-gace-module"></span><h2>pygace.examples.sto.sto_gace module<a class="headerlink" href="#module-pygace.examples.sto.sto_gace" title="Permalink to this headline">¶</a></h2>
+<p>A GA-to-CE example given in this module.</p>
+<dl class="class">
+<dt id="pygace.examples.sto.sto_gace.Runner">
+<em class="property">class </em><code class="descclassname">pygace.examples.sto.sto_gace.</code><code class="descname">Runner</code><span class="sig-paren">(</span><em>app=None</em>, <em>iter_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#Runner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.Runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pygace.html#pygace.gace.AbstractRunner" title="pygace.gace.AbstractRunner"><code class="xref py py-class docutils literal"><span class="pre">pygace.gace.AbstractRunner</span></code></a></p>
+<p>A runner for running a GACE simulation.</p>
+<p>This object is used to execute a GACE simulation in STO system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">subclass of STOApp</span></dt>
+<dd><p class="first last">A subclass object of STOApp, default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration, default is <cite>None</cite>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">STOApp</span></dt>
+<dd><p class="first last">A subclass object of HFO2App.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.Runner.create_dir_for_DFT">
+<code class="descname">create_dir_for_DFT</code><span class="sig-paren">(</span><em>task_fname='./DFT_task.dat'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#Runner.create_dir_for_DFT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.Runner.create_dir_for_DFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to create directories for DFT calculation for ground-state
+configurations candidates in each GA iteration. This function is used
+to God_view function. The identical functional method in a standard
+GACE iteration is included <cite>print_gs</cite> member function in STOApp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>task_fname</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of file contain the information of directory in which
+DFT task should be performed.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.Runner.god_view">
+<code class="descname">god_view</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#Runner.god_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.Runner.god_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>In some cases, the number of all candidate configurations in sample
+space is limited, and we can enumerate these configurations one by one
+to calculate CE energis, which is a fast and efficient way to obtain
+potential ground-state structures than standard genetic algorithms selection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.Runner.print_gs">
+<code class="descname">print_gs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#Runner.print_gs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.Runner.print_gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to extract ground-state information from pickle file
+saved during GACE running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.Runner.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#Runner.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.Runner.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to run GA-to-CE iterations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygace.examples.sto.sto_gace.STOApp">
+<em class="property">class </em><code class="descclassname">pygace.examples.sto.sto_gace.</code><code class="descname">STOApp</code><span class="sig-paren">(</span><em>ce_site=1</em>, <em>ce_dirname='./data/iter0'</em>, <em>ele_1st='Ti_sv'</em>, <em>ele_2nd='Nb_sv'</em>, <em>params_config_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pygace.html#pygace.gace.AbstractApp" title="pygace.gace.AbstractApp"><code class="xref py py-class docutils literal"><span class="pre">pygace.gace.AbstractApp</span></code></a></p>
+<p>An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp
+object</p>
+<p>This object is used to execute a GACE simulation, user only need to
+implement several interfaces to custom their application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ce_site: int</strong></dt>
+<dd><p class="first last">the concept of site used in ATAT program.</p>
+</dd>
+<dt><strong>ce_dirname: str</strong></dt>
+<dd><p class="first last">The name of a directory which contain information of MMAPS or MAPS
+running</p>
+</dd>
+<dt><strong>ele_1st: str</strong></dt>
+<dd><p class="first last">The first type of element in the <code class="docutils literal"><span class="pre">site</span></code> in <code class="docutils literal"><span class="pre">ATAT</span></code>.</p>
+</dd>
+<dt><strong>ele_2nd: str</strong></dt>
+<dd><p class="first last">The second type of element in the <code class="docutils literal"><span class="pre">site</span></code> in <code class="docutils literal"><span class="pre">ATAT</span></code>.</p>
+</dd>
+<dt><strong>params_config_dict: dirt</strong></dt>
+<dd><p class="first last">Parameter dict used to custom GACE AbstractApp.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">AbstractApp</span></dt>
+<dd><p class="first last">A subclass object of AbstractApp.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pygace.examples.sto.sto_gace.STOApp.DEFAULT_SETUP">
+<code class="descname">DEFAULT_SETUP</code><em class="property"> = {'MU_OXYGEN': -4.91223, 'TMP_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp_dir', 'NB_DEFECT': 12, 'TEMPLATE_FILE': './data/lat_in.template', 'DFT_CAL_DIR': './dft_dirs', 'TEST_RES_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res_dir', 'PICKLE_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle_bakup', 'PERFECT_STO': 0.0, 'NB_SITES': 15}</em><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.DEFAULT_SETUP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.create_dir_for_DFT">
+<code class="descname">create_dir_for_DFT</code><span class="sig-paren">(</span><em>task_fname='./DFT_task.dat'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.create_dir_for_DFT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.create_dir_for_DFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to create directories for DFT calculation for ground-state
+configurations candidates in each GA iteration. This function is used
+to God_view function. The identical functional method in a standard
+GACE iteration is included <cite>print_gs</cite> member function in STOApp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>task_fname</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Name of file restoring the directory in which DFT task should be
+performed.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.evalEnergy">
+<code class="descname">evalEnergy</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.evalEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.evalEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation function for the ground-state searching problem.</p>
+<p>The problem is to determine a configuration of n vacancies
+on a crystalline structures such that the energy of crystalline
+structures can obtain minimum value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>individual</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>tuple</strong></dt>
+<dd><p class="first last">A tuple contains energy in the first position, which is compatible
+with <code class="docutils literal"><span class="pre">DEAP</span></code>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.ind_to_elis">
+<code class="descname">ind_to_elis</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.ind_to_elis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.ind_to_elis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert individual (number list) to element list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>individual</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>list</strong></dt>
+<dd><p class="first last">A list of element symbol string.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.multiple_run">
+<code class="descname">multiple_run</code><span class="sig-paren">(</span><em>ce_iter</em>, <em>ga_iters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.multiple_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.multiple_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>For multiple tasks</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ce_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">How many times should a simulation repeat for statistic error(
+different grouond-state in different running iterations with
+identical parameter setting).</p>
+</dd>
+<dt><strong>ga_iters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">How many times should a GA simulation repeat in each GA-to-CE
+iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>list</strong></dt>
+<dd><p class="first last">A list contain the results of running</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>iter_idx=0</em>, <em>target_epoch=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to run a GACE simulation which will be called by
+<cite>AbstractRunner</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Determine which iteration the ECI is used in.</p>
+</dd>
+<dt><strong>target_epoch</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Iteration in GA simulation.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.single_run">
+<code class="descname">single_run</code><span class="sig-paren">(</span><em>ce_iter</em>, <em>ga_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.single_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.single_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single running task.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ce_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">How many times should a simulation repeat for statistic error(
+different grouond-state in different running iterations with
+identical parameter setting).</p>
+</dd>
+<dt><strong>ga_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">How many times should a GA simulation repeat in each GA-to-CE
+iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>tuple</strong></dt>
+<dd><p class="first last">A tuple of pupulation, random states and hall of fame.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.sto.sto_gace.STOApp.update_ce">
+<code class="descname">update_ce</code><span class="sig-paren">(</span><em>site=1</em>, <em>dirname='./data/iter0'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/sto/sto_gace.html#STOApp.update_ce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.sto.sto_gace.STOApp.update_ce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to update inner CE object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>site</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">The site defined in <code class="docutils literal"><span class="pre">lat.in</span></code> which is one of input files in ATAT.</p>
+</dd>
+<dt><strong>dirname</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of directory contain running results of <code class="docutils literal"><span class="pre">MMAPS</span></code>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pygace.examples.sto">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygace.examples.sto" title="Permalink to this headline">¶</a></h2>
+<p>A GA-to-CE example of Nb-doped SrTiO3 given in this module.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pygace</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.html">pygace package</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygace.html">pygace package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.ce">pygace.ce module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.config">pygace.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.ga">pygace.ga module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.gace">pygace.gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.utility">pygace.utility module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.examples.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.examples.html#module-pygace.examples">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pygace.examples.sto package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.examples.sto.sto_gace">pygace.examples.sto.sto_gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.examples.sto">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">pygace</a><ul>
+  <li><a href="pygace.html">pygace package</a><ul>
+  <li><a href="pygace.examples.html">pygace.examples package</a><ul>
+      <li>Previous: <a href="pygace.examples.hfo2.html" title="previous chapter">pygace.examples.hfo2 package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/pygace.examples.sto.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

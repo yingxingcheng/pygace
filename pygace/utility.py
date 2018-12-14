@@ -89,8 +89,8 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
                     str_template=None,**kwargs):
     """
     To determine whether structures are identical based crystal symmetry
-    analysis. The program used in this package is based on ``XXX`` library
-    which developed by XXX.
+    analysis. The program used in this package is based on ``XtalComp`` library
+    which developed by David C. Lonie.
 
     Parameters
     ----------
@@ -112,14 +112,14 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
 
     References
     ----------
-
-    xxxxx
+    https://github.com/allisonvacanti/XtalComp
 
     """
     assert(len(str1)==len(str2))
     ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
     at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
     verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
+
     if str_template is None:
         raise RuntimeError("`str.out` filename is Empty!")
     args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4} -s {5}'
@@ -131,6 +131,7 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
         return False
     else:
         return True
+
 
 class EleIndv(object):
     """

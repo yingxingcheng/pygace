@@ -27,6 +27,7 @@ import pickle
 from pygace.ga import gaceGA, gaceCrossover
 from pygace.utility import  EleIndv, reverse_dict, get_num_lis
 from pygace.gace import AbstractApp, AbstractRunner
+from pygace.config import RUN_MODE
 
 __author__ = "Yingxing Cheng"
 __email__ ="yxcheng@buaa.edu.cn"
@@ -34,14 +35,17 @@ __maintainer__ = "Yingxing Cheng"
 __maintainer_email__ ="yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
+if 'DEBUG' in RUN_MODE:
+    DEBUG = True
+else:
+    DEBUG = False
 
+DEBUG = False
 class STOApp(AbstractApp):
     """
     An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp
     object
 
-    Attributes
-    ----------
     This object is used to execute a GACE simulation, user only need to
     implement several interfaces to custom their application.
 
@@ -82,6 +86,7 @@ class STOApp(AbstractApp):
                  ele_1st = 'Ti_sv', ele_2nd = 'Nb_sv',
                  params_config_dict=None):
         super(STOApp,self).__init__(ce_site,ce_dirname, params_config_dict)
+        self.params_config_dict.update(STOApp.DEFAULT_SETUP)
         self.params_config_dict['FIRST_ELEMENT'] = ele_1st
         self.params_config_dict['SECOND_ELEMENT'] = ele_2nd
 
@@ -722,4 +727,3 @@ if __name__ == "__main__":
         app.create_dir_for_DFT(task_fname='./DFT_task.dat')
 
     show_results(iter_idx=5)
-    #data_process()
