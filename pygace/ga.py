@@ -190,8 +190,18 @@ def gaceMutShuffleIndexes(individual, indpb):
 
     return individual,
 
-
+# genes -> cromosomes -> individual
 class Individual(object):
+    """
+    Individual object contain several Cromosome objects.
+    """
+    def __init__(self):
+        pass
+
+
+    pass
+
+class Cromosome(object):
     """
     A wrapper class for individual in GA.
 
@@ -210,9 +220,9 @@ class Individual(object):
         self.fitness = fitness
         self.genes = [0] * self.gene_length
 
-    def generate_individual(self):
+    def generate_cromosome(self):
         """
-        Greate a random individual
+        Greate a random cromosome
 
         Returns
         -------
@@ -260,12 +270,12 @@ class Individual(object):
 
     def size(self):
         """
-        Return the length of individual.
+        Return the length of cromosome.
 
         Returns
         -------
         int
-            The length of individual
+            The length of cromosome
 
         """
         return len(self.genes)
@@ -290,9 +300,9 @@ def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
 
     Parameters
     ----------
-    indiv1 : Individual object
+    indiv1 : Cromosome object
         The first individual participating in the crossover.
-    indiv2 : Individual object
+    indiv2 : Cromosome object
         The second individual participating in the crossover.
     crossover_type : int
         The type of crossover method:
@@ -321,7 +331,7 @@ def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
     return methods[crossover_type%(len(methods)+1)](indiv1,indiv2,cross_num)
 
 def transfer_from(ind):
-    _tmp = Individual(gene_length=len(ind))
+    _tmp = Cromosome(gene_length=len(ind))
     _tmp.genes[:] = ind[:]
     return _tmp
 
@@ -368,7 +378,7 @@ def partial_mapped_crossover(ind1, ind2, cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv1.genes[:]
 
     # Loop through genes
@@ -414,9 +424,9 @@ def order_crossover(ind1, ind2,cross_number):
     Parameters
     ----------
     ind1 : iteration object
-        The first individual participating in the crossover.
+        The first cromosome participating in the crossover.
     ind2 : iteration object
-        The second individual participating in the crossover.
+        The second cromosome participating in the crossover.
     cross_number : int
         The number of crossover which determine the number exchange in each
         crossover operation.
@@ -424,7 +434,7 @@ def order_crossover(ind1, ind2,cross_number):
     Returns
     -------
     tuple
-        A tuple of two individuals
+        A tuple of two cromosomes
 
     References
     ----------
@@ -436,7 +446,7 @@ def order_crossover(ind1, ind2,cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv1.genes[:]
 
     # Loop through genes
@@ -476,9 +486,9 @@ def position_based_crossover(ind1, ind2, cross_number):
     Parameters
     ----------
     ind1 : iteration object
-        The first individual participating in the crossover.
+        The first cromosome participating in the crossover.
     ind2 : iteration object
-        The second individual participating in the crossover.
+        The second cromosome participating in the crossover.
     cross_number : int
         The number of crossover which determine the number exchange in each
         crossover operation.
@@ -486,7 +496,7 @@ def position_based_crossover(ind1, ind2, cross_number):
     Returns
     -------
     tuple
-        A tuple of two individuals
+        A tuple of two cromosomes
 
     References
     ----------
@@ -496,7 +506,7 @@ def position_based_crossover(ind1, ind2, cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv1.genes[:]
 
     # Loop through genes
@@ -510,7 +520,7 @@ def position_based_crossover(ind1, ind2, cross_number):
 
     set_value_pos_list = [pos for pos in range(new_sol.size()) if pos not in change_list_indiv1]
 
-    tmp_sol = Individual()
+    tmp_sol = Cromosome()
     tmp_sol.genes = indiv2.genes[:]
     index = 0
     for value in indiv2.genes:
@@ -539,9 +549,9 @@ def order_based_crossover(ind1, ind2, cross_number):
     Parameters
     ----------
     ind1 : iteration object
-        The first individual participating in the crossover.
+        The first cromosome participating in the crossover.
     ind2 : iteration object
-        The second individual participating in the crossover.
+        The second cromosome participating in the crossover.
     cross_number : int
         The number of crossover which determine the number exchange in each
         crossover operation.
@@ -549,7 +559,7 @@ def order_based_crossover(ind1, ind2, cross_number):
     Returns
     -------
     tuple
-        A tuple of two individuals
+        A tuple of two cromosomes
 
     References
     ----------
@@ -559,7 +569,7 @@ def order_based_crossover(ind1, ind2, cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv2.genes[:]
 
     # Loop through genes
@@ -598,16 +608,16 @@ def cycle_crossover(ind1, ind2, cross_number):
     Parameters
     ----------
     ind1 : iteration object
-        The first individual participating in the crossover.
+        The first cromosome participating in the crossover.
     ind2 : iteration object
-        The second individual participating in the crossover.
+        The second cromosome participating in the crossover.
     cross_number : int
         The number of crossover is not used in this algorithm.
 
     Returns
     -------
     tuple
-        A tuple of two individuals
+        A tuple of two cromosomes
 
     References
     ----------
@@ -620,7 +630,7 @@ def cycle_crossover(ind1, ind2, cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv1.genes[:]
 
     # selected randomly gene in parent1
@@ -654,16 +664,16 @@ def subtour_exchange_crossover(ind1, ind2, cross_number):
     Parameters
     ----------
     ind1 : iteration object
-        The first individual participating in the crossover.
+        The first cromosome participating in the crossover.
     ind2 : iteration object
-        The second individual participating in the crossover.
+        The second cromosome participating in the crossover.
     cross_number : int
         The number of crossover is not used in this algorithm.
 
     Returns
     -------
     tuple
-        A tuple of two individuals
+        A tuple of two cromosomes
 
     References
     ----------
@@ -674,7 +684,7 @@ def subtour_exchange_crossover(ind1, ind2, cross_number):
     """
     indiv1 = transfer_from(ind1)
     indiv2 = transfer_from(ind2)
-    new_sol = Individual()
+    new_sol = Cromosome()
     new_sol.genes = indiv1.genes[:]
     # Loop through genes
     offset = cross_number

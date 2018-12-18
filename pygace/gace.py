@@ -87,8 +87,7 @@ class AbstractApp(object):
     """
 
     DEFAULT_SETUP = {
-        'NB_DEFECT':4,
-        'NB_SITES': 64,
+        'NB_DEFECT' : None,
         'TEMPLATE_FILE': './data/lat_in.template',
         'TMP_DIR': os.path.abspath('tmp_dir'),
         'PICKLE_DIR': os.path.abspath('pickle_bakup'),
