@@ -25,12 +25,13 @@ from deap import tools
 import os, glob
 import multiprocessing
 import uuid, pickle, shutil
+import subprocess, random
 
 from pygace.ga import gaceGA, gaceCrossover
-from pygace.utility import  EleIndv,  compare_crystal
+from pygace.utility import  EleIndv,  compare_crystal, copytree
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 from pygace.gace import AbstractRunner, AbstractApp
-from pygace.config import RUN_MODE
+from pygace.config import RUN_MODE, runstruct_vasp_cmd
 
 __author__ = "Yingxing Cheng"
 __email__ ="yxcheng@buaa.edu.cn"
@@ -80,13 +81,12 @@ class GeneralApp(AbstractApp):
         Parameter dict used to custom GACE AbstractApp.
     """
 
-    def __init__(self,ele_type_list, defect_concentrations,
-                 ce_site, ce_dirname='./data/iter1',
+    def __init__(self,ele_type_list, defect_concentrations,ce_dirname='./data/iter1',
                  params_config_dict=None):
-        super(GeneralApp,self).__init__(ce_site=ce_site,ce_dirname=ce_dirname,
+        super(GeneralApp,self).__init__(ce_dirname=ce_dirname,
                                      params_config_dict=params_config_dict)
 
-        self.params_config_dict['ELE_TYPE_LIS'] = list(ele_type_list)
+        self.params_config_dict['element_type_list'] = list(ele_type_list)
         self.params_config_dict['NB_SITES'] = sum(defect_concentrations)
         self.update_defect_concentration(c=defect_concentrations)
 
@@ -102,7 +102,7 @@ class GeneralApp(AbstractApp):
 
         self.params_config_dict['elements_type'] = []
         for nb, t in zip(self.params_config_dict['NB_DEFECT'],
-                         self.params_config_dict['ELE_TYPE_LIS']):
+                         self.params_config_dict['element_type_list']):
             self.params_config_dict['elements_type'].extend([t] * nb)
 
 
@@ -201,7 +201,7 @@ class GeneralApp(AbstractApp):
 
         checkpoint_fname = os.path.join(
             self.params_config_dict['PICKLE_DIR'],
-            'checkpoint_name_{0}_{1}.pkl')
+            'cp_{0}_{1}.pkl')
 
         res = gaceGA(pop, self.toolbox, cxpb=0.5, ngen=90,
                      stats=stats, halloffame=hof, verbose=True,
@@ -210,7 +210,7 @@ class GeneralApp(AbstractApp):
         pop = res[0]
         return pop, stats, hof
 
-    def _multiple_run(self, mission_name,repeat_iters):
+    def _multiple_run(self, mission_name,repeat_iters, gs_selection=1):
         """
         For multiple tasks
 
@@ -237,13 +237,13 @@ class GeneralApp(AbstractApp):
             population = res[0]
             sorted_population = sorted(population,
                                        key=lambda ind: ind.fitness.values)
-            all_min.append(self.evalEnergy(sorted_population[0]))
+            all_min.append(self.evalEnergy(sorted_population[0])[0])
             all_best_son.append(self.ind_to_elis(sorted_population[0]))
 
             if repeat_iters % 10 == 0:
                 ENERGY_DICT = {}
-        all_min = numpy.asarray(all_min)
-        global_min_idx = numpy.argmin(all_min)
+        #all_min = numpy.asarray(all_min)
+        #global_min_idx = numpy.argmin(all_min)
 
         all_min_dict = {}
         for k,v in zip(all_best_son,all_min):
@@ -252,8 +252,12 @@ class GeneralApp(AbstractApp):
         print(res[0])
 
         s_fname = os.path.join(self.params_config_dict['TEST_RES_DIR'],
-                               '{0}.txt')
-        numpy.savetxt(s_fname.format(mission_name), all_min, fmt='%.3f')
+                               '{0}.dat'.format(mission_name))
+        with open(s_fname,'w') as fin:
+            for v,k in sorted(zip(all_min_dict.values(),all_min_dict.keys())):
+                print('{0} : {1}'.format(k,v),file=fin)
+
+        #numpy.savetxt(s_fname.format(mission_name), all_min, fmt='%.3f')
 
         def extract_candidates(res,n):
             li = []
@@ -261,10 +265,12 @@ class GeneralApp(AbstractApp):
                 li.append(k.split('_'))
             return li
 
-        return extract_candidates(res,1)
+        return extract_candidates(res,gs_selection)
 
     # TODO: muiltiprocessing is not available here.
-    def run(self,iter_idx=1, target_epoch=3):
+    def run(self,iter_idx=1, default_epoch=4, target_epoch=4,
+            cross_method=1, cross_num=8, cp_fname_prefix='ground_states_iter',
+            task_prefix='general-app', gs_selection=1):
         """
         Main function to run a GACE simulation which will be called by
         `AbstractRunner`.
@@ -275,6 +281,20 @@ class GeneralApp(AbstractApp):
             Determine which iteration the ECI is used in.
         target_epoch : int
             Iteration in GA simulation.
+        default_epoch : int
+            Default epoch setting for GA.
+        target_epoch : int
+            Target epoch for GA.
+        cross_method : int
+            Crossover operator type.
+        cross_num :
+            The exchange number used in crossover operator.
+        cp_fname_prefix : str
+            The prefix of checkpoint file name.
+        task_prefix : str
+            The prefix of task filename of a single simulation.
+        gs_selection : int
+            Ground-state structures selected from `target_epoch` GA simulation.
 
         Returns
         -------
@@ -285,37 +305,41 @@ class GeneralApp(AbstractApp):
         # for multiprocessing
         # pool = multiprocessing.Pool(processes=8)
         # self.toolbox.register("map", pool.map)
-
         self.toolbox.unregister("mate")
-        self.toolbox.register("mate", gaceCrossover, crossover_type=1,cross_num=8)
+        self.toolbox.register("mate", gaceCrossover,
+                              crossover_type=cross_method,
+                              cross_num=cross_num)
 
-        mission_name = 'final-hfo2-iter{0}-'.format(iter_idx) + \
-                       str(self.params_config_dict['NB_DEFECT']) + 'vac-cm'
-        cross_method = 1
-        _name = mission_name + str(cross_method)
+        mission_name = task_prefix + '-iter{0}-'.format(iter_idx) + \
+                       str(self.params_config_dict['NB_DEFECT'])
+        checkpoint = str(cp_fname_prefix) + '_{0}_defect_{1}.pkl'.format(
+            iter_idx,str(self.params_config_dict['NB_DEFECT']))
+        checkpoint = os.path.join(self.params_config_dict['TEST_RES_DIR'],
+                                  checkpoint)
+        pre_epoch = self._get_epoch(checkpoint)
 
-        epoch = self._get_epoch(self.params_config_dict['NB_DEFECT'])
-
-        if epoch == 0:
-            epoch = 50
+        if pre_epoch == 0:
+            new_epoch = default_epoch
         else:
             #epoch += self.params_config_dict['STEP']
-            if epoch < target_epoch:
-                epoch = target_epoch
+            if pre_epoch < target_epoch:
+                new_epoch = target_epoch
             else:
                 print("target epoch has been satisfied.")
-                return
+                new_epoch = pre_epoch
 
         ground_states = []
-        ground_states.extend(self._multiple_run(_name, epoch))
+        if gs_selection > target_epoch:
+            gs_selection = target_epoch
+        ground_states.extend(self._multiple_run(mission_name, new_epoch,
+                                                gs_selection=gs_selection))
 
-        checkpoint = 'ground_states_iter{0}.pkl'.format(iter_idx)
         with open(checkpoint, 'wb') as cp_file:
             pickle.dump(ground_states, cp_file)
 
         # pool.close()
 
-    def _get_epoch(self,nb_vac):
+    def _get_epoch(self,cp_fname):
         """
         Obtain the epoch state of the previous running
 
@@ -329,9 +353,7 @@ class GeneralApp(AbstractApp):
         int
             The epoch state of previous running.
         """
-        checkpoint_fname = self.params_config_dict['PICKLE_DIR'] + \
-                           '/*-{0}vac-cm*'.format(nb_vac)
-        res = glob.glob(checkpoint_fname)
+        res = glob.glob(cp_fname)
         if len(res) > 0:
             new_res = sorted(res, key=lambda x: int(x.split('.')[0].split('_')[-1]))
             epoch = int(new_res[-1].split('.')[0].split('_')[-1])
@@ -384,9 +406,15 @@ class Runner(AbstractRunner):
                   'of simulation used in our paper.')
             print('Iteration {0} done!\n'.format(self.iter_idx))
             return
-        self.app.run(self.iter_idx)
 
-    def print_gs(self):
+        print('GA-to-CE No. {0} iteration with defect {1} BEGIN'.
+              format(self.iter_idx,
+            self.app.params_config_dict['NB_DEFECT']).center(80, '#'))
+        print("GA part BEGIN:".center(80,' '))
+        self.app.run(self.iter_idx)
+        print("GA part END!".center(80,' '))
+
+    def print_gs(self, vasp_cmd=None):
         """
         Function used to extract ground-state information from pickle file
         saved during GACE running.
@@ -395,12 +423,16 @@ class Runner(AbstractRunner):
         -------
         None
         """
-        checkpoint = 'ground_states_iter{}.pkl'.format(self.iter_idx)
+        checkpoint = 'ground_states_iter_{0}_defect_{1}.pkl'.format(
+            self.iter_idx,self.app.params_config_dict['NB_DEFECT'])
+        checkpoint = os.path.join(self.app.params_config_dict['TEST_RES_DIR'],
+                                  checkpoint)
         with open(checkpoint, 'r') as cp_file:
             ground_states = pickle.load(cp_file)
 
         EleIndv_lis = [GeneralEleIndv(i,self.app) for i in ground_states]
-        print('total number of structures is {0}'.format(len(EleIndv_lis)))
+        print('The number of ground-state structures selected '
+              'is {0}.'.format(len(EleIndv_lis)))
         new_ground = []
         for i in EleIndv_lis:
             if not i in new_ground:
@@ -410,7 +442,11 @@ class Runner(AbstractRunner):
                 # idx = [str(_i) for _i, ele in enumerate(i.ele_lis) if ele == 'Vac']
                 # idx_lis = '_'.join(idx)
                 # print(idx_lis)
-                i.dft_energy(iters=self.iter_idx)
+                i.dft_energy(iters=self.iter_idx, vasp_cmd=vasp_cmd)
+        print('GA-to-CE No. {0} iteration with defect {1} END'.
+              format(
+            self.iter_idx,
+            self.app.params_config_dict['NB_DEFECT']).center(80, '#'))
 
     def compare_gs(self, new_gs, old_gs):
         """
@@ -540,7 +576,7 @@ class GeneralEleIndv(EleIndv):
         return float(self.app.ce.get_total_energy(
             self.app.transver_to_struct(self.ele_lis), is_corrdump=True))
 
-    def dft_energy(self, iters=None):
+    def dft_energy(self, iters=None, vasp_cmd=None):
         """
         Return DFT energy
 
@@ -558,21 +594,152 @@ class GeneralEleIndv(EleIndv):
         if iters is None:
             iters = 'INF'
         # random_fname = str(uuid.uuid1())
-        idx = [str(i) for i, ele in enumerate(self.ele_lis) if ele == 'Vac']
+        idx = [str(i) for i, ele in enumerate(self.ele_lis) if ele ==
+               self.app.params_config_dict['element_type_list'][-1]]
         if len(idx) == 0:
             idx = ['perfect', 'struct']
         random_fname = '_'.join(idx)
-        cal_dir = os.path.join(self.app.params_config_dict['DFT_CAL_DIR'],
-                               'iter'+str(iters), random_fname)
+        cal_dir = os.path.abspath(os.path.join(
+            self.app.params_config_dict['DFT_CAL_DIR'],
+            'iter'+str(iters), random_fname))
         if not os.path.exists(cal_dir):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
         shutil.copyfile(str_name, os.path.join(cal_dir, dist_fname))
-        shutil.copyfile(os.path.join(self.app.ce.work_path, 'vasp.wrap'),
-                        os.path.join(cal_dir, 'vasp.wrap'))
-        # args = 'runstruct_vasp -nr '
+        try:
+            shutil.copyfile(os.path.join(self.app.ce.work_path, 'vasp.wrap'),
+                            os.path.join(cal_dir, 'vasp.wrap'))
+        except IOError as e:
+            print("vasp.wrap not exists!")
+        cur_dir = os.path.abspath(os.curdir)
+
+
+        # # run vasp
+        # args = 'vasp '
         # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
-        # runstruct_vasp -nr
+        def has_calculated(cal_dir):
+            """
+            Whether or not to contain cal_dir to next GA-to-CE iteration.
+
+            Parameters
+            ----------
+            cal_dir : str
+                Current calculation directory.
+            iter_idx : int
+                Current index of iteration of GA-to-CE
+
+            Returns
+            -------
+            bool
+            """
+            print("VASP Running Check".center(80,'-'))
+            print("BEGIN: check whether or not to execute VASP calculation.")
+            print('cal_dir is {0}:'.format(cal_dir))
+            basename = os.path.basename(cal_dir) # 1_3_12
+            cur_idx = int(os.path.split(cal_dir)[-2].split('iter')[-1])
+
+            cal_main_dir = os.path.abspath(
+                self.app.params_config_dict['DFT_CAL_DIR'])
+            for i in range(1,cur_idx+1):
+                pre_cal_dir = os.path.join(cal_main_dir,'iter'+str(i))
+                print("previous calculation directory",pre_cal_dir)
+                print('cal_main_dir ',cal_main_dir)
+                if not os.path.exists(os.path.join(cal_main_dir,pre_cal_dir)):
+                    continue
+                for f in os.listdir(pre_cal_dir):
+                    if os.path.isdir(os.path.join(pre_cal_dir,f)):
+                        # do not compare with self
+                        if cur_idx == i and f == basename:
+                            continue
+
+                        # nb of defect
+                        if len(f.split('_')) != len(basename.split('_')):
+                            continue
+                        # energy of str.out
+                        print('compare file'.center(80,'-'))
+                        print(os.path.join(pre_cal_dir, f, 'str.out'))
+                        print(os.path.join(cal_dir,'str.out'))
+                        print(''.center(80,'-'))
+                        try:
+                            pre_e = self.app.ce.get_total_energy(
+                                os.path.join(pre_cal_dir,f,'str.out'),delete_file=False)
+                            cur_e = self.app.ce.get_total_energy(
+                                os.path.join(cal_dir,'str.out'),delete_file=False)
+                        except Exception as e:
+                            print('Energy calculation wrong!')
+                            return False
+                        print("energy compare:")
+                        print(pre_e, cur_e)
+                        print("*"*80)
+                        if '{:.6}'.format(pre_e) == '{:.6}'.format(cur_e):
+                            return True
+            else:
+                return False
+
+        if has_calculated(cal_dir):
+            print("END: don't need to execute VASP.")
+            print("-" * 80)
+            return
+        print("END: need to execute VASP")
+        print("-" * 80)
+
+        os.chdir(cal_dir)
+        # create vasp input files
+        args = runstruct_vasp_cmd + ' -nr '
+        s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        s.communicate()
+
+        if vasp_cmd is None:
+            self.run_fake_vasp()
+        else:
+            self.run_vasp(vasp_cmd)
+        # self.run_vasp()
+        os.chdir(cur_dir)
+
+        ## copy dft calculation file to next iteration of GA-to-CE
+        # Assume we have finished the vasp calculation.
+        # We need to extract energy from OSZICAR and copy str.out and energy
+        # to next iteration to update ECI.
+        pre_atat_path = self.app.ce.work_path
+        basename = os.path.basename(pre_atat_path)
+        if 'iter' in basename:
+            iter_idx = int(basename.split('iter')[-1])
+            next_idx = iter_idx + 1
+        else:
+            raise RuntimeError("Iteration directory is wrong!")
+
+        next_atat_path = os.path.join(
+            pre_atat_path.split(basename)[0],
+            'iter'+str(next_idx))
+        copytree(pre_atat_path,next_atat_path)
+
+        # copy calculatin directory
+        cal_name_in_next_atat_path = os.path.join(
+            next_atat_path, 'dft_'+ basename +'_' +
+                            os.path.basename(cal_dir))
+        if not os.path.exists(cal_name_in_next_atat_path):
+            os.mkdir(cal_name_in_next_atat_path)
+        shutil.copy(os.path.join(cal_dir,'str.out'), cal_name_in_next_atat_path)
+        shutil.copy(os.path.join(cal_dir,'energy'),cal_name_in_next_atat_path)
+
+    def run_fake_vasp(self):
+        ce_e = self.app.ce.get_total_energy(
+            os.path.join(os.path.curdir,'str.out'),
+            delete_file=False)
+        dft_e = ce_e + (random.random()-0.5)/5.
+        cmd = 'echo {} > energy'.format(dft_e)
+        s = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+        s.communicate()
+
+    def run_vasp(self, vasp_cmd):
+        #cmd = 'mpirun -machinefile $PBS_NODEFILE -np $NP $EXEC >vasp.out'
+        s = subprocess.Popen(vasp_cmd, shell=True, stdout=subprocess.PIPE)
+        s.communicate()
+
+        cmd = 'extract_vasp '
+        s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        s.communicate()
+
 
     def __str__(self):
         return '_'.join(self.ele_lis)
@@ -582,22 +749,5 @@ class GeneralEleIndv(EleIndv):
 
 
 if __name__ == '__main__':
-
-    def get_app(iter_idx,nb_defect):
-
-        app = GeneralApp(ele_type_list=['O','Vac'], defect_concentrations=[64-nb_defect,nb_defect],
-             ce_site=8, ce_dirname='./data/iter{0}'.format(iter_idx))
-        #app = HFO2App(ce_site=8,ce_dirname='./data/iter{0}'.format(_i))
-        #app.params_config_dict['NB_DEFECT'] = [60, nb_defect]
-        app.update_defect_concentration(c = [64-nb_defect,nb_defect])
-        return app
-
-    def show_results():
-        # iter1
-        iter_idx = 1
-        runner = Runner(get_app(iter_idx,16),iter_idx)
-        runner.run()
-        runner.print_gs()
-
-    show_results()
+    pass
 

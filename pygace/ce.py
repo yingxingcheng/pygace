@@ -21,6 +21,11 @@ import numpy as np
 import os.path
 from pymatgen.io.atat import Mcsqs
 import subprocess
+from copy import deepcopy
+import time
+
+from pygace.parse import GaceMcsqs
+from pygace.config import ATAT_BIN
 
 __author__ = "Yingxing Cheng"
 __email__ ="yxcheng@buaa.edu.cn"
@@ -71,7 +76,7 @@ class CE(object):
     """
 
     COMPARE_CRYSTAL = None
-    CORRDUMP = None
+    CORRDUMP = os.path.join(os.path.abspath(ATAT_BIN),'corrdump')
 
     def __init__(self, lat_in=None, site=16,
                  corrdump_cmd=None,compare_crystal_cmd=None):
@@ -81,15 +86,29 @@ class CE(object):
             self.CORRDUMP = corrdump_cmd
         if compare_crystal_cmd:
             self.COMPARE_CRYSTAL = compare_crystal_cmd
+        self.lat_in_structure = None
 
-    def __get_mess(self):
+    def _get_mess(self):
         if not self.lat_in:
             self.lat_in = os.path.join(
                 os.path.abspath(self.work_path), 'lat.in')
+        self.lat_in_structure, self.ele_to_atat_type = \
+            GaceMcsqs.structure_from_string(open(self.lat_in,'r').read())
+        self.site = GaceMcsqs(self.lat_in_structure).nb_occu_sites
+
         self.eci_out = os.path.join(
             os.path.abspath(self.work_path), 'eci.out')
         self.cluster_info = os.path.join(
             os.path.abspath(self.work_path), 'clusters.out')
+
+    def make_template(self, scale):
+        if self.lat_in_structure is None:
+            raise RuntimeError('please fit first!')
+        tmp_structure = deepcopy(self.lat_in_structure)
+        tmp_structure.make_supercell(scale)
+        return GaceMcsqs(tmp_structure).to_template(
+            ele_dict=self.ele_to_atat_type)
+
 
     def fit(self, dirname='./.tmp_atat_ce_dir'):
         """
@@ -111,7 +130,7 @@ class CE(object):
             os.makedirs(_dirname)
 
         self.work_path = _dirname
-        self.__get_mess()
+        self._get_mess()
 
         _ref_energy_path = os.path.join(self.work_path, 'ref_energy.out')
         _atoms_path = os.path.join(self.work_path, 'atoms.out')
@@ -158,7 +177,8 @@ class CE(object):
         _y = self.corrdump(_args)
         return _y
 
-    def mmaps(self, dirname, cal=False, *args, **kwargs):
+    @staticmethod
+    def mmaps(dirname, maps_args='-d'):
         """
         Call ``MMAPS`` command in system.
 
@@ -188,11 +208,49 @@ class CE(object):
         _dirname = os.path.abspath(dirname)
         os.chdir(_dirname)
         # TODO run mmaps
-        if os.path.exists('maps.log'):
-            print('mmaps run successful!')
-        else:
-            print('please run mmaps first!')
+        maps_cmd = os.path.join(os.path.abspath(ATAT_BIN),'mmaps')
+        args = maps_cmd or '-d'
+        tmp_mmaps_log_fname = '_mmaps.log'
+        cmd = "{0} {1} > {2} 2>&1".format(maps_cmd,
+                                          maps_args,tmp_mmaps_log_fname)
+        if os.path.exists("maps_is_running"):
+            os.remove("maps_is_running")
+        s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        # stdout, stderr = s.communicate()
+        pre_lines = 0
+        while 1:
+            if not os.path.exists(tmp_mmaps_log_fname):
+                time.sleep(1)
+                continue
+
+            context = open(tmp_mmaps_log_fname, 'r').readlines()
+            cur_lines = len(context)
+            if cur_lines != pre_lines:
+                pre_lines = cur_lines
+                time.sleep(2)
+                continue
+
+            if len(context) > 1 and 'done' in context[-1]:
+                break
+            else:
+                if len(context) == 0:
+                    print("There is not dir that contains `str.out` "
+                          "and energy to run mmaps or maps.")
+                    break
+                elif 'not loaded' in context[-1] and '\n'.join(context).count('done') == 2:
+                    break
+                elif 'not loaded' in context[-1]:
+                    time.sleep(1)
+                    continue
+                elif '\n'.join(context).count('done') == 2:
+                    break
+                else:
+                    raise RuntimeError("mmaps running error")
+
+        s.terminate()
+        os.remove(tmp_mmaps_log_fname)
         os.chdir(_curr_path)
+        print("Run mmaps successfully!")
 
     def corrdump(self, cmd):
         """

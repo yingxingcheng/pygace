@@ -43,6 +43,8 @@ if 'DEBUG' in RUN_MODE:
 else:
     DEBUG = False
 
+DEBUG = False
+
 class HFO2App(AbstractApp):
     """
     An app of HfO(2-x) system which is implemented from AbstractApp object

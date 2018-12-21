@@ -7,7 +7,6 @@ from setuptools import setup, find_packages
 module_dir = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == "__main__":
-    print(module_dir)
     setup(
         name='pygace',
         version='2018.12.13',

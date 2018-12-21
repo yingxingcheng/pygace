@@ -43,7 +43,9 @@ cp = ConfigParser.ConfigParser()
 cp.read(CONFIG_FILE_PATH)
 corrdump_cmd = str(cp.get('ENV_PATH', 'CORRDUMP'))
 compare_crystal_cmd = str(cp.get('ENV_PATH', 'COMPARE_CRYSTAL'))
+runstruct_vasp_cmd = str(cp.get('ENV_PATH','BUILD_VASP_INPUT_FILE_CMD'))
 RUN_MODE = str(cp.get('ENV_PATH','RUN_MODE'))
+ATAT_BIN = str(cp.get('ENV_PATH','ATAT_BIN'))
 
 if corrdump_cmd is None:
    logging.warning('corrdump_cmd does exist!')

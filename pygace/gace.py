@@ -95,7 +95,7 @@ class AbstractApp(object):
         'DFT_CAL_DIR':'./dft_dirs',
     }
 
-    def __init__(self,ce_site=8, ce_dirname='./data/iter1',
+    def __init__(self,ce_site=None, ce_dirname='./data/iter1',
                  params_config_dict=None):
 
         self.ce = CE(site=ce_site,
