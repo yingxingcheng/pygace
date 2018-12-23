@@ -26,6 +26,7 @@ import os, glob
 import multiprocessing
 import uuid, pickle, shutil
 import subprocess, random
+from pymatgen.io.vasp import Vasprun
 
 from pygace.ga import gaceGA, gaceCrossover
 from pygace.utility import  EleIndv,  compare_crystal, copytree
@@ -438,11 +439,6 @@ class Runner(AbstractRunner):
         for i in EleIndv_lis:
             if not i in new_ground:
                 new_ground.append(i)
-                # print(i.ce_energy)
-                # print(i.ele_lis)
-                # idx = [str(_i) for _i, ele in enumerate(i.ele_lis) if ele == 'Vac']
-                # idx_lis = '_'.join(idx)
-                # print(idx_lis)
                 i.dft_energy(iters=self.iter_idx, vasp_cmd=vasp_cmd)
         print('GA-to-CE No. {0} iteration with defect {1} END'.
               format(
@@ -577,7 +573,7 @@ class GeneralEleIndv(EleIndv):
         return float(self.app.ce.get_total_energy(
             self.app.transver_to_struct(self.ele_lis), is_corrdump=True))
 
-    def dft_energy(self, iters=None, vasp_cmd=None):
+    def dft_energy(self, iters=None, vasp_cmd=None, update_eci=True):
         """
         Return DFT energy
 
@@ -624,7 +620,8 @@ class GeneralEleIndv(EleIndv):
 
         cur_dir = os.path.abspath(os.curdir)
 
-
+        pre_dft_energy = None
+        cur_dft_energy = None
         # # run vasp
         # args = 'vasp '
         # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
@@ -683,6 +680,9 @@ class GeneralEleIndv(EleIndv):
                         print(pre_e, cur_e)
                         print("*"*80)
                         if '{:.6}'.format(pre_e) == '{:.6}'.format(cur_e):
+                            pre_dft_energy = float(numpy.loadtxt(os.path.join(
+                                pre_cal_dir, f,'energy')))
+
                             return True
             else:
                 return False
@@ -691,7 +691,7 @@ class GeneralEleIndv(EleIndv):
             print("END: don't need to execute VASP.")
             print("-" * 80)
             shutil.rmtree(cal_dir)
-            return
+            return pre_dft_energy
         print("END: need to execute VASP")
         print("-" * 80)
 
@@ -706,51 +706,75 @@ class GeneralEleIndv(EleIndv):
         else:
             self.run_vasp(vasp_cmd)
         # self.run_vasp()
+        cur_dft_energy = float(numpy.loadtxt('energy', dtype=float))
         os.chdir(cur_dir)
 
-        ## copy dft calculation file to next iteration of GA-to-CE
-        # Assume we have finished the vasp calculation.
-        # We need to extract energy from OSZICAR and copy str.out and energy
-        # to next iteration to update ECI.
-        pre_atat_path = self.app.ce.work_path
-        basename = os.path.basename(pre_atat_path)
-        if 'iter' in basename:
-            iter_idx = int(basename.split('iter')[-1])
-            next_idx = iter_idx + 1
-        else:
-            raise RuntimeError("Iteration directory is wrong!")
+        if update_eci:
+            ## copy dft calculation file to next iteration of GA-to-CE
+            # Assume we have finished the vasp calculation.
+            # We need to extract energy from OSZICAR and copy str.out and energy
+            # to next iteration to update ECI.
+            pre_atat_path = self.app.ce.work_path
+            basename = os.path.basename(pre_atat_path)
+            if 'iter' in basename:
+                iter_idx = int(basename.split('iter')[-1])
+                next_idx = iter_idx + 1
+            else:
+                raise RuntimeError("Iteration directory is wrong!")
 
-        next_atat_path = os.path.join(
-            pre_atat_path.split(basename)[0],
-            'iter'+str(next_idx))
-        copytree(pre_atat_path,next_atat_path)
+            next_atat_path = os.path.join(
+                pre_atat_path.split(basename)[0],
+                'iter'+str(next_idx))
+            copytree(pre_atat_path,next_atat_path)
 
-        # copy calculatin directory
-        cal_name_in_next_atat_path = os.path.join(
-            next_atat_path, 'dft_'+ basename +'_' +
-                            os.path.basename(cal_dir))
-        if not os.path.exists(cal_name_in_next_atat_path):
-            os.mkdir(cal_name_in_next_atat_path)
-        shutil.copy(os.path.join(cal_dir,'str.out'), cal_name_in_next_atat_path)
-        shutil.copy(os.path.join(cal_dir,'energy'),cal_name_in_next_atat_path)
+            # copy calculatin directory
+            cal_name_in_next_atat_path = os.path.join(
+                next_atat_path, 'dft_'+ basename +'_' +
+                                os.path.basename(cal_dir))
+            if not os.path.exists(cal_name_in_next_atat_path):
+                os.mkdir(cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir,'str.out'), cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir,'energy'),cal_name_in_next_atat_path)
+        return cur_dft_energy
 
     def run_fake_vasp(self):
         ce_e = self.app.ce.get_total_energy(
             os.path.join(os.path.curdir,'str.out'),
             delete_file=False)
+        # check if a calculation has been executed.
+        if os.path.exists('energy'):
+            try:
+                pre_e = float(numpy.loadtxt('energy',dtype=float))
+                if numpy.abs(ce_e,pre_e) < 0.2001:
+                    return
+            except Exception as e:
+                pass
         dft_e = ce_e + (random.random()-0.5)/5.
         cmd = 'echo {} > energy'.format(dft_e)
         s = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
         s.communicate()
 
     def run_vasp(self, vasp_cmd):
+        def extract_energy():
+            cmd = 'extract_vasp '
+            s = subprocess.Popen(cmd, shell=True,
+                                 stdout=subprocess.PIPE)
+            s.communicate()
+
+        vasprun_fname = 'vasprun.xml'
+        try:
+            vr = Vasprun(filename=vasprun_fname)
+            if vr.converged:
+                extract_energy()
+                return
+        except Exception as e:
+            pass
+
         #cmd = 'mpirun -machinefile $PBS_NODEFILE -np $NP $EXEC >vasp.out'
         s = subprocess.Popen(vasp_cmd, shell=True, stdout=subprocess.PIPE)
         s.communicate()
 
-        cmd = 'extract_vasp '
-        s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        s.communicate()
+        extract_energy()
 
 
     def __str__(self):
