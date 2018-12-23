@@ -249,6 +249,7 @@ class GeneralApp(AbstractApp):
         for k,v in zip(all_best_son,all_min):
             all_min_dict['_'.join(k)] = v
         res = sorted(all_min_dict.items(),key=lambda x: x[1])
+        res = sorted(res, key=lambda x: x[0])
         print(res[0])
 
         s_fname = os.path.join(self.params_config_dict['TEST_RES_DIR'],
@@ -611,6 +612,16 @@ class GeneralEleIndv(EleIndv):
                             os.path.join(cal_dir, 'vasp.wrap'))
         except IOError as e:
             print("vasp.wrap not exists!")
+        other_files = ['OPTCELL']
+        init_data_path = os.path.dirname(self.app.ce.work_path)
+        print(init_data_path)
+        for f in other_files:
+            f_abs_path = os.path.join(init_data_path,f)
+            if os.path.exists(f_abs_path):
+                shutil.copyfile(f_abs_path,os.path.join(cal_dir,f))
+            else:
+                print("{0} not exists!".format(f))
+
         cur_dir = os.path.abspath(os.curdir)
 
 
@@ -679,6 +690,7 @@ class GeneralEleIndv(EleIndv):
         if has_calculated(cal_dir):
             print("END: don't need to execute VASP.")
             print("-" * 80)
+            shutil.rmtree(cal_dir)
             return
         print("END: need to execute VASP")
         print("-" * 80)
