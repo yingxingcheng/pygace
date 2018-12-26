@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
     pygace.examples
+    pygace.scripts
 
 Submodules
 ----------
@@ -39,6 +40,22 @@ pygace\.gace module
 -------------------
 
 .. automodule:: pygace.gace
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygace\.general\_gace module
+----------------------------
+
+.. automodule:: pygace.general_gace
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pygace\.parse module
+--------------------
+
+.. automodule:: pygace.parse
     :members:
     :undoc-members:
     :show-inheritance:

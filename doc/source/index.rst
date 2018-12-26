@@ -12,6 +12,7 @@ Welcome to pygace's documentation!
 
    modules
    pygace
+   pygace.scripts
    pygace.examples
    pygace.examples.hfo2
    pygace.examples.sto

@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pygace.examples.sto package" href="pygace.examples.sto.html" />
-    <link rel="prev" title="pygace.examples package" href="pygace.examples.html" />
+    <link rel="prev" title="pygace.examples.general package" href="pygace.examples.general.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -371,7 +371,32 @@ program.</p>
 
 <dl class="method">
 <dt id="pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy">
-<code class="descname">dft_energy</code><span class="sig-paren">(</span><em>iters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/hfo2/hfo2_gace.html#HfO2EleIndv.dft_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy" title="Permalink to this definition">¶</a></dt>
+<code class="descname">dft_energy</code><span class="sig-paren">(</span><em>iters=None</em>, <em>vasp_cmd=None</em>, <em>update_eci=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/hfo2/hfo2_gace.html#HfO2EleIndv.dft_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return DFT energy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>iters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">index of iteration of GA-to-CE</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None or float</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy_deprecated">
+<code class="descname">dft_energy_deprecated</code><span class="sig-paren">(</span><em>iters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/examples/hfo2/hfo2_gace.html#HfO2EleIndv.dft_energy_deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy_deprecated" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return DFT energy</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -565,10 +590,13 @@ structure template file.</p>
 <li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.config">pygace.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.ga">pygace.ga module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.gace">pygace.gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.general_gace">pygace.general_gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.parse">pygace.parse module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.utility">pygace.utility module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="pygace.examples.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.examples.html#module-pygace.examples">Module contents</a></li>
@@ -590,7 +618,7 @@ structure template file.</p>
   <li><a href="modules.html">pygace</a><ul>
   <li><a href="pygace.html">pygace package</a><ul>
   <li><a href="pygace.examples.html">pygace.examples package</a><ul>
-      <li>Previous: <a href="pygace.examples.html" title="previous chapter">pygace.examples package</a></li>
+      <li>Previous: <a href="pygace.examples.general.html" title="previous chapter">pygace.examples.general package</a></li>
       <li>Next: <a href="pygace.examples.sto.html" title="next chapter">pygace.examples.sto package</a></li>
   </ul></li>
   </ul></li>

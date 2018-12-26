@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    pygace.examples.general
     pygace.examples.hfo2
     pygace.examples.sto
 

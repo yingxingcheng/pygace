@@ -49,6 +49,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pygace.examples.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pygace.examples.general.html">pygace.examples.general package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pygace.examples.general.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygace.examples.general.html#module-pygace.examples.general.test_general">pygace.examples.general.test_general module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pygace.examples.general.html#module-pygace.examples.general">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pygace.examples.hfo2.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pygace.examples.hfo2.html#module-pygace.examples.hfo2.hfo2_gace">pygace.examples.hfo2.hfo2_gace module</a></li>
@@ -64,6 +70,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pygace.examples.html#module-pygace.examples">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.scripts.html">pygace.scripts package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pygace.scripts.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.scripts.html#module-pygace.scripts.rungace">pygace.scripts.rungace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.scripts.html#module-pygace.scripts">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -143,7 +155,7 @@ in <code class="docutils literal"><span class="pre">ATAT</span></code>.</p>
 
 <dl class="attribute">
 <dt id="pygace.ce.CE.CORRDUMP">
-<code class="descname">CORRDUMP</code><em class="property"> = None</em><a class="headerlink" href="#pygace.ce.CE.CORRDUMP" title="Permalink to this definition">¶</a></dt>
+<code class="descname">CORRDUMP</code><em class="property"> = '/home/yxcheng/usr/local/atat/bin/corrdump'</em><a class="headerlink" href="#pygace.ce.CE.CORRDUMP" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
@@ -282,8 +294,13 @@ by <code class="docutils literal"><span class="pre">corrdump</span></code> comma
 </dd></dl>
 
 <dl class="method">
+<dt id="pygace.ce.CE.make_template">
+<code class="descname">make_template</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ce.html#CE.make_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ce.CE.make_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
 <dt id="pygace.ce.CE.mmaps">
-<code class="descname">mmaps</code><span class="sig-paren">(</span><em>dirname</em>, <em>cal=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ce.html#CE.mmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ce.CE.mmaps" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">mmaps</code><span class="sig-paren">(</span><em>dirname</em>, <em>maps_args='-d'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ce.html#CE.mmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ce.CE.mmaps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call <code class="docutils literal"><span class="pre">MMAPS</span></code> command in system.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -357,8 +374,8 @@ CE fitting is running until users stop it.</p>
 <p>The module contains genetic algorithms and relevant operator used in GA, e.g.,
 crossover operator, mutation operator.</p>
 <dl class="class">
-<dt id="pygace.ga.Individual">
-<em class="property">class </em><code class="descclassname">pygace.ga.</code><code class="descname">Individual</code><span class="sig-paren">(</span><em>gene_length=64</em>, <em>fitness=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual" title="Permalink to this definition">¶</a></dt>
+<dt id="pygace.ga.Cromosome">
+<em class="property">class </em><code class="descclassname">pygace.ga.</code><code class="descname">Cromosome</code><span class="sig-paren">(</span><em>gene_length=64</em>, <em>fitness=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Cromosome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Cromosome" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>A wrapper class for individual in GA.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -378,9 +395,9 @@ crossover operator, mutation operator.</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="pygace.ga.Individual.generate_individual">
-<code class="descname">generate_individual</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Individual.generate_individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual.generate_individual" title="Permalink to this definition">¶</a></dt>
-<dd><p>Greate a random individual</p>
+<dt id="pygace.ga.Cromosome.generate_cromosome">
+<code class="descname">generate_cromosome</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Cromosome.generate_cromosome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Cromosome.generate_cromosome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Greate a random cromosome</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -396,8 +413,8 @@ crossover operator, mutation operator.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pygace.ga.Individual.get_gene">
-<code class="descname">get_gene</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Individual.get_gene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual.get_gene" title="Permalink to this definition">¶</a></dt>
+<dt id="pygace.ga.Cromosome.get_gene">
+<code class="descname">get_gene</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Cromosome.get_gene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Cromosome.get_gene" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain gene in the position of <cite>index</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -422,8 +439,8 @@ crossover operator, mutation operator.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pygace.ga.Individual.set_gene">
-<code class="descname">set_gene</code><span class="sig-paren">(</span><em>index</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Individual.set_gene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual.set_gene" title="Permalink to this definition">¶</a></dt>
+<dt id="pygace.ga.Cromosome.set_gene">
+<code class="descname">set_gene</code><span class="sig-paren">(</span><em>index</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Cromosome.set_gene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Cromosome.set_gene" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set gene in position of <cite>index</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -450,16 +467,16 @@ crossover operator, mutation operator.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pygace.ga.Individual.size">
-<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Individual.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual.size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the length of individual.</p>
+<dt id="pygace.ga.Cromosome.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/ga.html#Cromosome.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Cromosome.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the length of cromosome.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>int</strong></dt>
-<dd><p class="first last">The length of individual</p>
+<dd><p class="first last">The length of cromosome</p>
 </dd>
 </dl>
 </td>
@@ -469,10 +486,17 @@ crossover operator, mutation operator.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pygace.ga.Individual.valid_type">
-<code class="descname">valid_type</code><em class="property"> = ['Vac', 'Replace']</em><a class="headerlink" href="#pygace.ga.Individual.valid_type" title="Permalink to this definition">¶</a></dt>
+<dt id="pygace.ga.Cromosome.valid_type">
+<code class="descname">valid_type</code><em class="property"> = ['Vac', 'Replace']</em><a class="headerlink" href="#pygace.ga.Cromosome.valid_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="pygace.ga.Individual">
+<em class="property">class </em><code class="descclassname">pygace.ga.</code><code class="descname">Individual</code><a class="reference internal" href="_modules/pygace/ga.html#Individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.ga.Individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Individual object contain several Cromosome objects.</p>
 </dd></dl>
 
 <dl class="function">
@@ -492,10 +516,10 @@ crossover operator, mutation operator.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ind1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The first individual participating in the crossover.</p>
+<dd><p class="first last">The first cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>ind2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The second individual participating in the crossover.</p>
+<dd><p class="first last">The second cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>cross_number</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">The number of crossover is not used in this algorithm.</p>
@@ -505,7 +529,7 @@ crossover operator, mutation operator.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>tuple</strong></dt>
-<dd><p class="first last">A tuple of two individuals</p>
+<dd><p class="first last">A tuple of two cromosomes</p>
 </dd>
 </dl>
 </td>
@@ -537,10 +561,10 @@ length.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>indiv1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Individual object</span></dt>
+<dt><strong>indiv1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Cromosome object</span></dt>
 <dd><p class="first last">The first individual participating in the crossover.</p>
 </dd>
-<dt><strong>indiv2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Individual object</span></dt>
+<dt><strong>indiv2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Cromosome object</span></dt>
 <dd><p class="first last">The second individual participating in the crossover.</p>
 </dd>
 <dt><strong>crossover_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
@@ -708,10 +732,10 @@ of this parent is imposed on the other parent.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ind1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The first individual participating in the crossover.</p>
+<dd><p class="first last">The first cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>ind2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The second individual participating in the crossover.</p>
+<dd><p class="first last">The second cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>cross_number</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">The number of crossover which determine the number exchange in each
@@ -722,7 +746,7 @@ crossover operation.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>tuple</strong></dt>
-<dd><p class="first last">A tuple of two individuals</p>
+<dd><p class="first last">A tuple of two cromosomes</p>
 </dd>
 </dl>
 </td>
@@ -760,10 +784,10 @@ parent.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ind1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The first individual participating in the crossover.</p>
+<dd><p class="first last">The first cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>ind2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The second individual participating in the crossover.</p>
+<dd><p class="first last">The second cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>cross_number</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">The number of crossover which determine the number exchange in each
@@ -774,7 +798,7 @@ crossover operation.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>tuple</strong></dt>
-<dd><p class="first last">A tuple of two individuals</p>
+<dd><p class="first last">A tuple of two cromosomes</p>
 </dd>
 </dl>
 </td>
@@ -865,10 +889,10 @@ Pittsburgh, 1985.</td></tr>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ind1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The first individual participating in the crossover.</p>
+<dd><p class="first last">The first cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>ind2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The second individual participating in the crossover.</p>
+<dd><p class="first last">The second cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>cross_number</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">The number of crossover which determine the number exchange in each
@@ -879,7 +903,7 @@ crossover operation.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>tuple</strong></dt>
-<dd><p class="first last">A tuple of two individuals</p>
+<dd><p class="first last">A tuple of two cromosomes</p>
 </dd>
 </dl>
 </td>
@@ -913,10 +937,10 @@ crossover operation.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ind1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The first individual participating in the crossover.</p>
+<dd><p class="first last">The first cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>ind2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">iteration object</span></dt>
-<dd><p class="first last">The second individual participating in the crossover.</p>
+<dd><p class="first last">The second cromosome participating in the crossover.</p>
 </dd>
 <dt><strong>cross_number</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">The number of crossover is not used in this algorithm.</p>
@@ -926,7 +950,7 @@ crossover operation.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>tuple</strong></dt>
-<dd><p class="first last">A tuple of two individuals</p>
+<dd><p class="first last">A tuple of two cromosomes</p>
 </dd>
 </dl>
 </td>
@@ -958,7 +982,7 @@ their application, and it defines several interface which are called in
 concreate application.</p>
 <dl class="class">
 <dt id="pygace.gace.AbstractApp">
-<em class="property">class </em><code class="descclassname">pygace.gace.</code><code class="descname">AbstractApp</code><span class="sig-paren">(</span><em>ce_site=8</em>, <em>ce_dirname='./data/iter1'</em>, <em>params_config_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/gace.html#AbstractApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.gace.AbstractApp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pygace.gace.</code><code class="descname">AbstractApp</code><span class="sig-paren">(</span><em>ce_site=None</em>, <em>ce_dirname='./data/iter1'</em>, <em>params_config_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/gace.html#AbstractApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.gace.AbstractApp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Abstract application object for <code class="docutils literal"><span class="pre">GACE</span></code> framework.</p>
 <p>AbstractApp initial process needs input parameters of CE simulation
@@ -1031,7 +1055,7 @@ input file in <code class="docutils literal"><span class="pre">ATAT</span></code
 </table>
 <dl class="attribute">
 <dt id="pygace.gace.AbstractApp.DEFAULT_SETUP">
-<code class="descname">DEFAULT_SETUP</code><em class="property"> = {'TMP_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp_dir', 'NB_SITES': 64, 'TEMPLATE_FILE': './data/lat_in.template', 'TEST_RES_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res_dir', 'NB_DEFECT': 4, 'DFT_CAL_DIR': './dft_dirs', 'PICKLE_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle_bakup'}</em><a class="headerlink" href="#pygace.gace.AbstractApp.DEFAULT_SETUP" title="Permalink to this definition">¶</a></dt>
+<code class="descname">DEFAULT_SETUP</code><em class="property"> = {'TMP_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp_dir', 'TEMPLATE_FILE': './data/lat_in.template', 'TEST_RES_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res_dir', 'NB_DEFECT': None, 'DFT_CAL_DIR': './dft_dirs', 'PICKLE_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle_bakup'}</em><a class="headerlink" href="#pygace.gace.AbstractApp.DEFAULT_SETUP" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1359,6 +1383,468 @@ error would be raised.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pygace.general_gace">
+<span id="pygace-general-gace-module"></span><h2>pygace.general_gace module<a class="headerlink" href="#module-pygace.general_gace" title="Permalink to this headline">¶</a></h2>
+<p>A GA-to-CE example of oxygen-vacancy-containing HfO2 system given in
+this module.</p>
+<dl class="class">
+<dt id="pygace.general_gace.GeneralApp">
+<em class="property">class </em><code class="descclassname">pygace.general_gace.</code><code class="descname">GeneralApp</code><span class="sig-paren">(</span><em>ele_type_list</em>, <em>defect_concentrations</em>, <em>ce_dirname='./data/iter1'</em>, <em>params_config_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygace.gace.AbstractApp" title="pygace.gace.AbstractApp"><code class="xref py py-class docutils literal"><span class="pre">pygace.gace.AbstractApp</span></code></a></p>
+<p>An app of general system which is implemented from AbstractApp object</p>
+<p>This object is used to execute a GACE simulation, user only need to
+implement several interfaces to custom their application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ce_site: int</strong></dt>
+<dd><p class="first last">the concept of site used in ATAT program.</p>
+</dd>
+<dt><strong>ce_dirname: str</strong></dt>
+<dd><p class="first last">The name of a directory which contain information of MMAPS or MAPS
+running</p>
+</dd>
+<dt><strong>ele_1st: str</strong></dt>
+<dd><p class="first last">The first type of element in the <code class="docutils literal"><span class="pre">site</span></code> in <code class="docutils literal"><span class="pre">ATAT</span></code>.</p>
+</dd>
+<dt><strong>ele_2nd: str</strong></dt>
+<dd><p class="first last">The second type of element in the <code class="docutils literal"><span class="pre">site</span></code> in <code class="docutils literal"><span class="pre">ATAT</span></code>.</p>
+</dd>
+<dt><strong>params_config_dict: dirt</strong></dt>
+<dd><p class="first last">Parameter dict used to custom GACE AbstractApp.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">AbstractApp</span></dt>
+<dd><p class="first last">A subclass object of AbstractApp.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pygace.general_gace.GeneralApp.evalEnergy">
+<code class="descname">evalEnergy</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralApp.evalEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralApp.evalEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation function for the ground-state searching problem.</p>
+<p>The problem is to determine a configuration of n vacancies
+on a crystalline structures such that the energy of crystalline
+structures can obtain minimum value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>individual</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>float</strong></dt>
+<dd><p class="first last">Fittness value</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralApp.ind_to_elis">
+<code class="descname">ind_to_elis</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralApp.ind_to_elis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralApp.ind_to_elis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert individual (number list) to element list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>individual</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>list</strong></dt>
+<dd><p class="first last">A list of element symbol string.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralApp.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>iter_idx=1</em>, <em>default_epoch=4</em>, <em>target_epoch=4</em>, <em>cross_method=1</em>, <em>cross_num=8</em>, <em>cp_fname_prefix='ground_states_iter'</em>, <em>task_prefix='general-app'</em>, <em>gs_selection=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralApp.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralApp.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to run a GACE simulation which will be called by
+<cite>AbstractRunner</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Determine which iteration the ECI is used in.</p>
+</dd>
+<dt><strong>target_epoch</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Iteration in GA simulation.</p>
+</dd>
+<dt><strong>default_epoch</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Default epoch setting for GA.</p>
+</dd>
+<dt><strong>target_epoch</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Target epoch for GA.</p>
+</dd>
+<dt><strong>cross_method</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Crossover operator type.</p>
+</dd>
+<dt><strong>cross_num :</strong></dt>
+<dd><p class="first last">The exchange number used in crossover operator.</p>
+</dd>
+<dt><strong>cp_fname_prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The prefix of checkpoint file name.</p>
+</dd>
+<dt><strong>task_prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The prefix of task filename of a single simulation.</p>
+</dd>
+<dt><strong>gs_selection</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Ground-state structures selected from <cite>target_epoch</cite> GA simulation.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralApp.update_defect_concentration">
+<code class="descname">update_defect_concentration</code><span class="sig-paren">(</span><em>c=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralApp.update_defect_concentration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralApp.update_defect_concentration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygace.general_gace.GeneralEleIndv">
+<em class="property">class </em><code class="descclassname">pygace.general_gace.</code><code class="descname">GeneralEleIndv</code><span class="sig-paren">(</span><em>ele_lis</em>, <em>app=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralEleIndv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygace.utility.EleIndv" title="pygace.utility.EleIndv"><code class="xref py py-class docutils literal"><span class="pre">pygace.utility.EleIndv</span></code></a></p>
+<p>A class that use list chemistry element to represent individual.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ele_lis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">A list of chemistry element.</p>
+</dd>
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">AbstractApp</span></dt>
+<dd><p class="first last">An application of GACE which is used to obtain ground-state
+structures based generic algorithm and cluster expansion method.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>app: AbstractApp</strong></dt>
+<dd><p class="first last">An application handling GACE running process.</p>
+</dd>
+<dt><strong>ele_lis: list</strong></dt>
+<dd><p class="first last">A list of chemistry element string.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pygace.general_gace.GeneralEleIndv.ce_energy">
+<code class="descname">ce_energy</code><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv.ce_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return CE energy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>float</strong></dt>
+<dd><p class="first last">Energy predicted by CE method.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pygace.general_gace.GeneralEleIndv.ce_energy_corrdump">
+<code class="descname">ce_energy_corrdump</code><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv.ce_energy_corrdump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return relative energy defined in <code class="docutils literal"><span class="pre">ATAT</span></code> and computed by <code class="docutils literal"><span class="pre">corrdump</span></code>
+program.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>float</strong></dt>
+<dd><p class="first last">Relative energy generated by <code class="docutils literal"><span class="pre">corrdump</span></code> program.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralEleIndv.dft_energy">
+<code class="descname">dft_energy</code><span class="sig-paren">(</span><em>iters=None</em>, <em>vasp_cmd=None</em>, <em>update_eci=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralEleIndv.dft_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv.dft_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return DFT energy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>iters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">index of iteration of GA-to-CE</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None or float</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralEleIndv.run_fake_vasp">
+<code class="descname">run_fake_vasp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralEleIndv.run_fake_vasp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv.run_fake_vasp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.GeneralEleIndv.run_vasp">
+<code class="descname">run_vasp</code><span class="sig-paren">(</span><em>vasp_cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#GeneralEleIndv.run_vasp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.GeneralEleIndv.run_vasp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pygace.general_gace.Runner">
+<em class="property">class </em><code class="descclassname">pygace.general_gace.</code><code class="descname">Runner</code><span class="sig-paren">(</span><em>app=None</em>, <em>iter_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#Runner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.Runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pygace.gace.AbstractRunner" title="pygace.gace.AbstractRunner"><code class="xref py py-class docutils literal"><span class="pre">pygace.gace.AbstractRunner</span></code></a></p>
+<p>A runner for running a GACE simulation.</p>
+<p>This object is used to execute a GACE simulation in HfO2 system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">subclass of GeneralApp</span></dt>
+<dd><p class="first last">A subclass object of GeneralApp, default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration, default is <cite>None</cite>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>app</strong> <span class="classifier-delimiter">:</span> <span class="classifier">GeneralApp</span></dt>
+<dd><p class="first last">A subclass object of GeneralApp.</p>
+</dd>
+<dt><strong>iter_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Index of GA-to-CE iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pygace.general_gace.Runner.compare_gs">
+<code class="descname">compare_gs</code><span class="sig-paren">(</span><em>new_gs</em>, <em>old_gs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#Runner.compare_gs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.Runner.compare_gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether current and previous ground-state are identical.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>new_gs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Ground-state configuration predicted by current iteration.</p>
+</dd>
+<dt><strong>old_gs :</strong></dt>
+<dd><p class="first last">Ground-state configuration predicted by previous iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>bool</strong></dt>
+<dd></dd>
+<dt><strong>Raises:</strong></dt>
+<dd></dd>
+<dt><strong>RuntimeError</strong></dt>
+<dd><p class="first last">when the number of point defect (oxygen vacancy here) is not equal
+in two iteration.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.Runner.print_gs">
+<code class="descname">print_gs</code><span class="sig-paren">(</span><em>vasp_cmd=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#Runner.print_gs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.Runner.print_gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to extract ground-state information from pickle file
+saved during GACE running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.Runner.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#Runner.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.Runner.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to run.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.general_gace.Runner.str2energy">
+<code class="descname">str2energy</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/general_gace.html#Runner.str2energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.general_gace.Runner.str2energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain energy from string consists of numbers joined by ‘_’, e.g.,
+<code class="docutils literal"><span class="pre">'1_2_3_19_'</span></code>, in which the number is the position index in lattice
+structure template file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>string</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The string consists by index of point defect.</p>
+</dd>
+<dt><strong>Returns</strong></dt>
+<dd></dd>
+<dt><strong>——-</strong></dt>
+<dd></dd>
+<dt><strong>float</strong></dt>
+<dd><p class="first last">CE energy.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pygace.parse">
+<span id="pygace-parse-module"></span><h2>pygace.parse module<a class="headerlink" href="#module-pygace.parse" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pygace.parse.GaceMcsqs">
+<em class="property">class </em><code class="descclassname">pygace.parse.</code><code class="descname">GaceMcsqs</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/parse.html#GaceMcsqs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.parse.GaceMcsqs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pygace.parse.GaceMcsqs.nb_occu_sites">
+<code class="descname">nb_occu_sites</code><a class="headerlink" href="#pygace.parse.GaceMcsqs.nb_occu_sites" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pygace.parse.GaceMcsqs.structure_from_string">
+<em class="property">static </em><code class="descname">structure_from_string</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/parse.html#GaceMcsqs.structure_from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.parse.GaceMcsqs.structure_from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a rndstr.in or lat.in file into pymatgen’s
+Structure format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – contents of a rndstr.in or lat.in file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Structure object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.parse.GaceMcsqs.to_string">
+<code class="descname">to_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/parse.html#GaceMcsqs.to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.parse.GaceMcsqs.to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a structure in mcsqs rndstr.in format.
+:return (str):</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pygace.parse.GaceMcsqs.to_template">
+<code class="descname">to_template</code><span class="sig-paren">(</span><em>ele_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/parse.html#GaceMcsqs.to_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.parse.GaceMcsqs.to_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a structure in lat.in format template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ele_dict</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">A dict used to convert element type in ATAT to
+element type in pymatgen.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>str</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-pygace.utility">
 <span id="pygace-utility-module"></span><h2>pygace.utility module<a class="headerlink" href="#module-pygace.utility" title="Permalink to this headline">¶</a></h2>
 <p>There are some general helper function defined in this module.</p>
@@ -1535,6 +2021,29 @@ crystal structures are identical, default <cite>CompareCrystal</cite>.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pygace.utility.copytree">
+<code class="descclassname">pygace.utility.</code><code class="descname">copytree</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em>, <em>symlinks=False</em>, <em>ignore=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/utility.html#copytree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.utility.copytree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively copy a directory tree using copy2().</p>
+<p>The destination directory must not already exist.
+If exception(s) occur, an Error is raised with a list of reasons.</p>
+<p>If the optional symlinks flag is true, symbolic links in the
+source tree result in symbolic links in the destination tree; if
+it is false, the contents of the files pointed to by symbolic
+links are copied.</p>
+<p>The optional ignore argument is a callable. If given, it
+is called with the <cite>src</cite> parameter, which is the directory
+being visited by copytree(), and <cite>names</cite> which is the list of
+<cite>src</cite> contents, as returned by os.listdir():</p>
+<blockquote>
+<div>callable(src, names) -&gt; ignored_names</div></blockquote>
+<p>Since copytree() is called recursively, the callable will be
+called once for each directory that is copied. It returns a
+list of names relative to the <cite>src</cite> directory that should
+not be copied.</p>
+<p>XXX Consider this example code rather than the ultimate tool.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pygace.utility.get_num_lis">
 <code class="descclassname">pygace.utility.</code><code class="descname">get_num_lis</code><span class="sig-paren">(</span><em>nb_Nb</em>, <em>nb_site</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/utility.html#get_num_lis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.utility.get_num_lis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get number list by given the number point defect and site defined in
@@ -1666,10 +2175,13 @@ semiconductors.</p>
 <li class="toctree-l2"><a class="reference internal" href="#module-pygace.config">pygace.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pygace.ga">pygace.ga module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pygace.gace">pygace.gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.general_gace">pygace.general_gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.parse">pygace.parse module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pygace.utility">pygace.utility module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pygace">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pygace.examples.sto.html">pygace.examples.sto package</a></li>

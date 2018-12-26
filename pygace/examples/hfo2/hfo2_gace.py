@@ -24,11 +24,10 @@ from deap import tools
 
 import os, glob
 import multiprocessing
-import uuid, pickle, shutil
+import pickle, shutil
 
 from pygace.ga import gaceGA, gaceCrossover
-from pygace.utility import  EleIndv,  compare_crystal
-from pygace.config import corrdump_cmd, compare_crystal_cmd
+from pygace.utility import  EleIndv
 from pygace.gace import AbstractRunner, AbstractApp
 from pygace.config import RUN_MODE
 
@@ -42,8 +41,6 @@ if 'DEBUG' in RUN_MODE:
     DEBUG = True
 else:
     DEBUG = False
-
-DEBUG = False
 
 class HFO2App(AbstractApp):
     """
@@ -95,7 +92,7 @@ class HFO2App(AbstractApp):
         self.params_config_dict['FIRST_ELEMENT'] = ele_1st
         self.params_config_dict['SECOND_ELEMENT'] = ele_2nd
 
-        self.type_dict = {'Vac': 3, 'O': 2, 'Hf': 1}
+        # self.type_dict = {'Vac': 3, 'O': 2, 'Hf': 1}
 
 
     def update_ce(self, site=8, dirname='./data/iter1'):
@@ -153,32 +150,32 @@ class HFO2App(AbstractApp):
             Fittness value
         """
         element_lis = self.ind_to_elis(individual)
-        types_lis = [str(self.type_dict[i]) for i in element_lis]
-        typeslis = ''.join(types_lis)
+        # types_lis = [str(self.type_dict[i]) for i in element_lis]
+        # typeslis = ''.join(types_lis)
 
         k = '_'.join(element_lis)
         if k in self.ENERGY_DICT.keys():
             energy = self.ENERGY_DICT[k]
         else:
             # TODO: optimize energy data saved in storage during executing process
-            for e_type in self.TYPES_ENERGY_DICT.keys():
-                # TODO: never run here
-                if self.ce.compare_crystal(e_type,typeslis):
-                    energy = self.TYPES_ENERGY_DICT[e_type]
-            else:
-                energy = float(self.ce.get_total_energy(
-                    self.transver_to_struct(element_lis),
-                    is_corrdump=False))
-                # TODO get total energy from VASP based DFT
-                # formation energy of per oxygen vacancy
-                energy = (energy - self.params_config_dict['PERFECT_HFO2'] +
-                          self.params_config_dict['NB_DEFECT'] *
-                          self.params_config_dict['MU_OXYGEN']) / \
-                         self.params_config_dict['NB_DEFECT']
+            # for e_type in self.TYPES_ENERGY_DICT.keys():
+            #     # TODO: never run here
+            #     if self.ce.compare_crystal(e_type,typeslis):
+            #         energy = self.TYPES_ENERGY_DICT[e_type]
+            # else:
+            energy = float(self.ce.get_total_energy(
+                self.transver_to_struct(element_lis),
+                is_corrdump=False))
+            # TODO get total energy from VASP based DFT
+            # formation energy of per oxygen vacancy
+            energy = (energy - self.params_config_dict['PERFECT_HFO2'] +
+                      self.params_config_dict['NB_DEFECT'] *
+                      self.params_config_dict['MU_OXYGEN']) / \
+                     self.params_config_dict['NB_DEFECT']
 
-                if len(self.ENERGY_DICT) > 5000:
-                    self.ENERGY_DICT = {}
-                self.ENERGY_DICT[k] = energy
+            if len(self.ENERGY_DICT) > 5000:
+                self.ENERGY_DICT = {}
+            self.ENERGY_DICT[k] = energy
 
         return energy,
 
@@ -569,14 +566,15 @@ class HfO2EleIndv(EleIndv):
 
 
     def __eq__(self, other):
-        types_lis1 = [str(self.app.type_dict[_i]) for _i in self.ele_lis]
-        typeslis1 = ''.join(types_lis1)
-
-        types_lis2 = [str(self.app.type_dict[_j]) for _j in other.ele_lis]
-        typeslis2 = ''.join(types_lis2)
-        return compare_crystal(typeslis1, typeslis2,
-                               compare_crystal_cmd=compare_crystal_cmd,
-                               str_template=self.app.params_config_dict['TEMPLATE_FILE'])
+        return numpy.abs(self.ce_energy - other.ce_energy) < 0.001
+        # types_lis1 = [str(self.app.type_dict[_i]) for _i in self.ele_lis]
+        # typeslis1 = ''.join(types_lis1)
+        #
+        # types_lis2 = [str(self.app.type_dict[_j]) for _j in other.ele_lis]
+        # typeslis2 = ''.join(types_lis2)
+        # return compare_crystal(typeslis1, typeslis2,
+        #                        compare_crystal_cmd=compare_crystal_cmd,
+        #                        str_template=self.app.params_config_dict['TEMPLATE_FILE'])
 
     @property
     def ce_energy(self):
@@ -607,7 +605,7 @@ class HfO2EleIndv(EleIndv):
         return float(self.app.ce.get_total_energy(
             self.app.transver_to_struct(self.ele_lis), is_corrdump=True))
 
-    def dft_energy(self, iters=None):
+    def dft_energy_deprecated(self, iters=None):
         """
         Return DFT energy
 
@@ -640,6 +638,170 @@ class HfO2EleIndv(EleIndv):
         # args = 'runstruct_vasp -nr '
         # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
         # runstruct_vasp -nr
+
+    def dft_energy(self, iters=None, vasp_cmd=None, update_eci=True):
+        """
+        Return DFT energy
+
+        Parameters
+        ----------
+        iters : int
+            index of iteration of GA-to-CE
+
+        Returns
+        -------
+        None or float
+
+        """
+        str_name = self.app.transver_to_struct(self.ele_lis)
+        if iters is None:
+            iters = 'INF'
+        # random_fname = str(uuid.uuid1())
+        idx = [str(i) for i, ele in enumerate(self.ele_lis) if ele ==
+               self.app.params_config_dict['element_type_list'][-1]]
+        if len(idx) == 0:
+            idx = ['perfect', 'struct']
+        random_fname = '_'.join(idx)
+        cal_dir = os.path.abspath(os.path.join(
+            self.app.params_config_dict['DFT_CAL_DIR'],
+            'iter'+str(iters), random_fname))
+        if not os.path.exists(cal_dir):
+            os.makedirs(cal_dir)
+        dist_fname = 'str.out'
+        shutil.copyfile(str_name, os.path.join(cal_dir, dist_fname))
+        try:
+            shutil.copyfile(os.path.join(self.app.ce.work_path, 'vasp.wrap'),
+                            os.path.join(cal_dir, 'vasp.wrap'))
+        except IOError as e:
+            print("vasp.wrap not exists!")
+        other_files = ['OPTCELL']
+        init_data_path = os.path.dirname(self.app.ce.work_path)
+        print(init_data_path)
+        for f in other_files:
+            f_abs_path = os.path.join(init_data_path,f)
+            if os.path.exists(f_abs_path):
+                shutil.copyfile(f_abs_path,os.path.join(cal_dir,f))
+            else:
+                print("{0} not exists!".format(f))
+
+        cur_dir = os.path.abspath(os.curdir)
+
+        pre_dft_energy = None
+        cur_dft_energy = None
+        # # run vasp
+        # args = 'vasp '
+        # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        def has_calculated(cal_dir):
+            """
+            Whether or not to contain cal_dir to next GA-to-CE iteration.
+
+            Parameters
+            ----------
+            cal_dir : str
+                Current calculation directory.
+            iter_idx : int
+                Current index of iteration of GA-to-CE
+
+            Returns
+            -------
+            bool
+            """
+            print("VASP Running Check".center(80,'-'))
+            print("BEGIN: check whether or not to execute VASP calculation.")
+            print('cal_dir is {0}:'.format(cal_dir))
+            basename = os.path.basename(cal_dir) # 1_3_12
+            cur_idx = int(os.path.split(cal_dir)[-2].split('iter')[-1])
+
+            cal_main_dir = os.path.abspath(
+                self.app.params_config_dict['DFT_CAL_DIR'])
+            for i in range(1,cur_idx+1):
+                pre_cal_dir = os.path.join(cal_main_dir,'iter'+str(i))
+                print("previous calculation directory",pre_cal_dir)
+                print('cal_main_dir ',cal_main_dir)
+                if not os.path.exists(os.path.join(cal_main_dir,pre_cal_dir)):
+                    continue
+                for f in os.listdir(pre_cal_dir):
+                    if os.path.isdir(os.path.join(pre_cal_dir,f)):
+                        # do not compare with self
+                        if cur_idx == i and f == basename:
+                            continue
+
+                        # nb of defect
+                        if len(f.split('_')) != len(basename.split('_')):
+                            continue
+                        # energy of str.out
+                        print('compare file'.center(80,'-'))
+                        print(os.path.join(pre_cal_dir, f, 'str.out'))
+                        print(os.path.join(cal_dir,'str.out'))
+                        print(''.center(80,'-'))
+                        try:
+                            pre_e = self.app.ce.get_total_energy(
+                                os.path.join(pre_cal_dir,f,'str.out'),delete_file=False)
+                            cur_e = self.app.ce.get_total_energy(
+                                os.path.join(cal_dir,'str.out'),delete_file=False)
+                        except Exception as e:
+                            print('Energy calculation wrong!')
+                            return False
+                        print("energy compare:")
+                        print(pre_e, cur_e)
+                        print("*"*80)
+                        if '{:.6}'.format(pre_e) == '{:.6}'.format(cur_e):
+                            pre_dft_energy = float(numpy.loadtxt(os.path.join(
+                                pre_cal_dir, f,'energy')))
+
+                            return True
+            else:
+                return False
+
+        if has_calculated(cal_dir):
+            print("END: don't need to execute VASP.")
+            print("-" * 80)
+            shutil.rmtree(cal_dir)
+            return pre_dft_energy
+        print("END: need to execute VASP")
+        print("-" * 80)
+
+        os.chdir(cal_dir)
+        # create vasp input files
+        args = runstruct_vasp_cmd + ' -nr '
+        s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        s.communicate()
+
+        if vasp_cmd is None:
+            self.run_fake_vasp()
+        else:
+            self.run_vasp(vasp_cmd)
+        # self.run_vasp()
+        cur_dft_energy = float(numpy.loadtxt('energy', dtype=float))
+        os.chdir(cur_dir)
+
+        if update_eci:
+            ## copy dft calculation file to next iteration of GA-to-CE
+            # Assume we have finished the vasp calculation.
+            # We need to extract energy from OSZICAR and copy str.out and energy
+            # to next iteration to update ECI.
+            pre_atat_path = self.app.ce.work_path
+            basename = os.path.basename(pre_atat_path)
+            if 'iter' in basename:
+                iter_idx = int(basename.split('iter')[-1])
+                next_idx = iter_idx + 1
+            else:
+                raise RuntimeError("Iteration directory is wrong!")
+
+            next_atat_path = os.path.join(
+                pre_atat_path.split(basename)[0],
+                'iter'+str(next_idx))
+            copytree(pre_atat_path,next_atat_path)
+
+            # copy calculatin directory
+            cal_name_in_next_atat_path = os.path.join(
+                next_atat_path, 'dft_'+ basename +'_' +
+                                os.path.basename(cal_dir))
+            if not os.path.exists(cal_name_in_next_atat_path):
+                os.mkdir(cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir,'str.out'), cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir,'energy'),cal_name_in_next_atat_path)
+        return cur_dft_energy
 
     def __str__(self):
         return '_'.join(self.ele_lis)

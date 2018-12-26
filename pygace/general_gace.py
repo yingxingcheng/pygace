@@ -24,15 +24,14 @@ from deap import tools
 
 import os, glob
 import multiprocessing
-import uuid, pickle, shutil
+import pickle, shutil
 import subprocess, random
 from pymatgen.io.vasp import Vasprun
 
 from pygace.ga import gaceGA, gaceCrossover
-from pygace.utility import  EleIndv,  compare_crystal, copytree
-from pygace.config import corrdump_cmd, compare_crystal_cmd
+from pygace.utility import  EleIndv, copytree
 from pygace.gace import AbstractRunner, AbstractApp
-from pygace.config import RUN_MODE, runstruct_vasp_cmd
+from pygace.config import runstruct_vasp_cmd
 
 __author__ = "Yingxing Cheng"
 __email__ ="yxcheng@buaa.edu.cn"
@@ -40,22 +39,11 @@ __maintainer__ = "Yingxing Cheng"
 __maintainer_email__ ="yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
-if 'DEBUG' in RUN_MODE:
-    DEBUG = True
-else:
-    DEBUG = False
 
-DEBUG = False
 
-# x1 y1 z1 O, Vac, N
-# x1 y1 z1 O, Vac, C
-# x1 y1 z1 Hf
-# x1 y1 z1 Hf, Cu
-
-# O N Vac
 class GeneralApp(AbstractApp):
     """
-    An app of HfO(2-x) system which is implemented from AbstractApp object
+    An app of general system which is implemented from AbstractApp object
 
     This object is used to execute a GACE simulation, user only need to
     implement several interfaces to custom their application.
@@ -88,17 +76,12 @@ class GeneralApp(AbstractApp):
                                      params_config_dict=params_config_dict)
 
         self.params_config_dict['element_type_list'] = list(ele_type_list)
-        self.params_config_dict['NB_SITES'] = sum(defect_concentrations)
         self.update_defect_concentration(c=defect_concentrations)
-
-        #self.type_dict = {'Vac': 3, 'O': 2, 'Hf': 1}
-        self.type_dict = {}
-        for idx, ele in enumerate(ele_type_list):
-            self.type_dict[ele] = idx
 
     def update_defect_concentration(self, c=None):
         if c is None:
             return
+        self.params_config_dict['NB_SITES'] = sum(c)
         self.params_config_dict['NB_DEFECT'] = c
 
         self.params_config_dict['elements_type'] = []
@@ -143,32 +126,18 @@ class GeneralApp(AbstractApp):
             Fittness value
         """
         element_lis = self.ind_to_elis(individual)
-        types_lis = [str(self.type_dict[i]) for i in element_lis]
-        typeslis = ''.join(types_lis)
 
         k = '_'.join(element_lis)
         if k in self.ENERGY_DICT.keys():
             energy = self.ENERGY_DICT[k]
         else:
-            # TODO: optimize energy data saved in storage during executing process
-            for e_type in self.TYPES_ENERGY_DICT.keys():
-                # TODO: never run here
-                if self.ce.compare_crystal(e_type,typeslis):
-                    energy = self.TYPES_ENERGY_DICT[e_type]
-            else:
-                energy = float(self.ce.get_total_energy(
-                    self.transver_to_struct(element_lis),
-                    is_corrdump=False))
-                # TODO get total energy from VASP based DFT
-                # formation energy of per oxygen vacancy
-                # energy = (energy - self.params_config_dict['PERFECT_HFO2'] +
-                #           self.params_config_dict['NB_DEFECT'] *
-                #           self.params_config_dict['MU_OXYGEN']) / \
-                #          self.params_config_dict['NB_DEFECT']
+            energy = float(self.ce.get_total_energy(
+                self.transver_to_struct(element_lis),
+                is_corrdump=False))
 
-                if len(self.ENERGY_DICT) > 5000:
-                    self.ENERGY_DICT = {}
-                self.ENERGY_DICT[k] = energy
+            if len(self.ENERGY_DICT) > 5000:
+                self.ENERGY_DICT = {}
+            self.ENERGY_DICT[k] = energy
 
         return energy,
 
@@ -258,8 +227,6 @@ class GeneralApp(AbstractApp):
         with open(s_fname,'w') as fin:
             for v,k in sorted(zip(all_min_dict.values(),all_min_dict.keys())):
                 print('{0} : {1}'.format(k,v),file=fin)
-
-        #numpy.savetxt(s_fname.format(mission_name), all_min, fmt='%.3f')
 
         def extract_candidates(res,n):
             li = []
@@ -535,14 +502,7 @@ class GeneralEleIndv(EleIndv):
 
 
     def __eq__(self, other):
-        types_lis1 = [str(self.app.type_dict[_i]) for _i in self.ele_lis]
-        typeslis1 = ''.join(types_lis1)
-
-        types_lis2 = [str(self.app.type_dict[_j]) for _j in other.ele_lis]
-        typeslis2 = ''.join(types_lis2)
-        return compare_crystal(typeslis1, typeslis2,
-                               compare_crystal_cmd=compare_crystal_cmd,
-                               str_template=self.app.params_config_dict['TEMPLATE_FILE'])
+        return numpy.abs(self.ce_energy-other.ce_energy) < 0.001
 
     @property
     def ce_energy(self):

@@ -5,12 +5,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pygace.examples.hfo2.hfo2_gace &#8212; pygace 2018.12.13 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <title>pygace.general_gace &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../../../',
+        URL_ROOT:    '../../',
         VERSION:     '2018.12.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -18,14 +18,14 @@
         SOURCELINK_SUFFIX: '.txt'
       };
     </script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
    
-  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -39,7 +39,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for pygace.examples.hfo2.hfo2_gace</h1><div class="highlight"><pre>
+  <h1>Source code for pygace.general_gace</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding:utf-8 -*-</span>
 <span class="c1">#    This file is part of pygace.</span>
 <span class="c1">#</span>
@@ -67,11 +67,13 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.vasp</span> <span class="k">import</span> <span class="n">Vasprun</span>
 
 <span class="kn">from</span> <span class="nn">pygace.ga</span> <span class="k">import</span> <span class="n">gaceGA</span><span class="p">,</span> <span class="n">gaceCrossover</span>
-<span class="kn">from</span> <span class="nn">pygace.utility</span> <span class="k">import</span>  <span class="n">EleIndv</span>
+<span class="kn">from</span> <span class="nn">pygace.utility</span> <span class="k">import</span>  <span class="n">EleIndv</span><span class="p">,</span> <span class="n">copytree</span>
 <span class="kn">from</span> <span class="nn">pygace.gace</span> <span class="k">import</span> <span class="n">AbstractRunner</span><span class="p">,</span> <span class="n">AbstractApp</span>
-<span class="kn">from</span> <span class="nn">pygace.config</span> <span class="k">import</span> <span class="n">RUN_MODE</span>
+<span class="kn">from</span> <span class="nn">pygace.config</span> <span class="k">import</span> <span class="n">runstruct_vasp_cmd</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
@@ -79,14 +81,11 @@
 <span class="n">__maintainer_email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
 
-<span class="k">if</span> <span class="s1">&#39;DEBUG&#39;</span> <span class="ow">in</span> <span class="n">RUN_MODE</span><span class="p">:</span>
-    <span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="HFO2App"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App">[docs]</a><span class="k">class</span> <span class="nc">HFO2App</span><span class="p">(</span><span class="n">AbstractApp</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GeneralApp"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralApp">[docs]</a><span class="k">class</span> <span class="nc">GeneralApp</span><span class="p">(</span><span class="n">AbstractApp</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An app of HfO(2-x) system which is implemented from AbstractApp object</span>
+<span class="sd">    An app of general system which is implemented from AbstractApp object</span>
 
 <span class="sd">    This object is used to execute a GACE simulation, user only need to</span>
 <span class="sd">    implement several interfaces to custom their application.</span>
@@ -112,50 +111,28 @@
 <span class="sd">    params_config_dict: dirt</span>
 <span class="sd">        Parameter dict used to custom GACE AbstractApp.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">DEFAULT_SETUP</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="c1"># DEFECT for VAC</span>
-        <span class="s1">&#39;NB_SITES&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="s1">&#39;TEMPLATE_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;./data/lat_in.template&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;TMP_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;pickle_bakup&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;res_dir&#39;</span><span class="p">),</span>
-        <span class="s1">&#39;MU_OXYGEN&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">4.91223</span><span class="p">,</span>
-        <span class="s1">&#39;PERFECT_HFO2&#39;</span> <span class="p">:</span>  <span class="o">-</span><span class="mf">976.3650933333331</span><span class="p">,</span>
-        <span class="s1">&#39;STEP&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
-        <span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;./dft_dirs&#39;</span><span class="p">,</span>
-    <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">,</span>
-                 <span class="n">ele_1st</span> <span class="o">=</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="n">ele_2nd</span> <span class="o">=</span> <span class="s1">&#39;Vac&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ele_type_list</span><span class="p">,</span> <span class="n">defect_concentrations</span><span class="p">,</span><span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">,</span>
                  <span class="n">params_config_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HFO2App</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ce_site</span><span class="o">=</span><span class="n">ce_site</span><span class="p">,</span><span class="n">ce_dirname</span><span class="o">=</span><span class="n">ce_dirname</span><span class="p">,</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralApp</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ce_dirname</span><span class="o">=</span><span class="n">ce_dirname</span><span class="p">,</span>
                                      <span class="n">params_config_dict</span><span class="o">=</span><span class="n">params_config_dict</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">HFO2App</span><span class="o">.</span><span class="n">DEFAULT_SETUP</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;FIRST_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_1st</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_2nd</span>
 
-        <span class="c1"># self.type_dict = {&#39;Vac&#39;: 3, &#39;O&#39;: 2, &#39;Hf&#39;: 1}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;element_type_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ele_type_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_defect_concentration</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">defect_concentrations</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GeneralApp.update_defect_concentration"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralApp.update_defect_concentration">[docs]</a>    <span class="k">def</span> <span class="nf">update_defect_concentration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_SITES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;elements_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nb</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">],</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;element_type_list&#39;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;elements_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">nb</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="HFO2App.update_ce"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.update_ce">[docs]</a>    <span class="k">def</span> <span class="nf">update_ce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        site : int, optional</span>
-<span class="sd">            The site used in cluster expansion.</span>
-
-<span class="sd">        dirname : str, optional</span>
-<span class="sd">            The name of directory which contains file required in cluster</span>
-<span class="sd">            expansion.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">            None</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HFO2App</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update_ce</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">,</span><span class="n">dirname</span><span class="o">=</span><span class="n">dirname</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="HFO2App.ind_to_elis"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.ind_to_elis">[docs]</a>    <span class="k">def</span> <span class="nf">ind_to_elis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralApp.ind_to_elis"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralApp.ind_to_elis">[docs]</a>    <span class="k">def</span> <span class="nf">ind_to_elis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Convert individual (number list) to element list</span>
 
 <span class="sd">        Parameters</span>
@@ -168,14 +145,13 @@
 <span class="sd">            A list of element symbol string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># a function that convert `number list` to `element list`</span>
-        <span class="n">tmp_f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> \
-            <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span> <span class="k">else</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;FIRST_ELEMENT&#39;</span><span class="p">]</span>
-        <span class="n">element_lis</span> <span class="o">=</span> <span class="p">[</span><span class="n">tmp_f</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">individual</span><span class="p">]</span>
+
+        <span class="n">element_lis</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;elements_type&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">individual</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="n">element_lis</span></div>
 
-<div class="viewcode-block" id="HFO2App.evalEnergy"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.evalEnergy">[docs]</a>    <span class="k">def</span> <span class="nf">evalEnergy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralApp.evalEnergy"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralApp.evalEnergy">[docs]</a>    <span class="k">def</span> <span class="nf">evalEnergy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluation function for the ground-state searching problem.</span>
 
 <span class="sd">        The problem is to determine a configuration of n vacancies</span>
@@ -192,28 +168,14 @@
 <span class="sd">            Fittness value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">element_lis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_to_elis</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
-        <span class="c1"># types_lis = [str(self.type_dict[i]) for i in element_lis]</span>
-        <span class="c1"># typeslis = &#39;&#39;.join(types_lis)</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">element_lis</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># TODO: optimize energy data saved in storage during executing process</span>
-            <span class="c1"># for e_type in self.TYPES_ENERGY_DICT.keys():</span>
-            <span class="c1">#     # TODO: never run here</span>
-            <span class="c1">#     if self.ce.compare_crystal(e_type,typeslis):</span>
-            <span class="c1">#         energy = self.TYPES_ENERGY_DICT[e_type]</span>
-            <span class="c1"># else:</span>
             <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="n">element_lis</span><span class="p">),</span>
                 <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-            <span class="c1"># TODO get total energy from VASP based DFT</span>
-            <span class="c1"># formation energy of per oxygen vacancy</span>
-            <span class="n">energy</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;PERFECT_HFO2&#39;</span><span class="p">]</span> <span class="o">+</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span> <span class="o">*</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;MU_OXYGEN&#39;</span><span class="p">])</span> <span class="o">/</span> \
-                     <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span> <span class="o">=</span> <span class="p">{}</span>
@@ -222,7 +184,7 @@
         <span class="k">return</span> <span class="n">energy</span><span class="p">,</span></div>
 
 
-<div class="viewcode-block" id="HFO2App.single_run"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.single_run">[docs]</a>    <span class="k">def</span> <span class="nf">single_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mission_name</span><span class="p">,</span> <span class="n">repeat_iter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_single_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mission_name</span><span class="p">,</span> <span class="n">repeat_iter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A single running task.</span>
 
@@ -251,16 +213,16 @@
 
         <span class="n">checkpoint_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;checkpoint_name_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+            <span class="s1">&#39;cp_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
 
         <span class="n">res</span> <span class="o">=</span> <span class="n">gaceGA</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="p">,</span> <span class="n">cxpb</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ngen</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
                      <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span> <span class="n">halloffame</span><span class="o">=</span><span class="n">hof</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                      <span class="n">checkpoint</span><span class="o">=</span><span class="n">checkpoint_fname</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mission_name</span><span class="p">,</span> <span class="n">repeat_iter</span><span class="p">))</span>
 
         <span class="n">pop</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">pop</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">hof</span></div>
+        <span class="k">return</span> <span class="n">pop</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">hof</span>
 
-<div class="viewcode-block" id="HFO2App.multiple_run"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.multiple_run">[docs]</a>    <span class="k">def</span> <span class="nf">multiple_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mission_name</span><span class="p">,</span><span class="n">repeat_iters</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_multiple_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mission_name</span><span class="p">,</span><span class="n">repeat_iters</span><span class="p">,</span> <span class="n">gs_selection</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For multiple tasks</span>
 
@@ -283,29 +245,30 @@
         <span class="n">all_best_son</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">repeat_iters</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No. </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_run</span><span class="p">(</span><span class="n">mission_name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_run</span><span class="p">(</span><span class="n">mission_name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">population</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">sorted_population</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">population</span><span class="p">,</span>
                                        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-
-            <span class="n">all_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evalEnergy</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
+            <span class="n">all_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evalEnergy</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">all_best_son</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_to_elis</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
             <span class="k">if</span> <span class="n">repeat_iters</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ENERGY_DICT</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">all_min</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">all_min</span><span class="p">)</span>
-        <span class="n">global_min_idx</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">all_min</span><span class="p">)</span>
+        <span class="c1">#all_min = numpy.asarray(all_min)</span>
+        <span class="c1">#global_min_idx = numpy.argmin(all_min)</span>
 
         <span class="n">all_min_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">all_best_son</span><span class="p">,</span><span class="n">all_min</span><span class="p">):</span>
             <span class="n">all_min_dict</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_min_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="n">s_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">.txt&#39;</span><span class="p">)</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">s_fname</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mission_name</span><span class="p">),</span> <span class="n">all_min</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="p">)</span>
+                               <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">.dat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mission_name</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">s_fname</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">all_min_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span><span class="n">all_min_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> : </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">),</span><span class="n">file</span><span class="o">=</span><span class="n">fin</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">extract_candidates</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
             <span class="n">li</span> <span class="o">=</span> <span class="p">[]</span>
@@ -313,10 +276,12 @@
                 <span class="n">li</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">li</span>
 
-        <span class="k">return</span> <span class="n">extract_candidates</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">extract_candidates</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">gs_selection</span><span class="p">)</span>
 
     <span class="c1"># TODO: muiltiprocessing is not available here.</span>
-<div class="viewcode-block" id="HFO2App.run"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">target_epoch</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralApp.run"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralApp.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iter_idx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_epoch</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">target_epoch</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">cross_method</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cp_fname_prefix</span><span class="o">=</span><span class="s1">&#39;ground_states_iter&#39;</span><span class="p">,</span>
+            <span class="n">task_prefix</span><span class="o">=</span><span class="s1">&#39;general-app&#39;</span><span class="p">,</span> <span class="n">gs_selection</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main function to run a GACE simulation which will be called by</span>
 <span class="sd">        `AbstractRunner`.</span>
@@ -327,6 +292,20 @@
 <span class="sd">            Determine which iteration the ECI is used in.</span>
 <span class="sd">        target_epoch : int</span>
 <span class="sd">            Iteration in GA simulation.</span>
+<span class="sd">        default_epoch : int</span>
+<span class="sd">            Default epoch setting for GA.</span>
+<span class="sd">        target_epoch : int</span>
+<span class="sd">            Target epoch for GA.</span>
+<span class="sd">        cross_method : int</span>
+<span class="sd">            Crossover operator type.</span>
+<span class="sd">        cross_num :</span>
+<span class="sd">            The exchange number used in crossover operator.</span>
+<span class="sd">        cp_fname_prefix : str</span>
+<span class="sd">            The prefix of checkpoint file name.</span>
+<span class="sd">        task_prefix : str</span>
+<span class="sd">            The prefix of task filename of a single simulation.</span>
+<span class="sd">        gs_selection : int</span>
+<span class="sd">            Ground-state structures selected from `target_epoch` GA simulation.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -337,37 +316,41 @@
         <span class="c1"># for multiprocessing</span>
         <span class="c1"># pool = multiprocessing.Pool(processes=8)</span>
         <span class="c1"># self.toolbox.register(&quot;map&quot;, pool.map)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">gaceCrossover</span><span class="p">,</span> <span class="n">crossover_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">gaceCrossover</span><span class="p">,</span>
+                              <span class="n">crossover_type</span><span class="o">=</span><span class="n">cross_method</span><span class="p">,</span>
+                              <span class="n">cross_num</span><span class="o">=</span><span class="n">cross_num</span><span class="p">)</span>
 
-        <span class="n">mission_name</span> <span class="o">=</span> <span class="s1">&#39;final-hfo2-iter</span><span class="si">{0}</span><span class="s1">-&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)</span> <span class="o">+</span> \
-                       <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;vac-cm&#39;</span>
-        <span class="n">cross_method</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">_name</span> <span class="o">=</span> <span class="n">mission_name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">cross_method</span><span class="p">)</span>
+        <span class="n">mission_name</span> <span class="o">=</span> <span class="n">task_prefix</span> <span class="o">+</span> <span class="s1">&#39;-iter</span><span class="si">{0}</span><span class="s1">-&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)</span> <span class="o">+</span> \
+                       <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cp_fname_prefix</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{0}</span><span class="s1">_defect_</span><span class="si">{1}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">iter_idx</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]))</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">],</span>
+                                  <span class="n">checkpoint</span><span class="p">)</span>
+        <span class="n">pre_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_epoch</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">)</span>
 
-        <span class="n">epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_epoch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="n">epoch</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">epoch</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="k">if</span> <span class="n">pre_epoch</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_epoch</span> <span class="o">=</span> <span class="n">default_epoch</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#epoch += self.params_config_dict[&#39;STEP&#39;]</span>
-            <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="n">target_epoch</span><span class="p">:</span>
-                <span class="n">epoch</span> <span class="o">=</span> <span class="n">target_epoch</span>
+            <span class="k">if</span> <span class="n">pre_epoch</span> <span class="o">&lt;</span> <span class="n">target_epoch</span><span class="p">:</span>
+                <span class="n">new_epoch</span> <span class="o">=</span> <span class="n">target_epoch</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;target epoch has been satisfied.&quot;</span><span class="p">)</span>
-                <span class="k">return</span>
+                <span class="n">new_epoch</span> <span class="o">=</span> <span class="n">pre_epoch</span>
 
         <span class="n">ground_states</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ground_states</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_run</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">epoch</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">gs_selection</span> <span class="o">&gt;</span> <span class="n">target_epoch</span><span class="p">:</span>
+            <span class="n">gs_selection</span> <span class="o">=</span> <span class="n">target_epoch</span>
+        <span class="n">ground_states</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multiple_run</span><span class="p">(</span><span class="n">mission_name</span><span class="p">,</span> <span class="n">new_epoch</span><span class="p">,</span>
+                                                <span class="n">gs_selection</span><span class="o">=</span><span class="n">gs_selection</span><span class="p">))</span>
 
-        <span class="n">checkpoint</span> <span class="o">=</span> <span class="s1">&#39;ground_states_iter</span><span class="si">{0}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ground_states</span><span class="p">,</span> <span class="n">cp_file</span><span class="p">)</span></div>
 
         <span class="c1"># pool.close()</span>
 
-<div class="viewcode-block" id="HFO2App.get_epoch"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HFO2App.get_epoch">[docs]</a>    <span class="k">def</span> <span class="nf">get_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nb_vac</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cp_fname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain the epoch state of the previous running</span>
 
@@ -381,38 +364,36 @@
 <span class="sd">        int</span>
 <span class="sd">            The epoch state of previous running.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">checkpoint_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">]</span> <span class="o">+</span> \
-                           <span class="s1">&#39;/*-</span><span class="si">{0}</span><span class="s1">vac-cm*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nb_vac</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">checkpoint_fname</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">cp_fname</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">new_res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">epoch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">epoch</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span></div></div>
+            <span class="k">return</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="Runner"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.Runner">[docs]</a><span class="k">class</span> <span class="nc">Runner</span><span class="p">(</span><span class="n">AbstractRunner</span><span class="p">):</span>
+<div class="viewcode-block" id="Runner"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.Runner">[docs]</a><span class="k">class</span> <span class="nc">Runner</span><span class="p">(</span><span class="n">AbstractRunner</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A runner for running a GACE simulation.</span>
 
 <span class="sd">    This object is used to execute a GACE simulation in HfO2 system.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    app : HFO2App</span>
-<span class="sd">        A subclass object of HFO2App.</span>
+<span class="sd">    app : GeneralApp</span>
+<span class="sd">        A subclass object of GeneralApp.</span>
 <span class="sd">    iter_idx : int</span>
 <span class="sd">        Index of GA-to-CE iteration.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    app : subclass of HFO2App</span>
-<span class="sd">        A subclass object of HFO2App, default is `None`.</span>
+<span class="sd">    app : subclass of GeneralApp</span>
+<span class="sd">        A subclass object of GeneralApp, default is `None`.</span>
 <span class="sd">    iter_idx : int</span>
 <span class="sd">        Index of GA-to-CE iteration, default is `None`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#app = HFO2App(ce_site=8, ce_dirname=&#39;./data/iter1&#39;)</span>
+    <span class="c1">#app = GeneralApp(ce_site=8, ce_dirname=&#39;./data/iter1&#39;)</span>
     <span class="c1">#iter_idx = 1</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -421,7 +402,7 @@
     <span class="c1"># -----------------------------------------------------------------------------</span>
     <span class="c1"># Standard GACE route</span>
     <span class="c1"># -----------------------------------------------------------------------------</span>
-<div class="viewcode-block" id="Runner.run"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.Runner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Runner.run"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.Runner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main function to run.</span>
 
@@ -436,9 +417,15 @@
                   <span class="s1">&#39;of simulation used in our paper.&#39;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Iteration </span><span class="si">{0}</span><span class="s1"> done!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">))</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Runner.print_gs"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.Runner.print_gs">[docs]</a>    <span class="k">def</span> <span class="nf">print_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GA-to-CE No. </span><span class="si">{0}</span><span class="s1"> iteration with defect </span><span class="si">{1}</span><span class="s1"> BEGIN&#39;</span><span class="o">.</span>
+              <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GA part BEGIN:&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GA part END!&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Runner.print_gs"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.Runner.print_gs">[docs]</a>    <span class="k">def</span> <span class="nf">print_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vasp_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function used to extract ground-state information from pickle file</span>
 <span class="sd">        saved during GACE running.</span>
@@ -447,78 +434,27 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In iter1, there are three structures needed &#39;</span>
-                      <span class="s1">&#39;to calculated by DFT:&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;0_3_7_9_10_24_32_33_34_35_40_42_53_55_56_61, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;7_9_15_16_23_33_34_35_38_40_43_48_54_57_61_63, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;11_13_14_20_21_22_25_29_30_31_44_45_46_47_50_51. </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;The file `str.out` and `energy` will be copied into &#39;</span>
-                      <span class="s1">&#39;`data/hfo2_iters/iter2`,</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;and run mmaps in `data/hfo2_iters/iter2` to obtain &#39;</span>
-                      <span class="s1">&#39;new `eci.out`.&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In iter2, there are two structures needed to &#39;</span>
-                      <span class="s1">&#39;calculated by DFT:&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;7_10_11_12_16_20_22_23_29_32_34_44_52_53_55_62, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;The file `str.out` and `energy` will be copied into &#39;</span>
-                      <span class="s1">&#39;`data/hfo2_iters/iter3`,</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;and run mmaps in `data/hfo2_iters/iter3` to obtain &#39;</span>
-                      <span class="s1">&#39;new `eci.out`.&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In iter3, there are two structures needed to &#39;</span>
-                      <span class="s1">&#39;calculated by DFT:&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;1_5_8_14_18_21_30_31_37_38_41_43_46_54_57, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;11_12_13_14_17_18_19_27_36_37_39_44_45_46_47, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;The file `str.out` and `energy` will be copied into &#39;</span>
-                      <span class="s1">&#39;`data/hfo2_iters/iter4`,&#39;</span>
-                      <span class="s1">&#39;and run mmaps in `data/hfo2_iters/iter4` to obtain &#39;</span>
-                      <span class="s1">&#39;new `eci.out`.&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In iter4, there are six structures needed to &#39;</span>
-                      <span class="s1">&#39;calculated by DFT:&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;2_3_9_23_33_38_49_62, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;7_9_24_34_49_55_56_61, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;10_11_22_29, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;12_23_36_44, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;21_30_41_57, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;22_29_31_51, </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;The file `str.out` and `energy` will be copied into &#39;</span>
-                      <span class="s1">&#39;`data/hfo2_iters/iter5`,&#39;</span>
-                      <span class="s1">&#39;and run mmaps in `data/hfo2_iters/iter2` to obtain &#39;</span>
-                      <span class="s1">&#39;new `eci.out`.&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In our previous calculation, in this iteration, all &#39;</span>
-                      <span class="s1">&#39;selected candidate ground-state </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;structures containing 4, 8, 15 and 16 oxygen vacancy &#39;</span>
-                      <span class="s1">&#39;have been calculated by </span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;previous iteration. The application can be terminated, &#39;</span>
-                      <span class="s1">&#39;but if we want to add more</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;structures to ensure more accurate results can be &#39;</span>
-                      <span class="s1">&#39;obtained.&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="n">checkpoint</span> <span class="o">=</span> <span class="s1">&#39;ground_states_iter</span><span class="si">{}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="s1">&#39;ground_states_iter_</span><span class="si">{0}</span><span class="s1">_defect_</span><span class="si">{1}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;TEST_RES_DIR&#39;</span><span class="p">],</span>
+                                  <span class="n">checkpoint</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
             <span class="n">ground_states</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cp_file</span><span class="p">)</span>
 
-        <span class="n">EleIndv_lis</span> <span class="o">=</span> <span class="p">[</span><span class="n">HfO2EleIndv</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ground_states</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;total number of structures is </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EleIndv_lis</span><span class="p">)))</span>
+        <span class="n">EleIndv_lis</span> <span class="o">=</span> <span class="p">[</span><span class="n">GeneralEleIndv</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ground_states</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The number of ground-state structures selected &#39;</span>
+              <span class="s1">&#39;is </span><span class="si">{0}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EleIndv_lis</span><span class="p">)))</span>
         <span class="n">new_ground</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">EleIndv_lis</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_ground</span><span class="p">:</span>
                 <span class="n">new_ground</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
-                <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">_i</span><span class="p">,</span> <span class="n">ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span> <span class="k">if</span> <span class="n">ele</span> <span class="o">==</span> <span class="s1">&#39;Vac&#39;</span><span class="p">]</span>
-                <span class="n">idx_lis</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">idx_lis</span><span class="p">)</span>
-                <span class="n">i</span><span class="o">.</span><span class="n">dft_energy</span><span class="p">(</span><span class="n">iters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">)</span></div>
+                <span class="n">i</span><span class="o">.</span><span class="n">dft_energy</span><span class="p">(</span><span class="n">iters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">,</span> <span class="n">vasp_cmd</span><span class="o">=</span><span class="n">vasp_cmd</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GA-to-CE No. </span><span class="si">{0}</span><span class="s1"> iteration with defect </span><span class="si">{1}</span><span class="s1"> END&#39;</span><span class="o">.</span>
+              <span class="nb">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iter_idx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Runner.compare_gs"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.Runner.compare_gs">[docs]</a>    <span class="k">def</span> <span class="nf">compare_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_gs</span><span class="p">,</span> <span class="n">old_gs</span><span class="p">):</span>
+<div class="viewcode-block" id="Runner.compare_gs"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.Runner.compare_gs">[docs]</a>    <span class="k">def</span> <span class="nf">compare_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_gs</span><span class="p">,</span> <span class="n">old_gs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether current and previous ground-state are identical.</span>
 
@@ -559,7 +495,7 @@
                   <span class="s2">&quot;and the eci of ce will be update.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;+&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Runner.str2energy"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.Runner.str2energy">[docs]</a>    <span class="k">def</span> <span class="nf">str2energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="Runner.str2energy"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.Runner.str2energy">[docs]</a>    <span class="k">def</span> <span class="nf">str2energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain energy from string consists of numbers joined by &#39;_&#39;, e.g.,</span>
 <span class="sd">        ``&#39;1_2_3_19_&#39;``, in which the number is the position index in lattice</span>
@@ -579,11 +515,11 @@
         <span class="n">ilis</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ilis</span><span class="p">:</span>
             <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Vac&#39;</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">HfO2EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">GeneralEleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="HfO2EleIndv"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv">[docs]</a><span class="k">class</span> <span class="nc">HfO2EleIndv</span><span class="p">(</span><span class="n">EleIndv</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralEleIndv"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralEleIndv">[docs]</a><span class="k">class</span> <span class="nc">GeneralEleIndv</span><span class="p">(</span><span class="n">EleIndv</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class that use list chemistry element to represent individual.</span>
 
@@ -604,19 +540,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ele_lis</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HfO2EleIndv</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ele_lis</span><span class="p">,</span><span class="n">app</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralEleIndv</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ele_lis</span><span class="p">,</span><span class="n">app</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_energy</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span>
-        <span class="c1"># types_lis1 = [str(self.app.type_dict[_i]) for _i in self.ele_lis]</span>
-        <span class="c1"># typeslis1 = &#39;&#39;.join(types_lis1)</span>
-        <span class="c1">#</span>
-        <span class="c1"># types_lis2 = [str(self.app.type_dict[_j]) for _j in other.ele_lis]</span>
-        <span class="c1"># typeslis2 = &#39;&#39;.join(types_lis2)</span>
-        <span class="c1"># return compare_crystal(typeslis1, typeslis2,</span>
-        <span class="c1">#                        compare_crystal_cmd=compare_crystal_cmd,</span>
-        <span class="c1">#                        str_template=self.app.params_config_dict[&#39;TEMPLATE_FILE&#39;])</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_energy</span><span class="o">-</span><span class="n">other</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ce_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -647,41 +575,7 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">),</span> <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-<div class="viewcode-block" id="HfO2EleIndv.dft_energy_deprecated"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy_deprecated">[docs]</a>    <span class="k">def</span> <span class="nf">dft_energy_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return DFT energy</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        iters : int</span>
-<span class="sd">            index of iteration of GA-to-CE</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None or float</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">str_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">iters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">iters</span> <span class="o">=</span> <span class="s1">&#39;INF&#39;</span>
-        <span class="c1"># random_fname = str(uuid.uuid1())</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span> <span class="k">if</span> <span class="n">ele</span> <span class="o">==</span> <span class="s1">&#39;Vac&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;perfect&#39;</span><span class="p">,</span> <span class="s1">&#39;struct&#39;</span><span class="p">]</span>
-        <span class="n">random_fname</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="n">cal_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;iter&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iters</span><span class="p">),</span> <span class="n">random_fname</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">)</span>
-        <span class="n">dist_fname</span> <span class="o">=</span> <span class="s1">&#39;str.out&#39;</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">str_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span> <span class="n">dist_fname</span><span class="p">))</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">work_path</span><span class="p">,</span> <span class="s1">&#39;vasp.wrap&#39;</span><span class="p">),</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span> <span class="s1">&#39;vasp.wrap&#39;</span><span class="p">))</span></div>
-        <span class="c1"># args = &#39;runstruct_vasp -nr &#39;</span>
-        <span class="c1"># s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)</span>
-        <span class="c1"># runstruct_vasp -nr</span>
-
-<div class="viewcode-block" id="HfO2EleIndv.dft_energy"><a class="viewcode-back" href="../../../../pygace.examples.hfo2.html#pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy">[docs]</a>    <span class="k">def</span> <span class="nf">dft_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vasp_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_eci</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralEleIndv.dft_energy"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralEleIndv.dft_energy">[docs]</a>    <span class="k">def</span> <span class="nf">dft_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vasp_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update_eci</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return DFT energy</span>
 
@@ -845,6 +739,46 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span><span class="s1">&#39;energy&#39;</span><span class="p">),</span><span class="n">cal_name_in_next_atat_path</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cur_dft_energy</span></div>
 
+<div class="viewcode-block" id="GeneralEleIndv.run_fake_vasp"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralEleIndv.run_fake_vasp">[docs]</a>    <span class="k">def</span> <span class="nf">run_fake_vasp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ce_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">curdir</span><span class="p">,</span><span class="s1">&#39;str.out&#39;</span><span class="p">),</span>
+            <span class="n">delete_file</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># check if a calculation has been executed.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;energy&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pre_e</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;energy&#39;</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ce_e</span><span class="p">,</span><span class="n">pre_e</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.2001</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="n">dft_e</span> <span class="o">=</span> <span class="n">ce_e</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">/</span><span class="mf">5.</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;echo </span><span class="si">{}</span><span class="s1"> &gt; energy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dft_e</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span><span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GeneralEleIndv.run_vasp"><a class="viewcode-back" href="../../pygace.html#pygace.general_gace.GeneralEleIndv.run_vasp">[docs]</a>    <span class="k">def</span> <span class="nf">run_vasp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vasp_cmd</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">extract_energy</span><span class="p">():</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;extract_vasp &#39;</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+        <span class="n">vasprun_fname</span> <span class="o">=</span> <span class="s1">&#39;vasprun.xml&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">vr</span> <span class="o">=</span> <span class="n">Vasprun</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">vasprun_fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">vr</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+                <span class="n">extract_energy</span><span class="p">()</span>
+                <span class="k">return</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1">#cmd = &#39;mpirun -machinefile $PBS_NODEFILE -np $NP $EXEC &gt;vasp.out&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">vasp_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+        <span class="n">extract_energy</span><span class="p">()</span></div>
+
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
 
@@ -853,78 +787,7 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># -----------------------------------------------------------------------------</span>
-    <span class="c1"># simple test function to test</span>
-    <span class="c1"># -----------------------------------------------------------------------------</span>
-    <span class="k">def</span> <span class="nf">simple_using</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-        <span class="n">test1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">64</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">HfO2EleIndv</span><span class="p">(</span><span class="n">test1</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">ce_energy</span><span class="p">)</span>
-
-
-    <span class="k">def</span> <span class="nf">numlis2strlis</span><span class="p">(</span><span class="n">numlis</span><span class="p">):</span>
-        <span class="n">_t</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">64</span>
-
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">numlis</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">numlis</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="n">numlis</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
-
-        <span class="k">assert</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">numlis</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">numlis</span><span class="p">:</span>
-            <span class="n">_t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Vac&#39;</span>
-        <span class="k">return</span> <span class="n">_t</span>
-
-
-    <span class="k">def</span> <span class="nf">compare_</span><span class="p">(</span><span class="n">numlis1</span><span class="p">,</span> <span class="n">numlis2</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">HfO2EleIndv</span><span class="p">(</span><span class="n">numlis2strlis</span><span class="p">(</span><span class="n">numlis1</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
-        <span class="n">t2</span> <span class="o">=</span> <span class="n">HfO2EleIndv</span><span class="p">(</span><span class="n">numlis2strlis</span><span class="p">(</span><span class="n">numlis2</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">t1</span> <span class="o">==</span> <span class="n">t2</span>
-
-
-    <span class="k">def</span> <span class="nf">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span><span class="n">nb_defect</span><span class="p">):</span>
-        <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">iter_idx</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">iter_idx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">nb_defect</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
-        <span class="n">apps</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
-            <span class="n">app</span> <span class="o">=</span> <span class="n">HFO2App</span><span class="p">(</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_i</span><span class="p">))</span>
-            <span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_defect</span>
-            <span class="n">apps</span><span class="p">[</span><span class="n">_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">app</span>
-        <span class="k">return</span> <span class="n">apps</span><span class="p">[</span><span class="n">iter_idx</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">show_results</span><span class="p">():</span>
-        <span class="c1"># iter1</span>
-        <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span><span class="n">iter_idx</span><span class="p">)</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">()</span>
-
-        <span class="c1"># iter2</span>
-        <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="n">iter_idx</span><span class="p">)</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">()</span>
-
-        <span class="c1"># iter3</span>
-        <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">3</span>
-        <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">iter_idx</span><span class="p">)</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">()</span>
-
-        <span class="c1"># iter4</span>
-        <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">4</span>
-        <span class="k">for</span> <span class="n">nb_vac</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">]:</span>
-            <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">get_app</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span> <span class="n">nb_vac</span><span class="p">),</span> <span class="n">iter_idx</span><span class="p">)</span>
-            <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-            <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">()</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ground-state structrues with different oxygen vacncy are:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0_8_15_16_34_35_42_43_53_55_56_57_58_60_61_63 for 16 vac&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;11_12_13_14_17_18_19_27_36_37_39_44_45_46_47 for 15 vac&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2_3_9_23_33_38_49_62 for 8 vac&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;12_23_36_44 for 4 vac&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
-
-    <span class="n">show_results</span><span class="p">()</span>
+    <span class="k">pass</span>
 
 </pre></div>
 
@@ -933,7 +796,7 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../../index.html">pygace</a></h1>
+<h1 class="logo"><a href="../../index.html">pygace</a></h1>
 
 
 
@@ -945,26 +808,26 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">pygace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.html">pygace package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.scripts.html">pygace.scripts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.html">pygace.examples package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
-  <li><a href="../../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
   </ul></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <form class="search" action="../../../../search.html" method="get">
+    <form class="search" action="../../search.html" method="get">
       <div><input type="text" name="q" /></div>
       <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />

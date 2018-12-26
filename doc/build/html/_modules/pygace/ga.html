@@ -232,8 +232,18 @@
 
     <span class="k">return</span> <span class="n">individual</span><span class="p">,</span></div>
 
-
+<span class="c1"># genes -&gt; cromosomes -&gt; individual</span>
 <div class="viewcode-block" id="Individual"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual">[docs]</a><span class="k">class</span> <span class="nc">Individual</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Individual object contain several Cromosome objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Cromosome"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome">[docs]</a><span class="k">class</span> <span class="nc">Cromosome</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper class for individual in GA.</span>
 
@@ -252,9 +262,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_length</span>
 
-<div class="viewcode-block" id="Individual.generate_individual"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual.generate_individual">[docs]</a>    <span class="k">def</span> <span class="nf">generate_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Cromosome.generate_cromosome"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome.generate_cromosome">[docs]</a>    <span class="k">def</span> <span class="nf">generate_cromosome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Greate a random individual</span>
+<span class="sd">        Greate a random cromosome</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -264,7 +274,7 @@
         <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[:]</span></div>
 
-<div class="viewcode-block" id="Individual.get_gene"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual.get_gene">[docs]</a>    <span class="k">def</span> <span class="nf">get_gene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="Cromosome.get_gene"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome.get_gene">[docs]</a>    <span class="k">def</span> <span class="nf">get_gene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain gene in the position of `index`.</span>
 
@@ -281,7 +291,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Individual.set_gene"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual.set_gene">[docs]</a>    <span class="k">def</span> <span class="nf">set_gene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Cromosome.set_gene"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome.set_gene">[docs]</a>    <span class="k">def</span> <span class="nf">set_gene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set gene in position of `index`.</span>
 
@@ -300,14 +310,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="Individual.size"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Cromosome.size"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the length of individual.</span>
+<span class="sd">        Return the length of cromosome.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
-<span class="sd">            The length of individual</span>
+<span class="sd">            The length of cromosome</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">)</span></div>
@@ -332,9 +342,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    indiv1 : Individual object</span>
+<span class="sd">    indiv1 : Cromosome object</span>
 <span class="sd">        The first individual participating in the crossover.</span>
-<span class="sd">    indiv2 : Individual object</span>
+<span class="sd">    indiv2 : Cromosome object</span>
 <span class="sd">        The second individual participating in the crossover.</span>
 <span class="sd">    crossover_type : int</span>
 <span class="sd">        The type of crossover method:</span>
@@ -363,7 +373,7 @@
     <span class="k">return</span> <span class="n">methods</span><span class="p">[</span><span class="n">crossover_type</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)](</span><span class="n">indiv1</span><span class="p">,</span><span class="n">indiv2</span><span class="p">,</span><span class="n">cross_num</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="transfer_from"><a class="viewcode-back" href="../../pygace.html#pygace.ga.transfer_from">[docs]</a><span class="k">def</span> <span class="nf">transfer_from</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
-    <span class="n">_tmp</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">gene_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
+    <span class="n">_tmp</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">(</span><span class="n">gene_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
     <span class="n">_tmp</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">_tmp</span></div>
 
@@ -410,7 +420,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># Loop through genes</span>
@@ -456,9 +466,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ind1 : iteration object</span>
-<span class="sd">        The first individual participating in the crossover.</span>
+<span class="sd">        The first cromosome participating in the crossover.</span>
 <span class="sd">    ind2 : iteration object</span>
-<span class="sd">        The second individual participating in the crossover.</span>
+<span class="sd">        The second cromosome participating in the crossover.</span>
 <span class="sd">    cross_number : int</span>
 <span class="sd">        The number of crossover which determine the number exchange in each</span>
 <span class="sd">        crossover operation.</span>
@@ -466,7 +476,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
-<span class="sd">        A tuple of two individuals</span>
+<span class="sd">        A tuple of two cromosomes</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -478,7 +488,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># Loop through genes</span>
@@ -518,9 +528,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ind1 : iteration object</span>
-<span class="sd">        The first individual participating in the crossover.</span>
+<span class="sd">        The first cromosome participating in the crossover.</span>
 <span class="sd">    ind2 : iteration object</span>
-<span class="sd">        The second individual participating in the crossover.</span>
+<span class="sd">        The second cromosome participating in the crossover.</span>
 <span class="sd">    cross_number : int</span>
 <span class="sd">        The number of crossover which determine the number exchange in each</span>
 <span class="sd">        crossover operation.</span>
@@ -528,7 +538,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
-<span class="sd">        A tuple of two individuals</span>
+<span class="sd">        A tuple of two cromosomes</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -538,7 +548,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># Loop through genes</span>
@@ -552,7 +562,7 @@
 
     <span class="n">set_value_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="k">if</span> <span class="n">pos</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">change_list_indiv1</span><span class="p">]</span>
 
-    <span class="n">tmp_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">tmp_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">tmp_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
     <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">:</span>
@@ -581,9 +591,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ind1 : iteration object</span>
-<span class="sd">        The first individual participating in the crossover.</span>
+<span class="sd">        The first cromosome participating in the crossover.</span>
 <span class="sd">    ind2 : iteration object</span>
-<span class="sd">        The second individual participating in the crossover.</span>
+<span class="sd">        The second cromosome participating in the crossover.</span>
 <span class="sd">    cross_number : int</span>
 <span class="sd">        The number of crossover which determine the number exchange in each</span>
 <span class="sd">        crossover operation.</span>
@@ -591,7 +601,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
-<span class="sd">        A tuple of two individuals</span>
+<span class="sd">        A tuple of two cromosomes</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -601,7 +611,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># Loop through genes</span>
@@ -640,16 +650,16 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ind1 : iteration object</span>
-<span class="sd">        The first individual participating in the crossover.</span>
+<span class="sd">        The first cromosome participating in the crossover.</span>
 <span class="sd">    ind2 : iteration object</span>
-<span class="sd">        The second individual participating in the crossover.</span>
+<span class="sd">        The second cromosome participating in the crossover.</span>
 <span class="sd">    cross_number : int</span>
 <span class="sd">        The number of crossover is not used in this algorithm.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
-<span class="sd">        A tuple of two individuals</span>
+<span class="sd">        A tuple of two cromosomes</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -662,7 +672,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># selected randomly gene in parent1</span>
@@ -696,16 +706,16 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ind1 : iteration object</span>
-<span class="sd">        The first individual participating in the crossover.</span>
+<span class="sd">        The first cromosome participating in the crossover.</span>
 <span class="sd">    ind2 : iteration object</span>
-<span class="sd">        The second individual participating in the crossover.</span>
+<span class="sd">        The second cromosome participating in the crossover.</span>
 <span class="sd">    cross_number : int</span>
 <span class="sd">        The number of crossover is not used in this algorithm.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
-<span class="sd">        A tuple of two individuals</span>
+<span class="sd">        A tuple of two cromosomes</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -716,7 +726,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indiv1</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span>
     <span class="n">indiv2</span> <span class="o">=</span> <span class="n">transfer_from</span><span class="p">(</span><span class="n">ind2</span><span class="p">)</span>
-    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">()</span>
+    <span class="n">new_sol</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">()</span>
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
     <span class="c1"># Loop through genes</span>
     <span class="n">offset</span> <span class="o">=</span> <span class="n">cross_number</span>
@@ -764,6 +774,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>

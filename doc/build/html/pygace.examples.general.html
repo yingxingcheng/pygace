@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pygace.examples package &#8212; pygace 2018.12.13 documentation</title>
+    <title>pygace.examples.general package &#8212; pygace 2018.12.13 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pygace.examples.general package" href="pygace.examples.general.html" />
-    <link rel="prev" title="pygace package" href="pygace.html" />
+    <link rel="next" title="pygace.examples.hfo2 package" href="pygace.examples.hfo2.html" />
+    <link rel="prev" title="pygace.examples package" href="pygace.examples.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,40 +41,30 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pygace-examples-package">
-<h1>pygace.examples package<a class="headerlink" href="#pygace-examples-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="pygace.examples.general.html">pygace.examples.general package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.general.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.general.html#module-pygace.examples.general.test_general">pygace.examples.general.test_general module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.general.html#module-pygace.examples.general">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.hfo2.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.hfo2.html#module-pygace.examples.hfo2.hfo2_gace">pygace.examples.hfo2.hfo2_gace module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.hfo2.html#module-pygace.examples.hfo2">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pygace.examples.sto.html">pygace.examples.sto package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.sto.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.sto.html#module-pygace.examples.sto.sto_gace">pygace.examples.sto.sto_gace module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pygace.examples.sto.html#module-pygace.examples.sto">Module contents</a></li>
-</ul>
-</li>
-</ul>
+  <div class="section" id="pygace-examples-general-package">
+<h1>pygace.examples.general package<a class="headerlink" href="#pygace-examples-general-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-pygace.examples.general.test_general">
+<span id="pygace-examples-general-test-general-module"></span><h2>pygace.examples.general.test_general module<a class="headerlink" href="#module-pygace.examples.general.test_general" title="Permalink to this headline">¶</a></h2>
+<p>Searching the most stable atomic-structure of a solid with point defects
+(including the extrinsic alloying/doping elements), is one of the central issues in
+materials science. Both adequate sampling of the configuration space and the
+accurate energy evaluation at relatively low cost are demanding for the structure
+prediction. In this work, we have developed a framework combining genetic
+algorithm, cluster expansion (CE) method and first-principles calculations, which
+can effectively locate the ground-state or meta-stable states of the relatively
+large/complex systems. We employ this framework to search the stable structures
+of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the
+Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with
+the structures available in the literature. The present framework can be applied
+to the ground-state search of extensive alloyed/doped materials, which is
+particularly significant for the design of advanced engineering alloys and
+semiconductors.</p>
 </div>
-<div class="section" id="module-pygace.examples">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygace.examples" title="Permalink to this headline">¶</a></h2>
-<p>The module contains an example of Nb-doped SrTiO3 with 75 atoms supercell.</p>
-<p>In this module, we will introduce two methods for obtaining ground-state
-structures. One is used in general mode to obtain ground-state with GA-to-CE
-iteration, the other one can be used in the case with samples of small
-order of magnitude.</p>
+<div class="section" id="module-pygace.examples.general">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygace.examples.general" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -114,9 +104,9 @@ order of magnitude.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pygace.scripts.html">pygace.scripts package</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">pygace.examples package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pygace.examples">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.examples.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.examples.html#module-pygace.examples">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
@@ -129,8 +119,10 @@ order of magnitude.</p>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">pygace</a><ul>
   <li><a href="pygace.html">pygace package</a><ul>
-      <li>Previous: <a href="pygace.html" title="previous chapter">pygace package</a></li>
-      <li>Next: <a href="pygace.examples.general.html" title="next chapter">pygace.examples.general package</a></li>
+  <li><a href="pygace.examples.html">pygace.examples package</a><ul>
+      <li>Previous: <a href="pygace.examples.html" title="previous chapter">pygace.examples package</a></li>
+      <li>Next: <a href="pygace.examples.hfo2.html" title="next chapter">pygace.examples.hfo2 package</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -158,7 +150,7 @@ order of magnitude.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/pygace.examples.rst.txt"
+      <a href="_sources/pygace.examples.general.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

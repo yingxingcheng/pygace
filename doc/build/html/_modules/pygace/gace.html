@@ -129,8 +129,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">DEFAULT_SETUP</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;NB_DEFECT&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
-        <span class="s1">&#39;NB_SITES&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s1">&#39;NB_DEFECT&#39;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s1">&#39;TEMPLATE_FILE&#39;</span><span class="p">:</span> <span class="s1">&#39;./data/lat_in.template&#39;</span><span class="p">,</span>
         <span class="s1">&#39;TMP_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">),</span>
         <span class="s1">&#39;PICKLE_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;pickle_bakup&#39;</span><span class="p">),</span>
@@ -138,7 +137,7 @@
         <span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">:</span><span class="s1">&#39;./dft_dirs&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ce_site</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ce_site</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ce_dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter1&#39;</span><span class="p">,</span>
                  <span class="n">params_config_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ce</span> <span class="o">=</span> <span class="n">CE</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="n">ce_site</span><span class="p">,</span>
@@ -461,6 +460,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>

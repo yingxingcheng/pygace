@@ -132,9 +132,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;FIRST_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_1st</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele_2nd</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">type_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">ele_1st</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ele_2nd</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Sr_sv&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
-
-
 <div class="viewcode-block" id="STOApp.update_ce"><a class="viewcode-back" href="../../../../pygace.examples.sto.html#pygace.examples.sto.sto_gace.STOApp.update_ce">[docs]</a>    <span class="k">def</span> <span class="nf">update_ce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dirname</span><span class="o">=</span><span class="s1">&#39;./data/iter0&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to update inner CE object</span>
@@ -194,24 +191,24 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">element_lis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ind_to_elis</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
-        <span class="n">types_lis</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_dict</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">element_lis</span><span class="p">]</span>
-        <span class="n">typeslis</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">types_lis</span><span class="p">)</span>
+        <span class="c1"># types_lis = [str(self.type_dict[i]) for i in element_lis]</span>
+        <span class="c1"># typeslis = &#39;&#39;.join(types_lis)</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">element_lis</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># TODO: optimize energy data saved in storage during executing process</span>
-            <span class="k">for</span> <span class="n">e_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPES_ENERGY_DICT</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="c1"># TODO: never run here</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">compare_crystal</span><span class="p">(</span><span class="n">e_type</span><span class="p">,</span><span class="n">typeslis</span><span class="p">):</span>
-                    <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPES_ENERGY_DICT</span><span class="p">[</span><span class="n">e_type</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="n">element_lis</span><span class="p">),</span>
-                    <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-                <span class="c1"># TODO get total energy from VASP based DFT</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span>
+            <span class="c1"># for e_type in self.TYPES_ENERGY_DICT.keys():</span>
+            <span class="c1">#     # TODO: never run here</span>
+            <span class="c1">#     if self.ce.compare_crystal(e_type,typeslis):</span>
+            <span class="c1">#         energy = self.TYPES_ENERGY_DICT[e_type]</span>
+            <span class="c1"># else:</span>
+            <span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="n">element_lis</span><span class="p">),</span>
+                <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="c1"># TODO get total energy from VASP based DFT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ENERGY_DICT</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span>
 
         <span class="k">return</span> <span class="n">energy</span><span class="p">,</span></div>
 
@@ -790,6 +787,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.html">pygace.examples package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pygace.examples.sto.html">pygace.examples.sto package</a></li>

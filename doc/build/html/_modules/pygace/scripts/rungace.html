@@ -1,0 +1,270 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.scripts.rungace &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2018.12.13',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pygace.scripts.rungace</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">#    This file is part of pygace.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU Lesser General Public License as</span>
+<span class="c1">#    published by the Free Software Foundation, either version 3 of</span>
+<span class="c1">#    the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    pygace is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="c1">#    GNU Lesser General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU Lesser General Public</span>
+<span class="c1">#    License along with pygace. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;Searching the most stable atomic-structure of a solid with point defects</span>
+<span class="sd">(including the extrinsic alloying/doping elements), is one of the central issues in</span>
+<span class="sd">materials science. Both adequate sampling of the configuration space and the</span>
+<span class="sd">accurate energy evaluation at relatively low cost are demanding for the structure</span>
+<span class="sd">prediction. In this work, we have developed a framework combining genetic</span>
+<span class="sd">algorithm, cluster expansion (CE) method and first-principles calculations, which</span>
+<span class="sd">can effectively locate the ground-state or meta-stable states of the relatively</span>
+<span class="sd">large/complex systems. We employ this framework to search the stable structures</span>
+<span class="sd">of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the</span>
+<span class="sd">Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with</span>
+<span class="sd">the structures available in the literature. The present framework can be applied</span>
+<span class="sd">to the ground-state search of extensive alloyed/doped materials, which is</span>
+<span class="sd">particularly significant for the design of advanced engineering alloys and</span>
+<span class="sd">semiconductors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">pygace.general_gace</span> <span class="k">import</span> <span class="n">GeneralApp</span><span class="p">,</span> <span class="n">Runner</span>
+<span class="kn">from</span> <span class="nn">pygace.ce</span> <span class="k">import</span> <span class="n">CE</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
+<span class="n">__maintainer_email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
+
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">WORK_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">curdir</span><span class="p">)</span>
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">WORK_PATH</span><span class="p">,</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is not exist!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">))</span>
+
+<div class="viewcode-block" id="build_supercell_template"><a class="viewcode-back" href="../../../pygace.scripts.html#pygace.scripts.rungace.build_supercell_template">[docs]</a><span class="k">def</span> <span class="nf">build_supercell_template</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create supercell for GA-to-CE simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale : list or arrary like</span>
+<span class="sd">        A list used to determine the size of supercell.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ce</span> <span class="o">=</span> <span class="n">CE</span><span class="p">()</span>
+    <span class="n">ce</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span><span class="s1">&#39;iter1&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ce</span><span class="o">.</span><span class="n">ele_to_atat_type</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;lat_in.template&#39;</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="n">tmp_str</span> <span class="o">=</span> <span class="n">ce</span><span class="o">.</span><span class="n">make_template</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tmp_str</span><span class="p">,</span><span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_results"><a class="viewcode-back" href="../../../pygace.scripts.html#pygace.scripts.rungace.show_results">[docs]</a><span class="k">def</span> <span class="nf">show_results</span><span class="p">(</span><span class="n">ele_type_list</span><span class="p">,</span> <span class="n">defect_con_list</span><span class="p">,</span>
+                 <span class="n">use_nb_iter</span><span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">nb_iter_gace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vasp_cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show results of GA-to-CE simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cell_scale : list or arrary like</span>
+<span class="sd">        A list used to specify the size of supercell.</span>
+<span class="sd">    ele_list : list</span>
+<span class="sd">        A list of elements contained in structure.</span>
+<span class="sd">    ele_nb : list</span>
+<span class="sd">        A list of maximum of the number of point defect in supercell structures.</span>
+<span class="sd">    nb_iter_gace : bool</span>
+<span class="sd">        Whether or not to determine stop criteria based on the number of iteration.</span>
+<span class="sd">    vasp_cmd : str</span>
+<span class="sd">        The command of VASP.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">use_nb_iter</span><span class="p">:</span>
+        <span class="n">nb_iter_gace</span> <span class="o">=</span> <span class="n">nb_iter_gace</span> <span class="ow">or</span> <span class="mi">5</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">GeneralApp</span><span class="p">(</span><span class="n">ele_type_list</span><span class="o">=</span><span class="n">ele_type_list</span><span class="p">,</span>
+            <span class="n">defect_concentrations</span><span class="o">=</span><span class="n">defect_con_list</span><span class="p">,</span>
+            <span class="n">ce_dirname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span><span class="s1">&#39;iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">use_nb_iter</span> <span class="ow">and</span> <span class="n">iter_idx</span> <span class="o">&gt;</span> <span class="n">nb_iter_gace</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">update_ce</span><span class="p">(</span><span class="n">dirname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span><span class="s1">&#39;iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">)))</span>
+        <span class="n">nb_sites</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">defect_con_list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nb_defect</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nb_sites</span><span class="p">):</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">update_defect_concentration</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="n">nb_sites</span> <span class="o">-</span> <span class="n">nb_defect</span><span class="p">,</span> <span class="n">nb_defect</span><span class="p">])</span>
+            <span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">app</span><span class="p">,</span><span class="n">iter_idx</span><span class="p">)</span>
+            <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="n">runner</span><span class="o">.</span><span class="n">print_gs</span><span class="p">(</span><span class="n">vasp_cmd</span><span class="o">=</span><span class="n">vasp_cmd</span><span class="p">)</span>
+        <span class="n">next_atat_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span><span class="s1">&#39;iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">next_atat_dir</span><span class="p">):</span>
+            <span class="n">CE</span><span class="o">.</span><span class="n">mmaps</span><span class="p">(</span><span class="n">dirname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span><span class="s1">&#39;iter</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There is no new structures can be calculated!&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="n">iter_idx</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="rungace"><a class="viewcode-back" href="../../../pygace.scripts.html#pygace.scripts.rungace.rungace">[docs]</a><span class="k">def</span> <span class="nf">rungace</span><span class="p">(</span><span class="n">cell_scale</span><span class="p">,</span> <span class="n">ele_list</span><span class="p">,</span> <span class="n">ele_nb</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command for running GA-to-CE simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cell_scale : list or arrary like</span>
+<span class="sd">        A list used to specify the size of supercell.</span>
+<span class="sd">    ele_list : list</span>
+<span class="sd">        A list of elements contained in structure.</span>
+<span class="sd">    ele_nb : list</span>
+<span class="sd">        A list of maximum of the number of point defect in supercell structures.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">build_supercell_template</span><span class="p">(</span><span class="n">cell_scale</span><span class="p">)</span>
+    <span class="n">show_results</span><span class="p">(</span><span class="n">ele_list</span><span class="p">,</span> <span class="n">ele_nb</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+    <span class="c1"># parser = argparse.ArgumentParser(description=&quot;General GACE running process.&quot;)</span>
+    <span class="c1"># parser.add_argument(&#39;cell_scale&#39;,help=&#39;shape of a supercell&#39;,type=list)</span>
+    <span class="c1"># parser.add_argument(&#39;ele_list&#39;,help=&quot;a list of element in structure&quot;, type=list)</span>
+    <span class="c1"># parser.add_argument(&#39;ele_nb&#39;,help=&#39;a list of maximum nubmer of each point-defect in strcutre&#39;,type=list)</span>
+    <span class="c1">#</span>
+    <span class="c1"># # optional arguments</span>
+    <span class="c1"># parser.add_argument(&#39;-u&#39;,help=&quot;use number of iteration to execute GA-to-CE iteration&quot;,type=bool)</span>
+    <span class="c1"># parser.add_argument(&#39;-n&#39;, help=&quot;the number of itearation execution&quot;,type=int)</span>
+    <span class="c1"># parser.add_argument(&#39;--vsap_cmd&#39;,help=&quot;the command of VASP&quot;,type=str)</span>
+    <span class="c1">#</span>
+    <span class="c1"># args = parser.parse_args()</span>
+    <span class="c1"># rungace(args.cell_scale,args.ele_list,args.ele_nb)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pygace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pygace.scripts.html">pygace.scripts package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pygace.examples.html">pygace.examples package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

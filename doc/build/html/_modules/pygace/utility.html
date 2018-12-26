@@ -61,6 +61,7 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">combinations</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copy2</span><span class="p">,</span> <span class="n">Error</span><span class="p">,</span> <span class="n">copystat</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
@@ -298,6 +299,73 @@
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="copytree"><a class="viewcode-back" href="../../pygace.html#pygace.utility.copytree">[docs]</a><span class="k">def</span> <span class="nf">copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">symlinks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively copy a directory tree using copy2().</span>
+
+<span class="sd">    The destination directory must not already exist.</span>
+<span class="sd">    If exception(s) occur, an Error is raised with a list of reasons.</span>
+
+<span class="sd">    If the optional symlinks flag is true, symbolic links in the</span>
+<span class="sd">    source tree result in symbolic links in the destination tree; if</span>
+<span class="sd">    it is false, the contents of the files pointed to by symbolic</span>
+<span class="sd">    links are copied.</span>
+
+<span class="sd">    The optional ignore argument is a callable. If given, it</span>
+<span class="sd">    is called with the `src` parameter, which is the directory</span>
+<span class="sd">    being visited by copytree(), and `names` which is the list of</span>
+<span class="sd">    `src` contents, as returned by os.listdir():</span>
+
+<span class="sd">        callable(src, names) -&gt; ignored_names</span>
+
+<span class="sd">    Since copytree() is called recursively, the callable will be</span>
+<span class="sd">    called once for each directory that is copied. It returns a</span>
+<span class="sd">    list of names relative to the `src` directory that should</span>
+<span class="sd">    not be copied.</span>
+
+<span class="sd">    XXX Consider this example code rather than the ultimate tool.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ignored_names</span> <span class="o">=</span> <span class="n">ignore</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ignored_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ignored_names</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">srcname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">dstname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symlinks</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">srcname</span><span class="p">):</span>
+                <span class="n">linkto</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">srcname</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">linkto</span><span class="p">,</span> <span class="n">dstname</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">srcname</span><span class="p">):</span>
+                <span class="n">copytree</span><span class="p">(</span><span class="n">srcname</span><span class="p">,</span> <span class="n">dstname</span><span class="p">,</span> <span class="n">symlinks</span><span class="p">,</span> <span class="n">ignore</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Will raise a SpecialFileError for unsupported file types</span>
+                <span class="n">copy2</span><span class="p">(</span><span class="n">srcname</span><span class="p">,</span> <span class="n">dstname</span><span class="p">)</span>
+        <span class="c1"># catch the Error from the recursive copytree so that we can</span>
+        <span class="c1"># continue with other files</span>
+        <span class="k">except</span> <span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">EnvironmentError</span> <span class="k">as</span>  <span class="n">why</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">srcname</span><span class="p">,</span> <span class="n">dstname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">why</span><span class="p">)))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">copystat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">why</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ne">WindowsError</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">why</span><span class="p">,</span> <span class="ne">WindowsError</span><span class="p">):</span>
+            <span class="c1"># Copying file access times may fail on Windows</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">why</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="p">(</span><span class="n">Error</span><span class="p">,</span><span class="n">errors</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -319,6 +387,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>

@@ -29,8 +29,13 @@ particularly significant for the design of advanced engineering alloys and
 semiconductors.
 """
 
+from pygace.scripts import rungace
+
 __author__ = "Yingxing Cheng"
 __email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
 __maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
+
+if __name__ == '__main__':
+    rungace(cell_scale=[3,3,1], ele_list=['Mo', 'Zr'], ele_nb=[18, 0])

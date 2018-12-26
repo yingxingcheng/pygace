@@ -90,9 +90,6 @@ class STOApp(AbstractApp):
         self.params_config_dict['FIRST_ELEMENT'] = ele_1st
         self.params_config_dict['SECOND_ELEMENT'] = ele_2nd
 
-        self.type_dict = {ele_1st: 1, 'O': 2, ele_2nd: 3, 'Sr_sv': 4}
-
-
     def update_ce(self, site=1, dirname='./data/iter0'):
         """
         Function to update inner CE object
@@ -152,24 +149,24 @@ class STOApp(AbstractApp):
 
         """
         element_lis = self.ind_to_elis(individual)
-        types_lis = [str(self.type_dict[i]) for i in element_lis]
-        typeslis = ''.join(types_lis)
+        # types_lis = [str(self.type_dict[i]) for i in element_lis]
+        # typeslis = ''.join(types_lis)
 
         k = '_'.join(element_lis)
         if k in self.ENERGY_DICT.keys():
             energy = self.ENERGY_DICT[k]
         else:
             # TODO: optimize energy data saved in storage during executing process
-            for e_type in self.TYPES_ENERGY_DICT.keys():
-                # TODO: never run here
-                if self.ce.compare_crystal(e_type,typeslis):
-                    energy = self.TYPES_ENERGY_DICT[e_type]
-            else:
-                energy = float(self.ce.get_total_energy(
-                    self.transver_to_struct(element_lis),
-                    is_corrdump=False))
-                # TODO get total energy from VASP based DFT
-                self.ENERGY_DICT[k] = energy
+            # for e_type in self.TYPES_ENERGY_DICT.keys():
+            #     # TODO: never run here
+            #     if self.ce.compare_crystal(e_type,typeslis):
+            #         energy = self.TYPES_ENERGY_DICT[e_type]
+            # else:
+            energy = float(self.ce.get_total_energy(
+                self.transver_to_struct(element_lis),
+                is_corrdump=False))
+            # TODO get total energy from VASP based DFT
+            self.ENERGY_DICT[k] = energy
 
         return energy,
 

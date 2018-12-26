@@ -1,0 +1,251 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pygace.scripts package &#8212; pygace 2018.12.13 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2018.12.13',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pygace.examples.sto package" href="pygace.examples.sto.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pygace-scripts-package">
+<h1>pygace.scripts package<a class="headerlink" href="#pygace-scripts-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pygace.scripts.rungace">
+<span id="pygace-scripts-rungace-module"></span><h2>pygace.scripts.rungace module<a class="headerlink" href="#module-pygace.scripts.rungace" title="Permalink to this headline">¶</a></h2>
+<p>Searching the most stable atomic-structure of a solid with point defects
+(including the extrinsic alloying/doping elements), is one of the central issues in
+materials science. Both adequate sampling of the configuration space and the
+accurate energy evaluation at relatively low cost are demanding for the structure
+prediction. In this work, we have developed a framework combining genetic
+algorithm, cluster expansion (CE) method and first-principles calculations, which
+can effectively locate the ground-state or meta-stable states of the relatively
+large/complex systems. We employ this framework to search the stable structures
+of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the
+Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with
+the structures available in the literature. The present framework can be applied
+to the ground-state search of extensive alloyed/doped materials, which is
+particularly significant for the design of advanced engineering alloys and
+semiconductors.</p>
+<dl class="function">
+<dt id="pygace.scripts.rungace.build_supercell_template">
+<code class="descclassname">pygace.scripts.rungace.</code><code class="descname">build_supercell_template</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/scripts/rungace.html#build_supercell_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.scripts.rungace.build_supercell_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create supercell for GA-to-CE simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list or arrary like</span></dt>
+<dd><p class="first last">A list used to determine the size of supercell.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygace.scripts.rungace.rungace">
+<code class="descclassname">pygace.scripts.rungace.</code><code class="descname">rungace</code><span class="sig-paren">(</span><em>cell_scale</em>, <em>ele_list</em>, <em>ele_nb</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/scripts/rungace.html#rungace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.scripts.rungace.rungace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Command for running GA-to-CE simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>cell_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list or arrary like</span></dt>
+<dd><p class="first last">A list used to specify the size of supercell.</p>
+</dd>
+<dt><strong>ele_list</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">A list of elements contained in structure.</p>
+</dd>
+<dt><strong>ele_nb</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">A list of maximum of the number of point defect in supercell structures.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pygace.scripts.rungace.show_results">
+<code class="descclassname">pygace.scripts.rungace.</code><code class="descname">show_results</code><span class="sig-paren">(</span><em>ele_type_list</em>, <em>defect_con_list</em>, <em>use_nb_iter=False</em>, <em>nb_iter_gace=None</em>, <em>vasp_cmd=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pygace/scripts/rungace.html#show_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pygace.scripts.rungace.show_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show results of GA-to-CE simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>cell_scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list or arrary like</span></dt>
+<dd><p class="first last">A list used to specify the size of supercell.</p>
+</dd>
+<dt><strong>ele_list</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">A list of elements contained in structure.</p>
+</dd>
+<dt><strong>ele_nb</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">A list of maximum of the number of point defect in supercell structures.</p>
+</dd>
+<dt><strong>nb_iter_gace</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">Whether or not to determine stop criteria based on the number of iteration.</p>
+</dd>
+<dt><strong>vasp_cmd</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The command of VASP.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pygace.scripts">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pygace.scripts" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pygace</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pygace</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.html">pygace package</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="pygace.html">pygace package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pygace.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.ce">pygace.ce module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.config">pygace.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.ga">pygace.ga module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.gace">pygace.gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.general_gace">pygace.general_gace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.parse">pygace.parse module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace.utility">pygace.utility module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pygace.html#module-pygace">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pygace.scripts package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.scripts.rungace">pygace.scripts.rungace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pygace.scripts">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.examples.html">pygace.examples package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pygace.examples.sto.html">pygace.examples.sto package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">pygace</a><ul>
+  <li><a href="pygace.html">pygace package</a><ul>
+      <li>Previous: <a href="pygace.examples.sto.html" title="previous chapter">pygace.examples.sto package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Yingxing Cheng.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/pygace.scripts.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
