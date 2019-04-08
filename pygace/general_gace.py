@@ -368,13 +368,6 @@ class Runner(AbstractRunner):
         -------
         None
         """
-        if DEBUG:
-            print('#'*80)
-            print('Iteration {0} begin: '.format(self.iter_idx))
-            print('In debug mode, this mode give the results '
-                  'of simulation used in our paper.')
-            print('Iteration {0} done!\n'.format(self.iter_idx))
-            return
 
         print('GA-to-CE No. {0} iteration with defect {1} BEGIN'.
               format(self.iter_idx,

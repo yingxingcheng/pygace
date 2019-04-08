@@ -48,7 +48,7 @@ random.seed(100)
 WORK_PATH = os.path.abspath(os.path.curdir)
 DATA_PATH = os.path.join(WORK_PATH,'data')
 
-if os.path.exists(DATA_PATH):
+if not os.path.exists(DATA_PATH):
     raise RuntimeError("{0} is not exist!".format(DATA_PATH))
 
 def build_supercell_template(scale):
@@ -77,7 +77,9 @@ def build_supercell_template(scale):
 
 
 def show_results(ele_type_list, defect_con_list,
-                 use_nb_iter= False, nb_iter_gace=None,vasp_cmd=None,*args,**kwargs):
+                 max_ele_concentration,
+                 use_nb_iter= False, nb_iter_gace=None,
+                 vasp_cmd=None,*args,**kwargs):
     """
     Show results of GA-to-CE simulation.
 
@@ -111,7 +113,7 @@ def show_results(ele_type_list, defect_con_list,
 
         app.update_ce(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx)))
         nb_sites = sum(defect_con_list)
-        for nb_defect in range(1,nb_sites):
+        for nb_defect in range(1,max_ele_concentration[1]):
             app.update_defect_concentration(c=[nb_sites - nb_defect, nb_defect])
             runner = Runner(app,iter_idx)
             runner.run()
@@ -119,14 +121,15 @@ def show_results(ele_type_list, defect_con_list,
         next_atat_dir = os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1))
         print()
         if os.path.exists(next_atat_dir):
-            CE.mmaps(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1)))
+            CE.mmaps(dirname=next_atat_dir)
+            #CE.mmaps(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1)))
         else:
             print("There is no new structures can be calculated!")
             break
 
         iter_idx += 1
 
-def rungace(cell_scale, ele_list, ele_nb, *args,**kwargs):
+def rungace(cell_scale, ele_list,ele_nb, max_lis, *args,**kwargs):
     """
     Command for running GA-to-CE simulation.
 
@@ -145,7 +148,7 @@ def rungace(cell_scale, ele_list, ele_nb, *args,**kwargs):
 
     """
     build_supercell_template(cell_scale)
-    show_results(ele_list, ele_nb, *args,**kwargs)
+    show_results(ele_list, ele_nb, max_lis, *args,**kwargs)
 
 if __name__ == '__main__':
     pass
