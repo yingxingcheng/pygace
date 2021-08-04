@@ -21,7 +21,6 @@ from __future__ import print_function
 import numpy
 from deap import tools
 
-
 import os, glob
 import multiprocessing
 import pickle, shutil
@@ -29,16 +28,15 @@ import subprocess, random
 from pymatgen.io.vasp import Vasprun
 
 from pygace.ga import gaceGA, gaceCrossover
-from pygace.utility import  EleIndv, copytree
+from pygace.utility import EleIndv, copytree
 from pygace.gace import AbstractRunner, AbstractApp
 from pygace.config import runstruct_vasp_cmd
 
 __author__ = "Yingxing Cheng"
-__email__ ="yxcheng@buaa.edu.cn"
+__email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
-__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
-
 
 
 class GeneralApp(AbstractApp):
@@ -70,10 +68,10 @@ class GeneralApp(AbstractApp):
         Parameter dict used to custom GACE AbstractApp.
     """
 
-    def __init__(self,ele_type_list, defect_concentrations,ce_dirname='./data/iter1',
+    def __init__(self, ele_type_list, defect_concentrations, ce_dirname='./data/iter1',
                  params_config_dict=None):
-        super(GeneralApp,self).__init__(ce_dirname=ce_dirname,
-                                     params_config_dict=params_config_dict)
+        super(GeneralApp, self).__init__(ce_dirname=ce_dirname,
+                                         params_config_dict=params_config_dict)
 
         self.params_config_dict['element_type_list'] = list(ele_type_list)
         self.update_defect_concentration(c=defect_concentrations)
@@ -89,7 +87,6 @@ class GeneralApp(AbstractApp):
                          self.params_config_dict['element_type_list']):
             self.params_config_dict['elements_type'].extend([t] * nb)
 
-
     def ind_to_elis(self, individual):
         """Convert individual (number list) to element list
 
@@ -103,10 +100,7 @@ class GeneralApp(AbstractApp):
             A list of element symbol string.
 
         """
-
-        element_lis = [self.params_config_dict['elements_type'][i]
-                       for i in individual]
-
+        element_lis = [self.params_config_dict['elements_type'][i] for i in individual]
         return element_lis
 
     def evalEnergy(self, individual):
@@ -131,16 +125,13 @@ class GeneralApp(AbstractApp):
         if k in self.ENERGY_DICT.keys():
             energy = self.ENERGY_DICT[k]
         else:
-            energy = float(self.ce.get_total_energy(
-                self.transver_to_struct(element_lis),
-                is_corrdump=False))
+            energy = float(self.ce.get_total_energy(self.transver_to_struct(element_lis),
+                                                    is_corrdump=False))
 
             if len(self.ENERGY_DICT) > 5000:
                 self.ENERGY_DICT = {}
             self.ENERGY_DICT[k] = energy
-
         return energy,
-
 
     def _single_run(self, mission_name, repeat_iter):
         """
@@ -151,14 +142,13 @@ class GeneralApp(AbstractApp):
         mission_name : str
             A string used to represent the name of current running.
         repeat_iters : int
-            How many times should a simulation repeat for statistic error(
-            different grouond-state in different running iterations with
-            identical parameter setting).
+            How many times should a simulation repeat for statistic error (different ground-state
+            in different running iterations with identical parameter setting).
 
         Returns
         -------
         tuple
-            A tuple of pupulation, random states and hall of fame.
+            A tuple of population, random states and hall of fame.
 
         """
         pop = self.toolbox.population(n=150)
@@ -168,19 +158,16 @@ class GeneralApp(AbstractApp):
         stats.register("Std", numpy.std)
         stats.register("Min", numpy.min)
         stats.register("Max", numpy.max)
-
         checkpoint_fname = os.path.join(
             self.params_config_dict['PICKLE_DIR'],
             'cp_{0}_{1}.pkl')
-
         res = gaceGA(pop, self.toolbox, cxpb=0.5, ngen=90,
                      stats=stats, halloffame=hof, verbose=True,
                      checkpoint=checkpoint_fname.format(mission_name, repeat_iter))
-
         pop = res[0]
         return pop, stats, hof
 
-    def _multiple_run(self, mission_name,repeat_iters, gs_selection=1):
+    def _multiple_run(self, mission_name, repeat_iters, gs_selection=1):
         """
         For multiple tasks
 
@@ -212,32 +199,32 @@ class GeneralApp(AbstractApp):
 
             if repeat_iters % 10 == 0:
                 ENERGY_DICT = {}
-        #all_min = numpy.asarray(all_min)
-        #global_min_idx = numpy.argmin(all_min)
+        # all_min = numpy.asarray(all_min)
+        # global_min_idx = numpy.argmin(all_min)
 
         all_min_dict = {}
-        for k,v in zip(all_best_son,all_min):
+        for k, v in zip(all_best_son, all_min):
             all_min_dict['_'.join(k)] = v
-        res = sorted(all_min_dict.items(),key=lambda x: x[1])
+        res = sorted(all_min_dict.items(), key=lambda x: x[1])
         res = sorted(res, key=lambda x: x[0])
         print(res[0])
 
         s_fname = os.path.join(self.params_config_dict['TEST_RES_DIR'],
                                '{0}.dat'.format(mission_name))
-        with open(s_fname,'w') as fin:
-            for v,k in sorted(zip(all_min_dict.values(),all_min_dict.keys())):
-                print('{0} : {1}'.format(k,v),file=fin)
+        with open(s_fname, 'w') as fin:
+            for v, k in sorted(zip(all_min_dict.values(), all_min_dict.keys())):
+                print('{0} : {1}'.format(k, v), file=fin)
 
-        def extract_candidates(res,n):
+        def extract_candidates(res, n):
             li = []
-            for k,v in res[0:n]:
+            for k, v in res[0:n]:
                 li.append(k.split('_'))
             return li
 
-        return extract_candidates(res,gs_selection)
+        return extract_candidates(res, gs_selection)
 
     # TODO: muiltiprocessing is not available here.
-    def run(self,iter_idx=1, default_epoch=4, target_epoch=4,
+    def run(self, iter_idx=1, default_epoch=4, target_epoch=4,
             cross_method=1, cross_num=8, cp_fname_prefix='ground_states_iter',
             task_prefix='general-app', gs_selection=1):
         """
@@ -282,7 +269,7 @@ class GeneralApp(AbstractApp):
         mission_name = task_prefix + '-iter{0}-'.format(iter_idx) + \
                        str(self.params_config_dict['NB_DEFECT'])
         checkpoint = str(cp_fname_prefix) + '_{0}_defect_{1}.pkl'.format(
-            iter_idx,str(self.params_config_dict['NB_DEFECT']))
+            iter_idx, str(self.params_config_dict['NB_DEFECT']))
         checkpoint = os.path.join(self.params_config_dict['TEST_RES_DIR'],
                                   checkpoint)
         pre_epoch = self._get_epoch(checkpoint)
@@ -290,7 +277,7 @@ class GeneralApp(AbstractApp):
         if pre_epoch == 0:
             new_epoch = default_epoch
         else:
-            #epoch += self.params_config_dict['STEP']
+            # epoch += self.params_config_dict['STEP']
             if pre_epoch < target_epoch:
                 new_epoch = target_epoch
             else:
@@ -308,7 +295,7 @@ class GeneralApp(AbstractApp):
 
         # pool.close()
 
-    def _get_epoch(self,cp_fname):
+    def _get_epoch(self, cp_fname):
         """
         Obtain the epoch state of the previous running
 
@@ -351,11 +338,12 @@ class Runner(AbstractRunner):
         Index of GA-to-CE iteration, default is `None`.
 
     """
-    #app = GeneralApp(ce_site=8, ce_dirname='./data/iter1')
-    #iter_idx = 1
+
+    # app = GeneralApp(ce_site=8, ce_dirname='./data/iter1')
+    # iter_idx = 1
 
     def __init__(self, app=None, iter_idx=None):
-        super(Runner,self).__init__(app,iter_idx)
+        super(Runner, self).__init__(app, iter_idx)
 
     # -----------------------------------------------------------------------------
     # Standard GACE route
@@ -371,10 +359,10 @@ class Runner(AbstractRunner):
 
         print('GA-to-CE No. {0} iteration with defect {1} BEGIN'.
               format(self.iter_idx,
-            self.app.params_config_dict['NB_DEFECT']).center(80, '#'))
-        print("GA part BEGIN:".center(80,' '))
+                     self.app.params_config_dict['NB_DEFECT']).center(80, '#'))
+        print("GA part BEGIN:".center(80, ' '))
         self.app.run(self.iter_idx)
-        print("GA part END!".center(80,' '))
+        print("GA part END!".center(80, ' '))
 
     def print_gs(self, vasp_cmd=None):
         """
@@ -386,13 +374,13 @@ class Runner(AbstractRunner):
         None
         """
         checkpoint = 'ground_states_iter_{0}_defect_{1}.pkl'.format(
-            self.iter_idx,self.app.params_config_dict['NB_DEFECT'])
+            self.iter_idx, self.app.params_config_dict['NB_DEFECT'])
         checkpoint = os.path.join(self.app.params_config_dict['TEST_RES_DIR'],
                                   checkpoint)
-        with open(checkpoint, 'r') as cp_file:
+        with open(checkpoint, 'rb') as cp_file:
             ground_states = pickle.load(cp_file)
 
-        EleIndv_lis = [GeneralEleIndv(i,self.app) for i in ground_states]
+        EleIndv_lis = [GeneralEleIndv(i, self.app) for i in ground_states]
         print('The number of ground-state structures selected '
               'is {0}.'.format(len(EleIndv_lis)))
         new_ground = []
@@ -446,7 +434,7 @@ class Runner(AbstractRunner):
                   "and the eci of ce will be update.")
         print('+' * 80)
 
-    def str2energy(self,string):
+    def str2energy(self, string):
         """
         Obtain energy from string consists of numbers joined by '_', e.g.,
         ``'1_2_3_19_'``, in which the number is the position index in lattice
@@ -490,12 +478,12 @@ class GeneralEleIndv(EleIndv):
         structures based generic algorithm and cluster expansion method.
 
     """
-    def __init__(self, ele_lis, app=None):
-        super(GeneralEleIndv,self).__init__(ele_lis,app)
 
+    def __init__(self, ele_lis, app=None):
+        super(GeneralEleIndv, self).__init__(ele_lis, app)
 
     def __eq__(self, other):
-        return numpy.abs(self.ce_energy-other.ce_energy) < 0.001
+        return numpy.abs(self.ce_energy - other.ce_energy) < 0.001
 
     @property
     def ce_energy(self):
@@ -551,7 +539,7 @@ class GeneralEleIndv(EleIndv):
         random_fname = '_'.join(idx)
         cal_dir = os.path.abspath(os.path.join(
             self.app.params_config_dict['DFT_CAL_DIR'],
-            'iter'+str(iters), random_fname))
+            'iter' + str(iters), random_fname))
         if not os.path.exists(cal_dir):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
@@ -565,9 +553,9 @@ class GeneralEleIndv(EleIndv):
         init_data_path = os.path.dirname(self.app.ce.work_path)
         print(init_data_path)
         for f in other_files:
-            f_abs_path = os.path.join(init_data_path,f)
+            f_abs_path = os.path.join(init_data_path, f)
             if os.path.exists(f_abs_path):
-                shutil.copyfile(f_abs_path,os.path.join(cal_dir,f))
+                shutil.copyfile(f_abs_path, os.path.join(cal_dir, f))
             else:
                 print("{0} not exists!".format(f))
 
@@ -575,6 +563,7 @@ class GeneralEleIndv(EleIndv):
 
         pre_dft_energy = None
         cur_dft_energy = None
+
         # # run vasp
         # args = 'vasp '
         # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
@@ -593,22 +582,22 @@ class GeneralEleIndv(EleIndv):
             -------
             bool
             """
-            print("VASP Running Check".center(80,'-'))
+            print("VASP Running Check".center(80, '-'))
             print("BEGIN: check whether or not to execute VASP calculation.")
             print('cal_dir is {0}:'.format(cal_dir))
-            basename = os.path.basename(cal_dir) # 1_3_12
+            basename = os.path.basename(cal_dir)  # 1_3_12
             cur_idx = int(os.path.split(cal_dir)[-2].split('iter')[-1])
 
             cal_main_dir = os.path.abspath(
                 self.app.params_config_dict['DFT_CAL_DIR'])
-            for i in range(1,cur_idx+1):
-                pre_cal_dir = os.path.join(cal_main_dir,'iter'+str(i))
-                print("previous calculation directory",pre_cal_dir)
-                print('cal_main_dir ',cal_main_dir)
-                if not os.path.exists(os.path.join(cal_main_dir,pre_cal_dir)):
+            for i in range(1, cur_idx + 1):
+                pre_cal_dir = os.path.join(cal_main_dir, 'iter' + str(i))
+                print("previous calculation directory", pre_cal_dir)
+                print('cal_main_dir ', cal_main_dir)
+                if not os.path.exists(os.path.join(cal_main_dir, pre_cal_dir)):
                     continue
                 for f in os.listdir(pre_cal_dir):
-                    if os.path.isdir(os.path.join(pre_cal_dir,f)):
+                    if os.path.isdir(os.path.join(pre_cal_dir, f)):
                         # do not compare with self
                         if cur_idx == i and f == basename:
                             continue
@@ -617,24 +606,24 @@ class GeneralEleIndv(EleIndv):
                         if len(f.split('_')) != len(basename.split('_')):
                             continue
                         # energy of str.out
-                        print('compare file'.center(80,'-'))
+                        print('compare file'.center(80, '-'))
                         print(os.path.join(pre_cal_dir, f, 'str.out'))
-                        print(os.path.join(cal_dir,'str.out'))
-                        print(''.center(80,'-'))
+                        print(os.path.join(cal_dir, 'str.out'))
+                        print(''.center(80, '-'))
                         try:
                             pre_e = self.app.ce.get_total_energy(
-                                os.path.join(pre_cal_dir,f,'str.out'),delete_file=False)
+                                os.path.join(pre_cal_dir, f, 'str.out'), delete_file=False)
                             cur_e = self.app.ce.get_total_energy(
-                                os.path.join(cal_dir,'str.out'),delete_file=False)
+                                os.path.join(cal_dir, 'str.out'), delete_file=False)
                         except Exception as e:
                             print('Energy calculation wrong!')
                             return False
                         print("energy compare:")
                         print(pre_e, cur_e)
-                        print("*"*80)
+                        print("*" * 80)
                         if '{:.6}'.format(pre_e) == '{:.6}'.format(cur_e):
                             pre_dft_energy = float(numpy.loadtxt(os.path.join(
-                                pre_cal_dir, f,'energy')))
+                                pre_cal_dir, f, 'energy')))
 
                             return True
             else:
@@ -677,34 +666,34 @@ class GeneralEleIndv(EleIndv):
 
             next_atat_path = os.path.join(
                 pre_atat_path.split(basename)[0],
-                'iter'+str(next_idx))
-            copytree(pre_atat_path,next_atat_path)
+                'iter' + str(next_idx))
+            copytree(pre_atat_path, next_atat_path)
 
             # copy calculatin directory
             cal_name_in_next_atat_path = os.path.join(
-                next_atat_path, 'dft_'+ basename +'_' +
+                next_atat_path, 'dft_' + basename + '_' +
                                 os.path.basename(cal_dir))
             if not os.path.exists(cal_name_in_next_atat_path):
                 os.mkdir(cal_name_in_next_atat_path)
-            shutil.copy(os.path.join(cal_dir,'str.out'), cal_name_in_next_atat_path)
-            shutil.copy(os.path.join(cal_dir,'energy'),cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir, 'str.out'), cal_name_in_next_atat_path)
+            shutil.copy(os.path.join(cal_dir, 'energy'), cal_name_in_next_atat_path)
         return cur_dft_energy
 
     def run_fake_vasp(self):
         ce_e = self.app.ce.get_total_energy(
-            os.path.join(os.path.curdir,'str.out'),
+            os.path.join(os.path.curdir, 'str.out'),
             delete_file=False)
         # check if a calculation has been executed.
         if os.path.exists('energy'):
             try:
-                pre_e = float(numpy.loadtxt('energy',dtype=float))
-                if numpy.abs(ce_e,pre_e) < 0.2001:
+                pre_e = float(numpy.loadtxt('energy', dtype=float))
+                if numpy.abs(ce_e, pre_e) < 0.2001:
                     return
             except Exception as e:
                 pass
-        dft_e = ce_e + (random.random()-0.5)/5.
+        dft_e = ce_e + (random.random() - 0.5) / 5.
         cmd = 'echo {} > energy'.format(dft_e)
-        s = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+        s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         s.communicate()
 
     def run_vasp(self, vasp_cmd):
@@ -723,12 +712,11 @@ class GeneralEleIndv(EleIndv):
         except Exception as e:
             pass
 
-        #cmd = 'mpirun -machinefile $PBS_NODEFILE -np $NP $EXEC >vasp.out'
+        # cmd = 'mpirun -machinefile $PBS_NODEFILE -np $NP $EXEC >vasp.out'
         s = subprocess.Popen(vasp_cmd, shell=True, stdout=subprocess.PIPE)
         s.communicate()
 
         extract_energy()
-
 
     def __str__(self):
         return '_'.join(self.ele_lis)
@@ -739,4 +727,3 @@ class GeneralEleIndv(EleIndv):
 
 if __name__ == '__main__':
     pass
-

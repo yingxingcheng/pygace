@@ -1,27 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pygace.utility &#8212; pygace 2018.12.13 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '2018.12.13',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -30,13 +20,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for pygace.utility</h1><div class="highlight"><pre>
@@ -59,17 +50,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">combinations</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copy2</span><span class="p">,</span> <span class="n">Error</span><span class="p">,</span> <span class="n">copystat</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copy2</span><span class="p">,</span> <span class="n">Error</span><span class="p">,</span> <span class="n">copystat</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
-<span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
 <span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
-<span class="n">__maintainer_email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__maintainer_email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
 
-<div class="viewcode-block" id="save_to_pickle"><a class="viewcode-back" href="../../pygace.html#pygace.utility.save_to_pickle">[docs]</a><span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">python_obj</span><span class="p">):</span>
+
+<div class="viewcode-block" id="save_to_pickle"><a class="viewcode-back" href="../../pygace.html#pygace.utility.save_to_pickle">[docs]</a><span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">python_obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save python object in pickle file.</span>
 
@@ -87,6 +79,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">python_obj</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="get_num_lis"><a class="viewcode-back" href="../../pygace.html#pygace.utility.get_num_lis">[docs]</a><span class="k">def</span> <span class="nf">get_num_lis</span><span class="p">(</span><span class="n">nb_Nb</span><span class="p">,</span> <span class="n">nb_site</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get number list by given the number point defect and site defined in</span>
@@ -103,8 +96,9 @@
 <span class="sd">    All combinations.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>  <span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nb_site</span><span class="p">),</span><span class="n">nb_Nb</span><span class="p">):</span>
-        <span class="k">yield</span>  <span class="n">i</span></div>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nb_site</span><span class="p">),</span> <span class="n">nb_Nb</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">i</span></div>
+
 
 <div class="viewcode-block" id="reverse_dict"><a class="viewcode-back" href="../../pygace.html#pygace.utility.reverse_dict">[docs]</a><span class="k">def</span> <span class="nf">reverse_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -128,8 +122,7 @@
     <span class="k">return</span> <span class="n">tmp_d</span></div>
 
 
-<div class="viewcode-block" id="compare_crystal"><a class="viewcode-back" href="../../pygace.html#pygace.utility.compare_crystal">[docs]</a><span class="k">def</span> <span class="nf">compare_crystal</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span><span class="n">str2</span><span class="p">,</span><span class="n">compare_crystal_cmd</span><span class="o">=</span><span class="s1">&#39;CompareCrystal &#39;</span><span class="p">,</span>
-                    <span class="n">str_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="compare_crystal"><a class="viewcode-back" href="../../pygace.html#pygace.utility.compare_crystal">[docs]</a><span class="k">def</span> <span class="nf">compare_crystal</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">,</span> <span class="n">compare_crystal_cmd</span><span class="o">=</span><span class="s1">&#39;CompareCrystal &#39;</span><span class="p">,</span> <span class="n">str_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    To determine whether structures are identical based crystal symmetry</span>
 <span class="sd">    analysis. The program used in this package is based on ``XtalComp`` library</span>
@@ -158,22 +151,21 @@
 <span class="sd">    https://github.com/allisonvacanti/XtalComp</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">str2</span><span class="p">))</span>
-    <span class="n">ct</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;ct&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ct&#39;</span><span class="p">]</span>
-    <span class="n">at</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;at&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;at&#39;</span><span class="p">]</span>
-    <span class="n">verbos</span> <span class="o">=</span> <span class="s1">&#39;False&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;verbos&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;verbos&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">str2</span><span class="p">))</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="k">if</span> <span class="s1">&#39;ct&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ct&#39;</span><span class="p">]</span>
+    <span class="n">at</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="k">if</span> <span class="s1">&#39;at&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;at&#39;</span><span class="p">]</span>
+    <span class="n">verbos</span> <span class="o">=</span> <span class="s1">&#39;False&#39;</span> <span class="k">if</span> <span class="s1">&#39;verbos&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;verbos&#39;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">str_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;`str.out` filename is Empty!&quot;</span><span class="p">)</span>
-    <span class="n">args</span> <span class="o">=</span>  <span class="n">compare_crystal_cmd</span> <span class="o">+</span>  <span class="s1">&#39; -f1 </span><span class="si">{0}</span><span class="s1"> -f2 </span><span class="si">{1}</span><span class="s1"> -c </span><span class="si">{2}</span><span class="s1"> -a </span><span class="si">{3}</span><span class="s1"> --verbos </span><span class="si">{4}</span><span class="s1"> -s </span><span class="si">{5}</span><span class="s1">&#39;</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span><span class="n">str2</span><span class="p">,</span><span class="n">ct</span><span class="p">,</span><span class="n">at</span><span class="p">,</span><span class="n">verbos</span><span class="p">,</span><span class="n">str_template</span><span class="p">)</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-    <span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span><span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">compare_crystal_cmd</span> <span class="o">+</span> <span class="s1">&#39; -f1 </span><span class="si">{0}</span><span class="s1"> -f2 </span><span class="si">{1}</span><span class="s1"> -c </span><span class="si">{2}</span><span class="s1"> -a </span><span class="si">{3}</span><span class="s1"> --verbos </span><span class="si">{4}</span><span class="s1"> -s </span><span class="si">{5}</span><span class="s1">&#39;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">,</span> <span class="n">ct</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">verbos</span><span class="p">,</span> <span class="n">str_template</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
     <span class="n">res</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;Not&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="EleIndv"><a class="viewcode-back" href="../../pygace.html#pygace.utility.EleIndv">[docs]</a><span class="k">class</span> <span class="nc">EleIndv</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -197,11 +189,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ele_lis</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ele_lis</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span> <span class="o">=</span> <span class="n">ele_lis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">raise</span> <span class="bp">NotImplemented</span>
 
     <span class="nd">@property</span>
@@ -210,7 +202,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_ce</span><span class="p">()</span>
 
-<div class="viewcode-block" id="EleIndv.set_app"><a class="viewcode-back" href="../../pygace.html#pygace.utility.EleIndv.set_app">[docs]</a>    <span class="k">def</span> <span class="nf">set_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">):</span>
+<div class="viewcode-block" id="EleIndv.set_app"><a class="viewcode-back" href="../../pygace.html#pygace.utility.EleIndv.set_app">[docs]</a>    <span class="k">def</span> <span class="nf">set_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span></div>
 
     <span class="nd">@property</span>
@@ -227,7 +219,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span>
 
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_object</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">),</span><span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">),</span> <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ce_energy_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -243,9 +235,9 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span>
 
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_object</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">),</span><span class="n">is_corrdump</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">),</span> <span class="n">is_corrdump</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-<div class="viewcode-block" id="EleIndv.dft_energy"><a class="viewcode-back" href="../../pygace.html#pygace.utility.EleIndv.dft_energy">[docs]</a>    <span class="k">def</span> <span class="nf">dft_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">iters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EleIndv.dft_energy"><a class="viewcode-back" href="../../pygace.html#pygace.utility.EleIndv.dft_energy">[docs]</a>    <span class="k">def</span> <span class="nf">dft_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The DFT energy of individual represented by element list.</span>
 
@@ -266,19 +258,19 @@
         <span class="n">str_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">transver_to_struct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">iters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">iters</span> <span class="o">=</span> <span class="s1">&#39;INF&#39;</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ele</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]</span> <span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ele</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
+               <span class="k">if</span> <span class="n">ele</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;SECOND_ELEMENT&#39;</span><span class="p">]]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;perfect&#39;</span><span class="p">,</span><span class="s1">&#39;struct&#39;</span><span class="p">]</span>
-        <span class="n">random_fname</span> <span class="o">=</span>  <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;perfect&#39;</span><span class="p">,</span> <span class="s1">&#39;struct&#39;</span><span class="p">]</span>
+        <span class="n">random_fname</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="n">cal_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">params_config_dict</span><span class="p">[</span><span class="s1">&#39;DFT_CAL_DIR&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;iter&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iters</span><span class="p">),</span><span class="n">random_fname</span><span class="p">)</span>
+                               <span class="s1">&#39;iter&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iters</span><span class="p">),</span> <span class="n">random_fname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">)</span>
         <span class="n">dist_fname</span> <span class="o">=</span> <span class="s1">&#39;str.out&#39;</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">str_name</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span><span class="n">dist_fname</span><span class="p">))</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_object</span><span class="o">.</span><span class="n">work_path</span><span class="p">,</span><span class="s1">&#39;vasp.wrap&#39;</span><span class="p">),</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span><span class="s1">&#39;vasp.wrap&#39;</span><span class="p">))</span></div>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">str_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span> <span class="n">dist_fname</span><span class="p">))</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ce_object</span><span class="o">.</span><span class="n">work_path</span><span class="p">,</span> <span class="s1">&#39;vasp.wrap&#39;</span><span class="p">),</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cal_dir</span><span class="p">,</span> <span class="s1">&#39;vasp.wrap&#39;</span><span class="p">))</span></div>
         <span class="c1"># args = &#39;runstruct_vasp -nr &#39;</span>
         <span class="c1"># s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)</span>
         <span class="c1"># runstruct_vasp -nr</span>
@@ -294,10 +286,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ele_lis</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 
@@ -365,10 +357,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">why</span><span class="p">)))</span>
     <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="p">(</span><span class="n">Error</span><span class="p">,</span><span class="n">errors</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="p">(</span><span class="n">Error</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -388,9 +381,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
 </ul>
 
 <div class="relations">
@@ -403,15 +393,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -420,8 +418,8 @@
       &copy;2018, Yingxing Cheng.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

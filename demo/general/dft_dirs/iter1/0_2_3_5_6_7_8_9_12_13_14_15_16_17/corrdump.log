@@ -1,0 +1,59 @@
+strain=
+1.00000 0.00000 0.00000 
+0.00000 1.00000 0.00000 
+0.00000 0.00000 1.00000 
+
+Mo atom at 0.16659 1.50000 0.59400 mapped onto lattice site at 0.16659 1.50000 0.59400 distance= 0.00000
+Zr atom at 1.66470 3.00000 0.59400 mapped onto lattice site at 1.66470 3.00000 0.59400 distance= 0.00000
+Zr atom at 0.16659 2.50000 0.59400 mapped onto lattice site at 0.16659 2.50000 0.59400 distance= 0.00000
+Zr atom at 0.16659 0.50000 0.59400 mapped onto lattice site at 0.16659 0.50000 0.59400 distance= 0.00000
+Zr atom at 1.66470 1.00000 0.59400 mapped onto lattice site at 1.66470 1.00000 0.59400 distance= 0.00000
+Zr atom at 1.66470 2.00000 0.59400 mapped onto lattice site at 1.66470 2.00000 0.59400 distance= 0.00000
+Mo atom at 1.16659 1.50000 0.59400 mapped onto lattice site at 1.16659 1.50000 0.59400 distance= 0.00001
+Zr atom at 2.16659 1.50000 0.59400 mapped onto lattice site at 2.16659 1.50000 0.59400 distance= 0.00001
+Zr atom at 0.66470 3.00000 0.59400 mapped onto lattice site at 0.66470 3.00000 0.59400 distance= 0.00001
+Zr atom at 2.66470 3.00000 0.59400 mapped onto lattice site at 2.66470 3.00000 0.59400 distance= 0.00001
+Zr atom at 1.16659 2.50000 0.59400 mapped onto lattice site at 1.16659 2.50000 0.59400 distance= 0.00001
+Zr atom at 1.16659 0.50000 0.59400 mapped onto lattice site at 1.16659 0.50000 0.59400 distance= 0.00001
+Mo atom at 0.66470 1.00000 0.59400 mapped onto lattice site at 0.66470 1.00000 0.59400 distance= 0.00001
+Zr atom at 2.16659 2.50000 0.59400 mapped onto lattice site at 2.16659 2.50000 0.59400 distance= 0.00001
+Zr atom at 2.16659 0.50000 0.59400 mapped onto lattice site at 2.16659 0.50000 0.59400 distance= 0.00001
+Mo atom at 0.66470 2.00000 0.59400 mapped onto lattice site at 0.66470 2.00000 0.59400 distance= 0.00001
+Zr atom at 2.66470 1.00000 0.59400 mapped onto lattice site at 2.66470 1.00000 0.59400 distance= 0.00001
+Zr atom at 2.66470 2.00000 0.59400 mapped onto lattice site at 2.66470 2.00000 0.59400 distance= 0.00001
+Te atom ignored at 0.99988 3.00000 0.49983
+Te atom ignored at 0.99988 1.00000 0.49983
+Te atom ignored at 0.99988 2.00000 0.49983
+Te atom ignored at 1.99988 3.00000 0.49983
+Te atom ignored at 1.99988 1.00000 0.49983
+Te atom ignored at 1.99988 2.00000 0.49983
+Te atom ignored at 2.99988 3.00000 0.49983
+Te atom ignored at 2.99988 1.00000 0.49983
+Te atom ignored at 2.99988 2.00000 0.49983
+Te atom ignored at 0.99988 3.00000 0.68817
+Te atom ignored at 0.99988 1.00000 0.68817
+Te atom ignored at 0.99988 2.00000 0.68817
+Te atom ignored at 1.99988 3.00000 0.68817
+Te atom ignored at 1.99988 1.00000 0.68817
+Te atom ignored at 1.99988 2.00000 0.68817
+Te atom ignored at 2.99988 3.00000 0.68817
+Te atom ignored at 2.99988 1.00000 0.68817
+Te atom ignored at 2.99988 2.00000 0.68817
+Te atom ignored at 0.49989 0.50000 0.49979
+Te atom ignored at 0.49989 1.50000 0.49979
+Te atom ignored at 0.49989 2.50000 0.49979
+Te atom ignored at 1.49989 0.50000 0.49979
+Te atom ignored at 1.49989 1.50000 0.49979
+Te atom ignored at 1.49989 2.50000 0.49979
+Te atom ignored at 2.49989 0.50000 0.49979
+Te atom ignored at 2.49989 1.50000 0.49979
+Te atom ignored at 2.49989 2.50000 0.49979
+Te atom ignored at 0.49989 0.50000 0.68821
+Te atom ignored at 0.49989 1.50000 0.68821
+Te atom ignored at 0.49989 2.50000 0.68821
+Te atom ignored at 1.49989 0.50000 0.68821
+Te atom ignored at 1.49989 1.50000 0.68821
+Te atom ignored at 1.49989 2.50000 0.68821
+Te atom ignored at 2.49989 0.50000 0.68821
+Te atom ignored at 2.49989 1.50000 0.68821
+Te atom ignored at 2.49989 2.50000 0.68821

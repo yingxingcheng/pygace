@@ -21,10 +21,11 @@ import random, os, os.path, pickle
 from deap import tools
 
 __author__ = "Yingxing Cheng"
-__email__ ="yxcheng@buaa.edu.cn"
+__email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
-__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
+
 
 def gaceVarAnd(population, toolbox, cxpb):
     """
@@ -55,14 +56,15 @@ def gaceVarAnd(population, toolbox, cxpb):
                                                           offspring[i])
             del offspring[i - 1].fitness.values, offspring[i].fitness.values
 
-    for i in range(0,len(offspring),2):
+    for i in range(0, len(offspring), 2):
         offspring[i], = toolbox.mutate(offspring[i])
         del offspring[i].fitness.values
 
     return offspring[0:len(offspring):2]
 
+
 def gaceGA(population, toolbox, cxpb, ngen, stats=None,
-             halloffame=None, verbose=True,checkpoint = None,freq=10):
+           halloffame=None, verbose=True, checkpoint=None, freq=10):
     """
     Genetic algorithm (GA) used in ``pygace``. Users can define their algorithms
     based on ``DEAP`` package or other GA framework.
@@ -95,7 +97,7 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
 
     """
     if checkpoint and os.path.exists(checkpoint):
-        with open(checkpoint,'r') as cp_file:
+        with open(checkpoint, 'rb') as cp_file:
             cp = pickle.load(cp_file)
         population = cp['population']
         start_gen = cp['generation']
@@ -126,7 +128,7 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
         print(logbook.stream)
 
     # Begin the generational process
-    for gen in range(start_gen+1, ngen + 1):
+    for gen in range(start_gen + 1, ngen + 1):
         # Select the next generation individuals
         offspring = toolbox.select(population, 2 * len(population))
 
@@ -153,11 +155,11 @@ def gaceGA(population, toolbox, cxpb, ngen, stats=None,
             print(logbook.stream)
 
         if gen % freq == 0 and checkpoint is not None:
-            cp = dict(population=population,generation=gen, halloffame=halloffame,
-                      logbook=logbook,rndstate=random.getstate())
+            cp = dict(population=population, generation=gen, halloffame=halloffame,
+                      logbook=logbook, rndstate=random.getstate())
 
-            with open(checkpoint,'wb') as cp_file:
-                pickle.dump(cp,cp_file)
+            with open(checkpoint, 'wb') as cp_file:
+                pickle.dump(cp, cp_file)
 
     return population, logbook
 
@@ -184,22 +186,24 @@ def gaceMutShuffleIndexes(individual, indpb):
     size = len(individual)
     for i in range(size):
         if random.random() < indpb:
-            index1 = random.randint(0, size -1)
-            index2 = random.randint(0, size -1)
+            index1 = random.randint(0, size - 1)
+            index2 = random.randint(0, size - 1)
             individual[index1], individual[index2] = individual[index2], individual[index1]
 
     return individual,
+
 
 # genes -> cromosomes -> individual
 class Individual(object):
     """
     Individual object contain several Cromosome objects.
     """
+
     def __init__(self):
         pass
 
-
     pass
+
 
 class Cromosome(object):
     """
@@ -213,7 +217,7 @@ class Cromosome(object):
         The fitness value of gene
     """
 
-    valid_type = ['Vac','Replace']
+    valid_type = ['Vac', 'Replace']
 
     def __init__(self, gene_length=64, fitness=0.0):
         self.gene_length = gene_length
@@ -280,7 +284,6 @@ class Cromosome(object):
         """
         return len(self.genes)
 
-
     def __str__(self):
         return " ".join([str(gene) for gene in self.genes])
 
@@ -291,7 +294,7 @@ class Cromosome(object):
         return self.genes[item]
 
 
-def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
+def gaceCrossover(indiv1, indiv2, crossover_type=1, cross_num=8):
     """
     Executes a crossover specified by crossover type `crossover_type`and the
     number of crossover `cross_num` on the input `sequence` individuals.
@@ -324,11 +327,12 @@ def gaceCrossover(indiv1, indiv2,crossover_type=1,cross_num=8):
         A tuple of two individuals.
 
     """
-    methods = (partial_mapped_crossover,order_crossover,
-               position_based_crossover,order_based_crossover,
+    methods = (partial_mapped_crossover, order_crossover,
+               position_based_crossover, order_based_crossover,
                cycle_crossover, subtour_exchange_crossover
                )
-    return methods[crossover_type%(len(methods)+1)](indiv1,indiv2,cross_num)
+    return methods[crossover_type % (len(methods) + 1)](indiv1, indiv2, cross_num)
+
 
 def transfer_from(ind):
     _tmp = Cromosome(gene_length=len(ind))
@@ -395,8 +399,8 @@ def partial_mapped_crossover(ind1, ind2, cross_number):
         value_list_in_indiv1.append(indiv1.get_gene(i))
         value_list_in_indiv2.append(indiv2.get_gene(i))
 
-    map_dict = {value_list_in_indiv2[i]:value_list_in_indiv1[i] for i in range(offset)}
-    new_sol.genes[begin_index_in_indiv1:begin_index_in_indiv1+offset] = value_list_in_indiv2[:]
+    map_dict = {value_list_in_indiv2[i]: value_list_in_indiv1[i] for i in range(offset)}
+    new_sol.genes[begin_index_in_indiv1:begin_index_in_indiv1 + offset] = value_list_in_indiv2[:]
 
     search_list = [x for x in range(new_sol.size()) if x not in change_list_indiv1]
     for x in search_list:
@@ -404,9 +408,10 @@ def partial_mapped_crossover(ind1, ind2, cross_number):
             new_sol.set_gene(x, map_dict[new_sol.get_gene(x)])
 
     ind1[:] = new_sol[:]
-    return ind1,ind2
+    return ind1, ind2
 
-def order_crossover(ind1, ind2,cross_number):
+
+def order_crossover(ind1, ind2, cross_number):
     """
     Order crossover (OX1) operator was proposed by Davis (1985). The OX1 exploits
     a property of the path representation, that the order of cities (not their
@@ -466,11 +471,12 @@ def order_crossover(ind1, ind2,cross_number):
     index = 0
     for gene in indiv2.genes:
         if gene not in value_set:
-            new_sol.set_gene(left_pos_in_indiv1[index],gene)
+            new_sol.set_gene(left_pos_in_indiv1[index], gene)
             index += 1
 
     ind1[:] = new_sol[:]
     return ind1, ind2
+
 
 def position_based_crossover(ind1, ind2, cross_number):
     """
@@ -513,7 +519,7 @@ def position_based_crossover(ind1, ind2, cross_number):
     offset = cross_number
 
     # Crossover
-    change_list_indiv1 = random.sample(range(new_sol.size()),offset)
+    change_list_indiv1 = random.sample(range(new_sol.size()), offset)
     value_list_in_indiv1 = []
     for i in change_list_indiv1:
         value_list_in_indiv1.append(indiv1.get_gene(i))
@@ -532,6 +538,7 @@ def position_based_crossover(ind1, ind2, cross_number):
 
     ind1[:] = new_sol[:]
     return ind1, ind2
+
 
 def order_based_crossover(ind1, ind2, cross_number):
     """
@@ -584,7 +591,7 @@ def order_based_crossover(ind1, ind2, cross_number):
 
     # second: select gene in indiv2 which is also in left_gene_in_indiv1
     left_pos_in_indiv2 = []
-    for index,value in enumerate(indiv2.genes):
+    for index, value in enumerate(indiv2.genes):
         if value not in left_gene_in_indiv1:
             left_pos_in_indiv2.append(index)
 
@@ -593,6 +600,7 @@ def order_based_crossover(ind1, ind2, cross_number):
 
     ind1[:] = new_sol[:]
     return ind1, ind2
+
 
 def cycle_crossover(ind1, ind2, cross_number):
     """
@@ -634,7 +642,7 @@ def cycle_crossover(ind1, ind2, cross_number):
     new_sol.genes = indiv1.genes[:]
 
     # selected randomly gene in parent1
-    random_gene_pos = random.randint(0,new_sol.size()-1)
+    random_gene_pos = random.randint(0, new_sol.size() - 1)
     head = indiv1.get_gene(random_gene_pos)
     tail = indiv2.get_gene(random_gene_pos)
     gene_poul = {head}
@@ -645,10 +653,11 @@ def cycle_crossover(ind1, ind2, cross_number):
 
     for index, gene in enumerate(new_sol.genes):
         if gene not in gene_poul:
-            new_sol.set_gene(index,indiv2.get_gene(index))
+            new_sol.set_gene(index, indiv2.get_gene(index))
 
     ind1[:] = new_sol[:]
     return ind1, ind2
+
 
 def subtour_exchange_crossover(ind1, ind2, cross_number):
     """

@@ -46,10 +46,8 @@ __version__ = "2018.12.13"
 random.seed(100)
 
 WORK_PATH = os.path.abspath(os.path.curdir)
-DATA_PATH = os.path.join(WORK_PATH,'data')
+DATA_PATH = os.path.join(WORK_PATH, 'data')
 
-if not os.path.exists(DATA_PATH):
-    raise RuntimeError("{0} is not exist!".format(DATA_PATH))
 
 def build_supercell_template(scale):
     """
@@ -66,35 +64,35 @@ def build_supercell_template(scale):
 
     """
     ce = CE()
-    ce.fit(os.path.join(DATA_PATH,'iter1'))
+    ce.fit(os.path.join(DATA_PATH, 'iter1'))
     print(ce.ele_to_atat_type)
     fname = 'lat_in.template'
     dirname = os.path.abspath(DATA_PATH)
     fname = os.path.join(dirname, fname)
     tmp_str = ce.make_template(scale)
-    with open(fname,'w') as f:
-        print(tmp_str,file=f)
+    with open(fname, 'w') as f:
+        print(tmp_str, file=f)
 
 
-def show_results(ele_type_list, defect_con_list,
-                 max_ele_concentration,
-                 use_nb_iter= False, nb_iter_gace=None,
-                 vasp_cmd=None,*args,**kwargs):
+def show_results(ele_type_list, defect_con_list, max_ele_concentration, use_nb_iter=False,
+                 nb_iter_gace=None, vasp_cmd=None, *args, **kwargs):
     """
     Show results of GA-to-CE simulation.
 
     Parameters
     ----------
-    cell_scale : list or arrary like
-        A list used to specify the size of supercell.
-    ele_list : list
-        A list of elements contained in structure.
-    ele_nb : list
-        A list of maximum of the number of point defect in supercell structures.
+    ele_type_list : list
+        A list of element symbols
+    defect_con_list : list
+        A list of defect concentration in supercell structures.
+    max_ele_concentration :
+        The maximum element concentration.
+    use_nb_iter : bool, default=False
+        Whether stop after `n`th iteration if it is not converged.
     nb_iter_gace : bool
         Whether or not to determine stop criteria based on the number of iteration.
-    vasp_cmd : str
-        The command of VASP.
+    vasp_cmd : str, default=None
+        The command of ``VASP``.
 
     Returns
     -------
@@ -103,52 +101,58 @@ def show_results(ele_type_list, defect_con_list,
     """
     if use_nb_iter:
         nb_iter_gace = nb_iter_gace or 5
-    app = GeneralApp(ele_type_list=ele_type_list,
-            defect_concentrations=defect_con_list,
-            ce_dirname=os.path.join(DATA_PATH,'iter{0}'.format(1)))
+    app = GeneralApp(ele_type_list=ele_type_list, defect_concentrations=defect_con_list,
+                     ce_dirname=os.path.join(DATA_PATH, 'iter{0}'.format(1)))
     iter_idx = 1
     while 1:
         if use_nb_iter and iter_idx > nb_iter_gace:
             break
 
-        app.update_ce(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx)))
+        app.update_ce(dirname=os.path.join(DATA_PATH, 'iter{0}'.format(iter_idx)))
         nb_sites = sum(defect_con_list)
-        for nb_defect in range(1,max_ele_concentration[1]):
+        for nb_defect in range(1, max_ele_concentration[1]):
             app.update_defect_concentration(c=[nb_sites - nb_defect, nb_defect])
-            runner = Runner(app,iter_idx)
+            runner = Runner(app, iter_idx)
             runner.run()
             runner.print_gs(vasp_cmd=vasp_cmd)
-        next_atat_dir = os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1))
+        next_atat_dir = os.path.join(DATA_PATH, 'iter{0}'.format(iter_idx + 1))
         print()
         if os.path.exists(next_atat_dir):
             CE.mmaps(dirname=next_atat_dir)
-            #CE.mmaps(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1)))
+            # CE.mmaps(dirname=os.path.join(DATA_PATH,'iter{0}'.format(iter_idx+1)))
         else:
             print("There is no new structures can be calculated!")
             break
 
         iter_idx += 1
 
-def rungace(cell_scale, ele_list,ele_nb, max_lis, *args,**kwargs):
+
+def rungace(cell_scale, ele_list, ele_nb, max_lis, *args, **kwargs):
     """
     Command for running GA-to-CE simulation.
 
     Parameters
     ----------
-    cell_scale : list or arrary like
+    cell_scale : list or array like
         A list used to specify the size of supercell.
     ele_list : list
         A list of elements contained in structure.
     ele_nb : list
         A list of maximum of the number of point defect in supercell structures.
+    max_lis : int
+        The maximum iterations
 
     Returns
     -------
     None
 
     """
+    if not os.path.exists(DATA_PATH):
+        raise RuntimeError("{0} is not exist!".format(DATA_PATH))
+
     build_supercell_template(cell_scale)
-    show_results(ele_list, ele_nb, max_lis, *args,**kwargs)
+    show_results(ele_list, ele_nb, max_lis, *args, **kwargs)
+
 
 if __name__ == '__main__':
     pass
@@ -164,4 +168,3 @@ if __name__ == '__main__':
     #
     # args = parser.parse_args()
     # rungace(args.cell_scale,args.ele_list,args.ele_nb)
-

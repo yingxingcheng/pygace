@@ -28,9 +28,9 @@ from pygace.parse import GaceMcsqs
 from pygace.config import ATAT_BIN
 
 __author__ = "Yingxing Cheng"
-__email__ ="yxcheng@buaa.edu.cn"
+__email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
-__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
 
@@ -76,10 +76,10 @@ class CE(object):
     """
 
     COMPARE_CRYSTAL = None
-    CORRDUMP = os.path.join(os.path.abspath(ATAT_BIN),'corrdump')
+    CORRDUMP = os.path.join(os.path.abspath(ATAT_BIN), 'corrdump')
 
     def __init__(self, lat_in=None, site=16,
-                 corrdump_cmd=None,compare_crystal_cmd=None):
+                 corrdump_cmd=None, compare_crystal_cmd=None):
         self.lat_in = lat_in
         self.site = site
         if corrdump_cmd:
@@ -93,7 +93,7 @@ class CE(object):
             self.lat_in = os.path.join(
                 os.path.abspath(self.work_path), 'lat.in')
         self.lat_in_structure, self.ele_to_atat_type = \
-            GaceMcsqs.structure_from_string(open(self.lat_in,'r').read())
+            GaceMcsqs.structure_from_string(open(self.lat_in, 'r').read())
         self.site = GaceMcsqs(self.lat_in_structure).nb_occu_sites
 
         self.eci_out = os.path.join(
@@ -108,7 +108,6 @@ class CE(object):
         tmp_structure.make_supercell(scale)
         return GaceMcsqs(tmp_structure).to_template(
             ele_dict=self.ele_to_atat_type)
-
 
     def fit(self, dirname='./.tmp_atat_ce_dir'):
         """
@@ -149,7 +148,8 @@ class CE(object):
         # using 'Au' to represent 'Vac' in current program.
         # TODO: change element substitute for 'Vac" which is valid element type
         # TODO: in ATAT --by yxcheng
-        for k in self.per_atom_energy.keys():
+        tmp_keys = [k for k in self.per_atom_energy.keys()]
+        for k in tmp_keys:
             if '_pv' in k or '_sv' in k:
                 ele = k.split('_')[0]
                 self.per_atom_energy[ele] = self.per_atom_energy[k]
@@ -173,7 +173,7 @@ class CE(object):
             Energy predicted by corrdump command in ``ATAT``
         """
         _args = '{0} -c -s={1} -eci={2} -l={3} -cf={4}'.format(
-            self.CORRDUMP,x, self.eci_out,self.lat_in,self.cluster_info)
+            self.CORRDUMP, x, self.eci_out, self.lat_in, self.cluster_info)
         _y = self.corrdump(_args)
         return _y
 
@@ -208,11 +208,11 @@ class CE(object):
         _dirname = os.path.abspath(dirname)
         os.chdir(_dirname)
         # TODO run mmaps
-        maps_cmd = os.path.join(os.path.abspath(ATAT_BIN),'mmaps')
+        maps_cmd = os.path.join(os.path.abspath(ATAT_BIN), 'mmaps')
         args = maps_cmd or '-d'
         tmp_mmaps_log_fname = '_mmaps.log'
         cmd = "{0} {1} > {2} 2>&1".format(maps_cmd,
-                                          maps_args,tmp_mmaps_log_fname)
+                                          maps_args, tmp_mmaps_log_fname)
         if os.path.exists("maps_is_running"):
             os.remove("maps_is_running")
         s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
@@ -268,11 +268,11 @@ class CE(object):
         """
         s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         stdout, stderr = s.communicate()
-        ref_energy = float(str(stdout).strip('\n'))
+        ref_energy = float(stdout.decode('utf-8').strip('\n'))
         return ref_energy
 
     @staticmethod
-    def compare_crystal(str1,str2,compare_crystal_cmd=None,**kwargs):
+    def compare_crystal(str1, str2, compare_crystal_cmd=None, **kwargs):
         """
         To determine whether structures are identical based crystal symmetry
         analysis. The program used in this package is based on ``XXX`` library
@@ -299,24 +299,21 @@ class CE(object):
         if compare_crystal_cmd is None:
             compare_crystal_cmd = 'CompareCrystal '
 
-        assert(len(str1)==len(str2))
+        if len(str1) != len(str2):
+            return False
+
         ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
         at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
         verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
-        args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} ' \
-                                       '--verbos {4}'
-        args = args.format(str1,str2,ct,at,verbos)
-        s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
-        stdout,stderr= s.communicate()
+        args = compare_crystal_cmd + ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4}'
+        args = args.format(str1, str2, ct, at, verbos)
+        s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        stdout, stderr = s.communicate()
         res = str(stdout)
-        if 'Not' in res:
-            return False
-        else:
-            return True
+        return False if 'Not' in res else True
 
-
-    def get_total_energy(self, x, is_corrdump=False,is_ref=False,
-                         site_repeat=-1,sum_corr=0.0,delete_file=True):
+    def get_total_energy(self, x, is_corrdump=False, is_ref=False, site_repeat=-1, sum_corr=0.0,
+                         delete_file=True):
         """
         Calculate absolute energy of a crystal structure like first-principles
         calculation software package computed.
@@ -345,7 +342,7 @@ class CE(object):
             Total energy or corrdump energy.
 
         """
-        #-----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
         # Calculation formula:
         # 1. get E_per_atom from ref_energy.out
         # 2. get C_atom from atoms.out
@@ -353,7 +350,7 @@ class CE(object):
         # 4. get E_corrdump from corrdump
         # 5. E_tot = ( sum(C_atom * E_per_atom) * site_count + \
         #    E_corrdump ) * supercell_size
-        #-----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
 
         if is_corrdump:
             if site_repeat > 0 and type(site_repeat) is int:
@@ -382,7 +379,7 @@ class CE(object):
         _lat_in = Mcsqs.structure_from_string(
             _lat_in_string.replace('_pv', '').
                 replace('_sv', '').
-                replace('Vac','Au'))
+                replace('Vac', 'Au'))
 
         _count_atom = {}
         num = 0

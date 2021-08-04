@@ -1,27 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pygace.ga &#8212; pygace 2018.12.13 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '2018.12.13',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -30,13 +20,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for pygace.ga</h1><div class="highlight"><pre>
@@ -60,13 +51,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">deap</span> <span class="k">import</span> <span class="n">tools</span>
+<span class="kn">from</span> <span class="nn">deap</span> <span class="kn">import</span> <span class="n">tools</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
-<span class="n">__email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
 <span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Yingxing Cheng&quot;</span>
-<span class="n">__maintainer_email__</span> <span class="o">=</span><span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
+<span class="n">__maintainer_email__</span> <span class="o">=</span> <span class="s2">&quot;yxcheng@buaa.edu.cn&quot;</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2018.12.13&quot;</span>
+
 
 <div class="viewcode-block" id="gaceVarAnd"><a class="viewcode-back" href="../../pygace.html#pygace.ga.gaceVarAnd">[docs]</a><span class="k">def</span> <span class="nf">gaceVarAnd</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">toolbox</span><span class="p">,</span> <span class="n">cxpb</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -97,14 +89,15 @@
                                                           <span class="n">offspring</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="k">del</span> <span class="n">offspring</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">offspring</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">offspring</span><span class="p">),</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">offspring</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
         <span class="n">offspring</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">=</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="n">offspring</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">del</span> <span class="n">offspring</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span>
 
     <span class="k">return</span> <span class="n">offspring</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">offspring</span><span class="p">):</span><span class="mi">2</span><span class="p">]</span></div>
 
+
 <div class="viewcode-block" id="gaceGA"><a class="viewcode-back" href="../../pygace.html#pygace.ga.gaceGA">[docs]</a><span class="k">def</span> <span class="nf">gaceGA</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">toolbox</span><span class="p">,</span> <span class="n">cxpb</span><span class="p">,</span> <span class="n">ngen</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">halloffame</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">checkpoint</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+           <span class="n">halloffame</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Genetic algorithm (GA) used in ``pygace``. Users can define their algorithms</span>
 <span class="sd">    based on ``DEAP`` package or other GA framework.</span>
@@ -137,7 +130,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">checkpoint</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
             <span class="n">cp</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cp_file</span><span class="p">)</span>
         <span class="n">population</span> <span class="o">=</span> <span class="n">cp</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span>
         <span class="n">start_gen</span> <span class="o">=</span> <span class="n">cp</span><span class="p">[</span><span class="s1">&#39;generation&#39;</span><span class="p">]</span>
@@ -168,7 +161,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">logbook</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
 
     <span class="c1"># Begin the generational process</span>
-    <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_gen</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_gen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ngen</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># Select the next generation individuals</span>
         <span class="n">offspring</span> <span class="o">=</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">))</span>
 
@@ -195,11 +188,11 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">logbook</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">gen</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">checkpoint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span><span class="n">generation</span><span class="o">=</span><span class="n">gen</span><span class="p">,</span> <span class="n">halloffame</span><span class="o">=</span><span class="n">halloffame</span><span class="p">,</span>
-                      <span class="n">logbook</span><span class="o">=</span><span class="n">logbook</span><span class="p">,</span><span class="n">rndstate</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">())</span>
+            <span class="n">cp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">generation</span><span class="o">=</span><span class="n">gen</span><span class="p">,</span> <span class="n">halloffame</span><span class="o">=</span><span class="n">halloffame</span><span class="p">,</span>
+                      <span class="n">logbook</span><span class="o">=</span><span class="n">logbook</span><span class="p">,</span> <span class="n">rndstate</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">())</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
-                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span><span class="n">cp_file</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cp_file</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">cp_file</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">population</span><span class="p">,</span> <span class="n">logbook</span></div>
 
@@ -226,22 +219,24 @@
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">indpb</span><span class="p">:</span>
-            <span class="n">index1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">index2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">index1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">index2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">individual</span><span class="p">[</span><span class="n">index1</span><span class="p">],</span> <span class="n">individual</span><span class="p">[</span><span class="n">index2</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="p">[</span><span class="n">index2</span><span class="p">],</span> <span class="n">individual</span><span class="p">[</span><span class="n">index1</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">individual</span><span class="p">,</span></div>
+
 
 <span class="c1"># genes -&gt; cromosomes -&gt; individual</span>
 <div class="viewcode-block" id="Individual"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Individual">[docs]</a><span class="k">class</span> <span class="nc">Individual</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Individual object contain several Cromosome objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
-
     <span class="k">pass</span></div>
+
 
 <div class="viewcode-block" id="Cromosome"><a class="viewcode-back" href="../../pygace.html#pygace.ga.Cromosome">[docs]</a><span class="k">class</span> <span class="nc">Cromosome</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -255,9 +250,9 @@
 <span class="sd">        The fitness value of gene</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">valid_type</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Vac&#39;</span><span class="p">,</span><span class="s1">&#39;Replace&#39;</span><span class="p">]</span>
+    <span class="n">valid_type</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Vac&#39;</span><span class="p">,</span> <span class="s1">&#39;Replace&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gene_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gene_length</span> <span class="o">=</span> <span class="n">gene_length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_length</span>
@@ -322,18 +317,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">)</span></div>
 
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">gene</span><span class="p">)</span> <span class="k">for</span> <span class="n">gene</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">genes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="gaceCrossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.gaceCrossover">[docs]</a><span class="k">def</span> <span class="nf">gaceCrossover</span><span class="p">(</span><span class="n">indiv1</span><span class="p">,</span> <span class="n">indiv2</span><span class="p">,</span><span class="n">crossover_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<div class="viewcode-block" id="gaceCrossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.gaceCrossover">[docs]</a><span class="k">def</span> <span class="nf">gaceCrossover</span><span class="p">(</span><span class="n">indiv1</span><span class="p">,</span> <span class="n">indiv2</span><span class="p">,</span> <span class="n">crossover_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cross_num</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Executes a crossover specified by crossover type `crossover_type`and the</span>
 <span class="sd">    number of crossover `cross_num` on the input `sequence` individuals.</span>
@@ -366,11 +360,12 @@
 <span class="sd">        A tuple of two individuals.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">methods</span> <span class="o">=</span> <span class="p">(</span><span class="n">partial_mapped_crossover</span><span class="p">,</span><span class="n">order_crossover</span><span class="p">,</span>
-               <span class="n">position_based_crossover</span><span class="p">,</span><span class="n">order_based_crossover</span><span class="p">,</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">(</span><span class="n">partial_mapped_crossover</span><span class="p">,</span> <span class="n">order_crossover</span><span class="p">,</span>
+               <span class="n">position_based_crossover</span><span class="p">,</span> <span class="n">order_based_crossover</span><span class="p">,</span>
                <span class="n">cycle_crossover</span><span class="p">,</span> <span class="n">subtour_exchange_crossover</span>
                <span class="p">)</span>
-    <span class="k">return</span> <span class="n">methods</span><span class="p">[</span><span class="n">crossover_type</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)](</span><span class="n">indiv1</span><span class="p">,</span><span class="n">indiv2</span><span class="p">,</span><span class="n">cross_num</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">methods</span><span class="p">[</span><span class="n">crossover_type</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)](</span><span class="n">indiv1</span><span class="p">,</span> <span class="n">indiv2</span><span class="p">,</span> <span class="n">cross_num</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="transfer_from"><a class="viewcode-back" href="../../pygace.html#pygace.ga.transfer_from">[docs]</a><span class="k">def</span> <span class="nf">transfer_from</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
     <span class="n">_tmp</span> <span class="o">=</span> <span class="n">Cromosome</span><span class="p">(</span><span class="n">gene_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
@@ -437,8 +432,8 @@
         <span class="n">value_list_in_indiv1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indiv1</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
         <span class="n">value_list_in_indiv2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indiv2</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
-    <span class="n">map_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">value_list_in_indiv2</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">value_list_in_indiv1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">offset</span><span class="p">)}</span>
-    <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span><span class="p">[</span><span class="n">begin_index_in_indiv1</span><span class="p">:</span><span class="n">begin_index_in_indiv1</span><span class="o">+</span><span class="n">offset</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_list_in_indiv2</span><span class="p">[:]</span>
+    <span class="n">map_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">value_list_in_indiv2</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="n">value_list_in_indiv1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">offset</span><span class="p">)}</span>
+    <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span><span class="p">[</span><span class="n">begin_index_in_indiv1</span><span class="p">:</span><span class="n">begin_index_in_indiv1</span> <span class="o">+</span> <span class="n">offset</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_list_in_indiv2</span><span class="p">[:]</span>
 
     <span class="n">search_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">change_list_indiv1</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">search_list</span><span class="p">:</span>
@@ -446,9 +441,10 @@
             <span class="n">new_sol</span><span class="o">.</span><span class="n">set_gene</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">map_dict</span><span class="p">[</span><span class="n">new_sol</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
 
     <span class="n">ind1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_sol</span><span class="p">[:]</span>
-    <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span><span class="n">ind2</span></div>
+    <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span></div>
 
-<div class="viewcode-block" id="order_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.order_crossover">[docs]</a><span class="k">def</span> <span class="nf">order_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span><span class="n">cross_number</span><span class="p">):</span>
+
+<div class="viewcode-block" id="order_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.order_crossover">[docs]</a><span class="k">def</span> <span class="nf">order_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">cross_number</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Order crossover (OX1) operator was proposed by Davis (1985). The OX1 exploits</span>
 <span class="sd">    a property of the path representation, that the order of cities (not their</span>
@@ -508,11 +504,12 @@
     <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">gene</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value_set</span><span class="p">:</span>
-            <span class="n">new_sol</span><span class="o">.</span><span class="n">set_gene</span><span class="p">(</span><span class="n">left_pos_in_indiv1</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">gene</span><span class="p">)</span>
+            <span class="n">new_sol</span><span class="o">.</span><span class="n">set_gene</span><span class="p">(</span><span class="n">left_pos_in_indiv1</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">gene</span><span class="p">)</span>
             <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="n">ind1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_sol</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span></div>
+
 
 <div class="viewcode-block" id="position_based_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.position_based_crossover">[docs]</a><span class="k">def</span> <span class="nf">position_based_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">cross_number</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -555,7 +552,7 @@
     <span class="n">offset</span> <span class="o">=</span> <span class="n">cross_number</span>
 
     <span class="c1"># Crossover</span>
-    <span class="n">change_list_indiv1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span><span class="n">offset</span><span class="p">)</span>
+    <span class="n">change_list_indiv1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span> <span class="n">offset</span><span class="p">)</span>
     <span class="n">value_list_in_indiv1</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">change_list_indiv1</span><span class="p">:</span>
         <span class="n">value_list_in_indiv1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indiv1</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
@@ -574,6 +571,7 @@
 
     <span class="n">ind1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_sol</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span></div>
+
 
 <div class="viewcode-block" id="order_based_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.order_based_crossover">[docs]</a><span class="k">def</span> <span class="nf">order_based_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">cross_number</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -626,7 +624,7 @@
 
     <span class="c1"># second: select gene in indiv2 which is also in left_gene_in_indiv1</span>
     <span class="n">left_pos_in_indiv2</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indiv2</span><span class="o">.</span><span class="n">genes</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">left_gene_in_indiv1</span><span class="p">:</span>
             <span class="n">left_pos_in_indiv2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 
@@ -635,6 +633,7 @@
 
     <span class="n">ind1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_sol</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span></div>
+
 
 <div class="viewcode-block" id="cycle_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.cycle_crossover">[docs]</a><span class="k">def</span> <span class="nf">cycle_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">cross_number</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -676,7 +675,7 @@
     <span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">genes</span><span class="p">[:]</span>
 
     <span class="c1"># selected randomly gene in parent1</span>
-    <span class="n">random_gene_pos</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">random_gene_pos</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_sol</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">head</span> <span class="o">=</span> <span class="n">indiv1</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">random_gene_pos</span><span class="p">)</span>
     <span class="n">tail</span> <span class="o">=</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">random_gene_pos</span><span class="p">)</span>
     <span class="n">gene_poul</span> <span class="o">=</span> <span class="p">{</span><span class="n">head</span><span class="p">}</span>
@@ -687,10 +686,11 @@
 
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">gene</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_sol</span><span class="o">.</span><span class="n">genes</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">gene</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gene_poul</span><span class="p">:</span>
-            <span class="n">new_sol</span><span class="o">.</span><span class="n">set_gene</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="n">indiv2</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+            <span class="n">new_sol</span><span class="o">.</span><span class="n">set_gene</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">indiv2</span><span class="o">.</span><span class="n">get_gene</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
 
     <span class="n">ind1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_sol</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span></div>
+
 
 <div class="viewcode-block" id="subtour_exchange_crossover"><a class="viewcode-back" href="../../pygace.html#pygace.ga.subtour_exchange_crossover">[docs]</a><span class="k">def</span> <span class="nf">subtour_exchange_crossover</span><span class="p">(</span><span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">cross_number</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -756,6 +756,7 @@
 </pre></div>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -775,9 +776,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pygace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.html">pygace package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pygace.scripts.html">pygace.scripts package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.html">pygace.examples package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.hfo2.html">pygace.examples.hfo2 package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pygace.examples.sto.html">pygace.examples.sto package</a></li>
 </ul>
 
 <div class="relations">
@@ -790,15 +788,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -807,8 +813,8 @@
       &copy;2018, Yingxing Cheng.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

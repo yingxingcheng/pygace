@@ -4,34 +4,47 @@
 \ifdefined\pdfpxdimen
    \let\sphinxpxdimen\pdfpxdimen\else\newdimen\sphinxpxdimen
 \fi \sphinxpxdimen=.75bp\relax
+\ifdefined\pdfimageresolution
+    \pdfimageresolution= \numexpr \dimexpr1in\relax/\sphinxpxdimen\relax
+\fi
+%% let collapsable pdf bookmarks panel have high depth per default
+\PassOptionsToPackage{bookmarksdepth=5}{hyperref}
 
+\PassOptionsToPackage{warn}{textcomp}
 \usepackage[utf8]{inputenc}
 \ifdefined\DeclareUnicodeCharacter
- \ifdefined\DeclareUnicodeCharacterAsOptional
-  \DeclareUnicodeCharacter{"00A0}{\nobreakspace}
-  \DeclareUnicodeCharacter{"2500}{\sphinxunichar{2500}}
-  \DeclareUnicodeCharacter{"2502}{\sphinxunichar{2502}}
-  \DeclareUnicodeCharacter{"2514}{\sphinxunichar{2514}}
-  \DeclareUnicodeCharacter{"251C}{\sphinxunichar{251C}}
-  \DeclareUnicodeCharacter{"2572}{\textbackslash}
- \else
-  \DeclareUnicodeCharacter{00A0}{\nobreakspace}
-  \DeclareUnicodeCharacter{2500}{\sphinxunichar{2500}}
-  \DeclareUnicodeCharacter{2502}{\sphinxunichar{2502}}
-  \DeclareUnicodeCharacter{2514}{\sphinxunichar{2514}}
-  \DeclareUnicodeCharacter{251C}{\sphinxunichar{251C}}
-  \DeclareUnicodeCharacter{2572}{\textbackslash}
- \fi
+% support both utf8 and utf8x syntaxes
+  \ifdefined\DeclareUnicodeCharacterAsOptional
+    \def\sphinxDUC#1{\DeclareUnicodeCharacter{"#1}}
+  \else
+    \let\sphinxDUC\DeclareUnicodeCharacter
+  \fi
+  \sphinxDUC{00A0}{\nobreakspace}
+  \sphinxDUC{2500}{\sphinxunichar{2500}}
+  \sphinxDUC{2502}{\sphinxunichar{2502}}
+  \sphinxDUC{2514}{\sphinxunichar{2514}}
+  \sphinxDUC{251C}{\sphinxunichar{251C}}
+  \sphinxDUC{2572}{\textbackslash}
 \fi
 \usepackage{cmap}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amstext}
 \usepackage{babel}
-\usepackage{times}
-\usepackage[Bjarne]{fncychap}
-\usepackage[dontkeepoldnames]{sphinx}
 
+
+
+\usepackage{tgtermes}
+\usepackage{tgheros}
+\renewcommand{\ttdefault}{txtt}
+
+
+
+\usepackage[Bjarne]{fncychap}
+\usepackage{sphinx}
+
+\fvset{fontsize=auto}
 \usepackage{geometry}
+
 
 % Include hyperref last.
 \usepackage{hyperref}
@@ -39,876 +52,40 @@
 \usepackage{hypcap}% it must be loaded after hyperref.
 % Set up styles of URL: it should be placed after hyperref.
 \urlstyle{same}
+
 \addto\captionsenglish{\renewcommand{\contentsname}{Contents:}}
 
-\addto\captionsenglish{\renewcommand{\figurename}{Fig.}}
-\addto\captionsenglish{\renewcommand{\tablename}{Table}}
-\addto\captionsenglish{\renewcommand{\literalblockname}{Listing}}
-
-\addto\captionsenglish{\renewcommand{\literalblockcontinuedname}{continued from previous page}}
-\addto\captionsenglish{\renewcommand{\literalblockcontinuesname}{continues on next page}}
-
-\addto\extrasenglish{\def\pageautorefname{page}}
-
+\usepackage{sphinxmessages}
 \setcounter{tocdepth}{1}
 
 
 
 \title{pygace Documentation}
-\date{Dec 26, 2018}
+\date{Aug 04, 2021}
 \release{2018.12.13}
 \author{Yingxing Cheng}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
 \makeindex
-
 \begin{document}
 
-\maketitle
+\pagestyle{empty}
+\sphinxmaketitle
+\pagestyle{plain}
 \sphinxtableofcontents
+\pagestyle{normal}
 \phantomsection\label{\detokenize{index::doc}}
 
 
 
 \chapter{pygace}
-\label{\detokenize{modules::doc}}\label{\detokenize{modules:welcome-to-pygace-s-documentation}}\label{\detokenize{modules:pygace}}
+\label{\detokenize{modules:pygace}}\label{\detokenize{modules::doc}}
 
 \section{pygace package}
 \label{\detokenize{pygace:pygace-package}}\label{\detokenize{pygace::doc}}
 
 \subsection{Subpackages}
 \label{\detokenize{pygace:subpackages}}
-
-\subsubsection{pygace.examples package}
-\label{\detokenize{pygace.examples::doc}}\label{\detokenize{pygace.examples:pygace-examples-package}}
-
-\paragraph{Subpackages}
-\label{\detokenize{pygace.examples:subpackages}}
-
-\subparagraph{pygace.examples.general package}
-\label{\detokenize{pygace.examples.general:pygace-examples-general-package}}\label{\detokenize{pygace.examples.general::doc}}
-
-\subparagraph{Submodules}
-\label{\detokenize{pygace.examples.general:submodules}}
-
-\subparagraph{pygace.examples.general.test\_general module}
-\label{\detokenize{pygace.examples.general:pygace-examples-general-test-general-module}}\label{\detokenize{pygace.examples.general:module-pygace.examples.general.test_general}}\index{pygace.examples.general.test\_general (module)}
-Searching the most stable atomic-structure of a solid with point defects
-(including the extrinsic alloying/doping elements), is one of the central issues in
-materials science. Both adequate sampling of the configuration space and the
-accurate energy evaluation at relatively low cost are demanding for the structure
-prediction. In this work, we have developed a framework combining genetic
-algorithm, cluster expansion (CE) method and first-principles calculations, which
-can effectively locate the ground-state or meta-stable states of the relatively
-large/complex systems. We employ this framework to search the stable structures
-of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the
-Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with
-the structures available in the literature. The present framework can be applied
-to the ground-state search of extensive alloyed/doped materials, which is
-particularly significant for the design of advanced engineering alloys and
-semiconductors.
-
-
-\subparagraph{Module contents}
-\label{\detokenize{pygace.examples.general:module-contents}}\label{\detokenize{pygace.examples.general:module-pygace.examples.general}}\index{pygace.examples.general (module)}
-
-\subparagraph{pygace.examples.hfo2 package}
-\label{\detokenize{pygace.examples.hfo2::doc}}\label{\detokenize{pygace.examples.hfo2:pygace-examples-hfo2-package}}
-
-\subparagraph{Submodules}
-\label{\detokenize{pygace.examples.hfo2:submodules}}
-
-\subparagraph{pygace.examples.hfo2.hfo2\_gace module}
-\label{\detokenize{pygace.examples.hfo2:pygace-examples-hfo2-hfo2-gace-module}}\label{\detokenize{pygace.examples.hfo2:module-pygace.examples.hfo2.hfo2_gace}}\index{pygace.examples.hfo2.hfo2\_gace (module)}
-A GA-to-CE example of oxygen-vacancy-containing HfO2 system given in
-this module.
-\index{HFO2App (class in pygace.examples.hfo2.hfo2\_gace)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.examples.hfo2.hfo2\_gace.}\sphinxbfcode{HFO2App}}{\emph{ce\_site=8}, \emph{ce\_dirname='./data/iter1'}, \emph{ele\_1st='O'}, \emph{ele\_2nd='Vac'}, \emph{params\_config\_dict=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractApp}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractApp}}}}
-
-An app of HfO(2-x) system which is implemented from AbstractApp object
-
-This object is used to execute a GACE simulation, user only need to
-implement several interfaces to custom their application.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{ce\_site: int}}] \leavevmode
-the concept of site used in ATAT program.
-
-\item[{\sphinxstylestrong{ce\_dirname: str}}] \leavevmode
-The name of a directory which contain information of MMAPS or MAPS
-running
-
-\item[{\sphinxstylestrong{ele\_1st: str}}] \leavevmode
-The first type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
-
-\item[{\sphinxstylestrong{ele\_2nd: str}}] \leavevmode
-The second type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
-
-\item[{\sphinxstylestrong{params\_config\_dict: dirt}}] \leavevmode
-Parameter dict used to custom GACE AbstractApp.
-
-\end{description}
-
-\item[{Attributes}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
-A subclass object of AbstractApp.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
-
-\end{description}
-
-\end{description}\end{quote}
-\index{DEFAULT\_SETUP (pygace.examples.hfo2.hfo2\_gace.HFO2App attribute)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.DEFAULT_SETUP}}\pysigline{\sphinxbfcode{DEFAULT\_SETUP}\sphinxbfcode{ = \{'MU\_OXYGEN': -4.91223, 'STEP': 1, 'TMP\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp\_dir', 'NB\_DEFECT': 4, 'TEMPLATE\_FILE': './data/lat\_in.template', 'PERFECT\_HFO2': -976.3650933333331, 'DFT\_CAL\_DIR': './dft\_dirs', 'TEST\_RES\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res\_dir', 'PICKLE\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle\_bakup', 'NB\_SITES': 64\}}}
-\end{fulllineitems}
-
-\index{evalEnergy() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{evalEnergy}}{\emph{individual}}{}
-Evaluation function for the ground-state searching problem.
-
-The problem is to determine a configuration of n vacancies
-on a crystalline structures such that the energy of crystalline
-structures can obtain minimum value.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{individual}}] \leavevmode
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
-Fittness value
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{get\_epoch() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.get_epoch}}\pysiglinewithargsret{\sphinxbfcode{get\_epoch}}{\emph{nb\_vac}}{}
-Obtain the epoch state of the previous running
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{nb\_vac}}] \leavevmode{[}int{]}
-The number of vacancy
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{int}}] \leavevmode
-The epoch state of previous running.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{ind\_to\_elis() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{ind\_to\_elis}}{\emph{individual}}{}
-Convert individual (number list) to element list
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{individual}}] \leavevmode
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
-A list of element symbol string.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{multiple\_run() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.multiple_run}}\pysiglinewithargsret{\sphinxbfcode{multiple\_run}}{\emph{mission\_name}, \emph{repeat\_iters}}{}
-For multiple tasks
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{mission\_name}}] \leavevmode{[}str{]}
-A string used to represent the name of current running.
-
-\item[{\sphinxstylestrong{repeat\_iters}}] \leavevmode{[}int{]}
-How many times should a simulation repeat for statistic error(
-different grouond-state in different running iterations with
-identical parameter setting).
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
-A list contain the results of running
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{run() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{\emph{iter\_idx=1}, \emph{target\_epoch=50}}{}
-Main function to run a GACE simulation which will be called by
-\sphinxtitleref{AbstractRunner}.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Determine which iteration the ECI is used in.
-
-\item[{\sphinxstylestrong{target\_epoch}}] \leavevmode{[}int{]}
-Iteration in GA simulation.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{single\_run() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.single_run}}\pysiglinewithargsret{\sphinxbfcode{single\_run}}{\emph{mission\_name}, \emph{repeat\_iter}}{}
-A single running task.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{mission\_name}}] \leavevmode{[}str{]}
-A string used to represent the name of current running.
-
-\item[{\sphinxstylestrong{repeat\_iters}}] \leavevmode{[}int{]}
-How many times should a simulation repeat for statistic error(
-different grouond-state in different running iterations with
-identical parameter setting).
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
-A tuple of pupulation, random states and hall of fame.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{update\_ce() (pygace.examples.hfo2.hfo2\_gace.HFO2App method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HFO2App.update_ce}}\pysiglinewithargsret{\sphinxbfcode{update\_ce}}{\emph{site=8}, \emph{dirname='./data/iter1'}}{}~\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{site}}] \leavevmode{[}int, optional{]}
-The site used in cluster expansion.
-
-\item[{\sphinxstylestrong{dirname}}] \leavevmode{[}str, optional{]}
-The name of directory which contains file required in cluster
-expansion.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{HfO2EleIndv (class in pygace.examples.hfo2.hfo2\_gace)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HfO2EleIndv}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.examples.hfo2.hfo2\_gace.}\sphinxbfcode{HfO2EleIndv}}{\emph{ele\_lis}, \emph{app=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.utility.EleIndv}]{\sphinxcrossref{\sphinxcode{pygace.utility.EleIndv}}}}
-
-A class that use list chemistry element to represent individual.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{ele\_lis}}] \leavevmode{[}list{]}
-A list of chemistry element.
-
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
-An application of GACE which is used to obtain ground-state
-structures based generic algorithm and cluster expansion method.
-
-\end{description}
-
-\item[{Attributes}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app: AbstractApp}}] \leavevmode
-An application handling GACE running process.
-
-\item[{\sphinxstylestrong{ele\_lis: list}}] \leavevmode
-A list of chemistry element string.
-
-\end{description}
-
-\end{description}\end{quote}
-\index{ce\_energy (pygace.examples.hfo2.hfo2\_gace.HfO2EleIndv attribute)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.ce_energy}}\pysigline{\sphinxbfcode{ce\_energy}}
-Return CE energy
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
-Energy predicted by CE method.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{ce\_energy\_corrdump (pygace.examples.hfo2.hfo2\_gace.HfO2EleIndv attribute)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.ce_energy_corrdump}}\pysigline{\sphinxbfcode{ce\_energy\_corrdump}}
-Return relative energy defined in \sphinxcode{ATAT} and computed by \sphinxcode{corrdump}
-program.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
-Relative energy generated by \sphinxcode{corrdump} program.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{dft\_energy() (pygace.examples.hfo2.hfo2\_gace.HfO2EleIndv method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy}}\pysiglinewithargsret{\sphinxbfcode{dft\_energy}}{\emph{iters=None}, \emph{vasp\_cmd=None}, \emph{update\_eci=True}}{}
-Return DFT energy
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{iters}}] \leavevmode{[}int{]}
-index of iteration of GA-to-CE
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None or float}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{dft\_energy\_deprecated() (pygace.examples.hfo2.hfo2\_gace.HfO2EleIndv method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.HfO2EleIndv.dft_energy_deprecated}}\pysiglinewithargsret{\sphinxbfcode{dft\_energy\_deprecated}}{\emph{iters=None}}{}
-Return DFT energy
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{iters}}] \leavevmode{[}int{]}
-index of iteration of GA-to-CE
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None or float}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{Runner (class in pygace.examples.hfo2.hfo2\_gace)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.Runner}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.examples.hfo2.hfo2\_gace.}\sphinxbfcode{Runner}}{\emph{app=None}, \emph{iter\_idx=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractRunner}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractRunner}}}}
-
-A runner for running a GACE simulation.
-
-This object is used to execute a GACE simulation in HfO2 system.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}subclass of HFO2App{]}
-A subclass object of HFO2App, default is \sphinxtitleref{None}.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration, default is \sphinxtitleref{None}.
-
-\end{description}
-
-\item[{Attributes}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}HFO2App{]}
-A subclass object of HFO2App.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
-
-\end{description}
-
-\end{description}\end{quote}
-\index{compare\_gs() (pygace.examples.hfo2.hfo2\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.Runner.compare_gs}}\pysiglinewithargsret{\sphinxbfcode{compare\_gs}}{\emph{new\_gs}, \emph{old\_gs}}{}
-Determine whether current and previous ground-state are identical.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{new\_gs}}] \leavevmode{[}str{]}
-Ground-state configuration predicted by current iteration.
-
-\item[{\sphinxstylestrong{old\_gs :}}] \leavevmode
-Ground-state configuration predicted by previous iteration.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{bool}}] \leavevmode
-\item[{\sphinxstylestrong{Raises:}}] \leavevmode
-\item[{\sphinxstylestrong{RuntimeError}}] \leavevmode
-when the number of point defect (oxygen vacancy here) is not equal
-in two iteration.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{print\_gs() (pygace.examples.hfo2.hfo2\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.Runner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{print\_gs}}{}{}
-Function used to extract ground-state information from pickle file
-saved during GACE running.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{run() (pygace.examples.hfo2.hfo2\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.Runner.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{}{}
-Main function to run.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{str2energy() (pygace.examples.hfo2.hfo2\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.hfo2:pygace.examples.hfo2.hfo2_gace.Runner.str2energy}}\pysiglinewithargsret{\sphinxbfcode{str2energy}}{\emph{string}}{}
-Obtain energy from string consists of numbers joined by ‘\_’, e.g.,
-\sphinxcode{'1\_2\_3\_19\_'}, in which the number is the position index in lattice
-structure template file.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{string}}] \leavevmode{[}str{]}
-The string consists by index of point defect.
-
-\item[{\sphinxstylestrong{Returns}}] \leavevmode
-\item[{\sphinxstylestrong{——-}}] \leavevmode
-\item[{\sphinxstylestrong{float}}] \leavevmode
-CE energy.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-
-
-\subparagraph{Module contents}
-\label{\detokenize{pygace.examples.hfo2:module-contents}}\label{\detokenize{pygace.examples.hfo2:module-pygace.examples.hfo2}}\index{pygace.examples.hfo2 (module)}
-A GA-to-CE example of oxygen-vacancy containing HfO2 given in this module.
-
-
-\subparagraph{pygace.examples.sto package}
-\label{\detokenize{pygace.examples.sto:pygace-examples-sto-package}}\label{\detokenize{pygace.examples.sto::doc}}
-
-\subparagraph{Submodules}
-\label{\detokenize{pygace.examples.sto:submodules}}
-
-\subparagraph{pygace.examples.sto.sto\_gace module}
-\label{\detokenize{pygace.examples.sto:pygace-examples-sto-sto-gace-module}}\label{\detokenize{pygace.examples.sto:module-pygace.examples.sto.sto_gace}}\index{pygace.examples.sto.sto\_gace (module)}
-A GA-to-CE example given in this module.
-\index{Runner (class in pygace.examples.sto.sto\_gace)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.Runner}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.examples.sto.sto\_gace.}\sphinxbfcode{Runner}}{\emph{app=None}, \emph{iter\_idx=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractRunner}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractRunner}}}}
-
-A runner for running a GACE simulation.
-
-This object is used to execute a GACE simulation in STO system.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}subclass of STOApp{]}
-A subclass object of STOApp, default is \sphinxtitleref{None}.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration, default is \sphinxtitleref{None}.
-
-\end{description}
-
-\item[{Attributes}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}STOApp{]}
-A subclass object of HFO2App.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
-
-\end{description}
-
-\end{description}\end{quote}
-\index{create\_dir\_for\_DFT() (pygace.examples.sto.sto\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.Runner.create_dir_for_DFT}}\pysiglinewithargsret{\sphinxbfcode{create\_dir\_for\_DFT}}{\emph{task\_fname='./DFT\_task.dat'}}{}
-Function to create directories for DFT calculation for ground-state
-configurations candidates in each GA iteration. This function is used
-to God\_view function. The identical functional method in a standard
-GACE iteration is included \sphinxtitleref{print\_gs} member function in STOApp.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{task\_fname}}] \leavevmode{[}str{]}
-The name of file contain the information of directory in which
-DFT task should be performed.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{god\_view() (pygace.examples.sto.sto\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.Runner.god_view}}\pysiglinewithargsret{\sphinxbfcode{god\_view}}{}{}
-In some cases, the number of all candidate configurations in sample
-space is limited, and we can enumerate these configurations one by one
-to calculate CE energis, which is a fast and efficient way to obtain
-potential ground-state structures than standard genetic algorithms selection.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{print\_gs() (pygace.examples.sto.sto\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.Runner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{print\_gs}}{}{}
-Function used to extract ground-state information from pickle file
-saved during GACE running.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{run() (pygace.examples.sto.sto\_gace.Runner method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.Runner.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{}{}
-Main function to run GA-to-CE iterations.
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{STOApp (class in pygace.examples.sto.sto\_gace)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.examples.sto.sto\_gace.}\sphinxbfcode{STOApp}}{\emph{ce\_site=1}, \emph{ce\_dirname='./data/iter0'}, \emph{ele\_1st='Ti\_sv'}, \emph{ele\_2nd='Nb\_sv'}, \emph{params\_config\_dict=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractApp}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractApp}}}}
-
-An app of SrTi(1-x)Nb(x)O3 system which is implemented from AbstractApp
-object
-
-This object is used to execute a GACE simulation, user only need to
-implement several interfaces to custom their application.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{ce\_site: int}}] \leavevmode
-the concept of site used in ATAT program.
-
-\item[{\sphinxstylestrong{ce\_dirname: str}}] \leavevmode
-The name of a directory which contain information of MMAPS or MAPS
-running
-
-\item[{\sphinxstylestrong{ele\_1st: str}}] \leavevmode
-The first type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
-
-\item[{\sphinxstylestrong{ele\_2nd: str}}] \leavevmode
-The second type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
-
-\item[{\sphinxstylestrong{params\_config\_dict: dirt}}] \leavevmode
-Parameter dict used to custom GACE AbstractApp.
-
-\end{description}
-
-\item[{Attributes}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
-A subclass object of AbstractApp.
-
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
-
-\end{description}
-
-\end{description}\end{quote}
-\index{DEFAULT\_SETUP (pygace.examples.sto.sto\_gace.STOApp attribute)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.DEFAULT_SETUP}}\pysigline{\sphinxbfcode{DEFAULT\_SETUP}\sphinxbfcode{ = \{'MU\_OXYGEN': -4.91223, 'TMP\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp\_dir', 'NB\_DEFECT': 12, 'TEMPLATE\_FILE': './data/lat\_in.template', 'DFT\_CAL\_DIR': './dft\_dirs', 'TEST\_RES\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res\_dir', 'PICKLE\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle\_bakup', 'PERFECT\_STO': 0.0, 'NB\_SITES': 15\}}}
-\end{fulllineitems}
-
-\index{create\_dir\_for\_DFT() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.create_dir_for_DFT}}\pysiglinewithargsret{\sphinxbfcode{create\_dir\_for\_DFT}}{\emph{task\_fname='./DFT\_task.dat'}}{}
-Function to create directories for DFT calculation for ground-state
-configurations candidates in each GA iteration. This function is used
-to God\_view function. The identical functional method in a standard
-GACE iteration is included \sphinxtitleref{print\_gs} member function in STOApp.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{task\_fname}}] \leavevmode{[}str{]}
-Name of file restoring the directory in which DFT task should be
-performed.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{evalEnergy() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{evalEnergy}}{\emph{individual}}{}
-Evaluation function for the ground-state searching problem.
-
-The problem is to determine a configuration of n vacancies
-on a crystalline structures such that the energy of crystalline
-structures can obtain minimum value.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{individual}}] \leavevmode
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
-A tuple contains energy in the first position, which is compatible
-with \sphinxcode{DEAP}.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{ind\_to\_elis() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{ind\_to\_elis}}{\emph{individual}}{}
-Convert individual (number list) to element list.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{individual}}] \leavevmode
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
-A list of element symbol string.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{multiple\_run() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.multiple_run}}\pysiglinewithargsret{\sphinxbfcode{multiple\_run}}{\emph{ce\_iter}, \emph{ga\_iters}}{}
-For multiple tasks
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{ce\_iter}}] \leavevmode{[}int{]}
-How many times should a simulation repeat for statistic error(
-different grouond-state in different running iterations with
-identical parameter setting).
-
-\item[{\sphinxstylestrong{ga\_iters}}] \leavevmode{[}int{]}
-How many times should a GA simulation repeat in each GA-to-CE
-iteration.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
-A list contain the results of running
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{run() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{\emph{iter\_idx=0}, \emph{target\_epoch=50}}{}
-Main function to run a GACE simulation which will be called by
-\sphinxtitleref{AbstractRunner}.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Determine which iteration the ECI is used in.
-
-\item[{\sphinxstylestrong{target\_epoch}}] \leavevmode{[}int{]}
-Iteration in GA simulation.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{single\_run() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.single_run}}\pysiglinewithargsret{\sphinxbfcode{single\_run}}{\emph{ce\_iter}, \emph{ga\_iter}}{}
-A single running task.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{ce\_iter}}] \leavevmode{[}str{]}
-How many times should a simulation repeat for statistic error(
-different grouond-state in different running iterations with
-identical parameter setting).
-
-\item[{\sphinxstylestrong{ga\_iter}}] \leavevmode{[}int{]}
-How many times should a GA simulation repeat in each GA-to-CE
-iteration.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
-A tuple of pupulation, random states and hall of fame.
-
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{update\_ce() (pygace.examples.sto.sto\_gace.STOApp method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.examples.sto:pygace.examples.sto.sto_gace.STOApp.update_ce}}\pysiglinewithargsret{\sphinxbfcode{update\_ce}}{\emph{site=1}, \emph{dirname='./data/iter0'}}{}
-Function to update inner CE object
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{site}}] \leavevmode{[}int, optional{]}
-The site defined in \sphinxcode{lat.in} which is one of input files in ATAT.
-
-\item[{\sphinxstylestrong{dirname}}] \leavevmode{[}str{]}
-The name of directory contain running results of \sphinxcode{MMAPS}.
-
-\end{description}
-
-\item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
-\end{description}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-
-
-\subparagraph{Module contents}
-\label{\detokenize{pygace.examples.sto:module-contents}}\label{\detokenize{pygace.examples.sto:module-pygace.examples.sto}}\index{pygace.examples.sto (module)}
-A GA-to-CE example of Nb-doped SrTiO3 given in this module.
-
-
-\paragraph{Module contents}
-\label{\detokenize{pygace.examples:module-contents}}\label{\detokenize{pygace.examples:module-pygace.examples}}\index{pygace.examples (module)}
-The module contains an example of Nb-doped SrTiO3 with 75 atoms supercell.
-
-In this module, we will introduce two methods for obtaining ground-state
-structures. One is used in general mode to obtain ground-state with GA-to-CE
-iteration, the other one can be used in the case with samples of small
-order of magnitude.
-
 
 \subsubsection{pygace.scripts package}
 \label{\detokenize{pygace.scripts:pygace-scripts-package}}\label{\detokenize{pygace.scripts::doc}}
@@ -917,93 +94,114 @@ order of magnitude.
 \label{\detokenize{pygace.scripts:submodules}}
 
 \paragraph{pygace.scripts.rungace module}
-\label{\detokenize{pygace.scripts:pygace-scripts-rungace-module}}\label{\detokenize{pygace.scripts:module-pygace.scripts.rungace}}\index{pygace.scripts.rungace (module)}
-Searching the most stable atomic-structure of a solid with point defects
+\label{\detokenize{pygace.scripts:module-pygace.scripts.rungace}}\label{\detokenize{pygace.scripts:pygace-scripts-rungace-module}}\index{module@\spxentry{module}!pygace.scripts.rungace@\spxentry{pygace.scripts.rungace}}\index{pygace.scripts.rungace@\spxentry{pygace.scripts.rungace}!module@\spxentry{module}}
+\sphinxAtStartPar
+Searching the most stable atomic\sphinxhyphen{}structure of a solid with point defects
 (including the extrinsic alloying/doping elements), is one of the central issues in
 materials science. Both adequate sampling of the configuration space and the
 accurate energy evaluation at relatively low cost are demanding for the structure
 prediction. In this work, we have developed a framework combining genetic
-algorithm, cluster expansion (CE) method and first-principles calculations, which
-can effectively locate the ground-state or meta-stable states of the relatively
+algorithm, cluster expansion (CE) method and first\sphinxhyphen{}principles calculations, which
+can effectively locate the ground\sphinxhyphen{}state or meta\sphinxhyphen{}stable states of the relatively
 large/complex systems. We employ this framework to search the stable structures
-of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the
-Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with
+of two distinct systems, i.e., oxygen\sphinxhyphen{}vacancy\sphinxhyphen{}containing HfO(2\sphinxhyphen{}x) and the
+Nb\sphinxhyphen{}doped SrTi(1\sphinxhyphen{}x)NbxO3 , and more stable structures are found compared with
 the structures available in the literature. The present framework can be applied
-to the ground-state search of extensive alloyed/doped materials, which is
+to the ground\sphinxhyphen{}state search of extensive alloyed/doped materials, which is
 particularly significant for the design of advanced engineering alloys and
 semiconductors.
-\index{build\_supercell\_template() (in module pygace.scripts.rungace)}
+\index{build\_supercell\_template() (in module pygace.scripts.rungace)@\spxentry{build\_supercell\_template()}\spxextra{in module pygace.scripts.rungace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.build_supercell_template}}\pysiglinewithargsret{\sphinxcode{pygace.scripts.rungace.}\sphinxbfcode{build\_supercell\_template}}{\emph{scale}}{}
-Create supercell for GA-to-CE simulation.
+\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.build_supercell_template}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.scripts.rungace.}}\sphinxbfcode{\sphinxupquote{build\_supercell\_template}}}{\emph{\DUrole{n}{scale}}}{}
+\sphinxAtStartPar
+Create supercell for GA\sphinxhyphen{}to\sphinxhyphen{}CE simulation.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{scale}}] \leavevmode{[}list or arrary like{]}
+\sphinxAtStartPar
 A list used to determine the size of supercell.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{rungace() (in module pygace.scripts.rungace)}
+\index{rungace() (in module pygace.scripts.rungace)@\spxentry{rungace()}\spxextra{in module pygace.scripts.rungace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.rungace}}\pysiglinewithargsret{\sphinxcode{pygace.scripts.rungace.}\sphinxbfcode{rungace}}{\emph{cell\_scale}, \emph{ele\_list}, \emph{ele\_nb}, \emph{*args}, \emph{**kwargs}}{}
-Command for running GA-to-CE simulation.
+\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.rungace}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.scripts.rungace.}}\sphinxbfcode{\sphinxupquote{rungace}}}{\emph{\DUrole{n}{cell\_scale}}, \emph{\DUrole{n}{ele\_list}}, \emph{\DUrole{n}{ele\_nb}}, \emph{\DUrole{n}{max\_lis}}, \emph{\DUrole{o}{*}\DUrole{n}{args}}, \emph{\DUrole{o}{**}\DUrole{n}{kwargs}}}{}
+\sphinxAtStartPar
+Command for running GA\sphinxhyphen{}to\sphinxhyphen{}CE simulation.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{cell\_scale}}] \leavevmode{[}list or arrary like{]}
+\item[{\sphinxstylestrong{cell\_scale}}] \leavevmode{[}list or array like{]}
+\sphinxAtStartPar
 A list used to specify the size of supercell.
 
 \item[{\sphinxstylestrong{ele\_list}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 A list of elements contained in structure.
 
 \item[{\sphinxstylestrong{ele\_nb}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 A list of maximum of the number of point defect in supercell structures.
+
+\item[{\sphinxstylestrong{max\_lis}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
+The maximum iterations
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{show\_results() (in module pygace.scripts.rungace)}
+\index{show\_results() (in module pygace.scripts.rungace)@\spxentry{show\_results()}\spxextra{in module pygace.scripts.rungace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.show_results}}\pysiglinewithargsret{\sphinxcode{pygace.scripts.rungace.}\sphinxbfcode{show\_results}}{\emph{ele\_type\_list}, \emph{defect\_con\_list}, \emph{use\_nb\_iter=False}, \emph{nb\_iter\_gace=None}, \emph{vasp\_cmd=None}, \emph{*args}, \emph{**kwargs}}{}
-Show results of GA-to-CE simulation.
+\phantomsection\label{\detokenize{pygace.scripts:pygace.scripts.rungace.show_results}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.scripts.rungace.}}\sphinxbfcode{\sphinxupquote{show\_results}}}{\emph{\DUrole{n}{ele\_type\_list}}, \emph{\DUrole{n}{defect\_con\_list}}, \emph{\DUrole{n}{max\_ele\_concentration}}, \emph{\DUrole{n}{use\_nb\_iter}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{nb\_iter\_gace}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{vasp\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{o}{*}\DUrole{n}{args}}, \emph{\DUrole{o}{**}\DUrole{n}{kwargs}}}{}
+\sphinxAtStartPar
+Show results of GA\sphinxhyphen{}to\sphinxhyphen{}CE simulation.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{cell\_scale}}] \leavevmode{[}list or arrary like{]}
-A list used to specify the size of supercell.
+\item[{\sphinxstylestrong{ele\_type\_list}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
+A list of element symbols
 
-\item[{\sphinxstylestrong{ele\_list}}] \leavevmode{[}list{]}
-A list of elements contained in structure.
+\item[{\sphinxstylestrong{defect\_con\_list}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
+A list of defect concentration in supercell structures.
 
-\item[{\sphinxstylestrong{ele\_nb}}] \leavevmode{[}list{]}
-A list of maximum of the number of point defect in supercell structures.
+\item[{\sphinxstylestrong{max\_ele\_concentration :}}] \leavevmode
+\sphinxAtStartPar
+The maximum element concentration.
+
+\item[{\sphinxstylestrong{use\_nb\_iter}}] \leavevmode{[}bool, default=False{]}
+\sphinxAtStartPar
+Whether stop after {\color{red}\bfseries{}\textasciigrave{}}n\textasciigrave{}th iteration if it is not converged.
 
 \item[{\sphinxstylestrong{nb\_iter\_gace}}] \leavevmode{[}bool{]}
+\sphinxAtStartPar
 Whether or not to determine stop criteria based on the number of iteration.
 
-\item[{\sphinxstylestrong{vasp\_cmd}}] \leavevmode{[}str{]}
-The command of VASP.
+\item[{\sphinxstylestrong{vasp\_cmd}}] \leavevmode{[}str, default=None{]}
+\sphinxAtStartPar
+The command of \sphinxcode{\sphinxupquote{VASP}}.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -1013,36 +211,44 @@ The command of VASP.
 
 
 \paragraph{Module contents}
-\label{\detokenize{pygace.scripts:module-pygace.scripts}}\label{\detokenize{pygace.scripts:module-contents}}\index{pygace.scripts (module)}
+\label{\detokenize{pygace.scripts:module-pygace.scripts}}\label{\detokenize{pygace.scripts:module-contents}}\index{module@\spxentry{module}!pygace.scripts@\spxentry{pygace.scripts}}\index{pygace.scripts@\spxentry{pygace.scripts}!module@\spxentry{module}}
 
 \subsection{Submodules}
 \label{\detokenize{pygace:submodules}}
 
 \subsection{pygace.ce module}
-\label{\detokenize{pygace:module-pygace.ce}}\label{\detokenize{pygace:pygace-ce-module}}\index{pygace.ce (module)}
-The module wrapper cluster expansion method (CE) implemented in \sphinxcode{MMAPS} in
-\sphinxcode{ATAT}.
-\index{CE (class in pygace.ce)}
+\label{\detokenize{pygace:module-pygace.ce}}\label{\detokenize{pygace:pygace-ce-module}}\index{module@\spxentry{module}!pygace.ce@\spxentry{pygace.ce}}\index{pygace.ce@\spxentry{pygace.ce}!module@\spxentry{module}}
+\sphinxAtStartPar
+The module wrapper cluster expansion method (CE) implemented in \sphinxcode{\sphinxupquote{MMAPS}} in
+\sphinxcode{\sphinxupquote{ATAT}}.
+\index{CE (class in pygace.ce)@\spxentry{CE}\spxextra{class in pygace.ce}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.ce.}\sphinxbfcode{CE}}{\emph{lat\_in=None}, \emph{site=16}, \emph{corrdump\_cmd=None}, \emph{compare\_crystal\_cmd=None}}{}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.ce.}}\sphinxbfcode{\sphinxupquote{CE}}}{\emph{\DUrole{n}{lat\_in}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{site}\DUrole{o}{=}\DUrole{default_value}{16}}, \emph{\DUrole{n}{corrdump\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{compare\_crystal\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
-An wrapper for commends in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+An wrapper for commends in \sphinxcode{\sphinxupquote{ATAT}}.
 
-This class provides several commands that are commonly used in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+This class provides several commands that are commonly used in \sphinxcode{\sphinxupquote{ATAT}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{lat\_in}}] \leavevmode{[}str{]}
-File name of \sphinxcode{lat.in} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+File name of \sphinxcode{\sphinxupquote{lat.in}} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{site}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The site in which different can occupy.
 
 \item[{\sphinxstylestrong{corrdump\_cmd}}] \leavevmode{[}str{]}
-Command of \sphinxcode{corrdump} in \sphinxcode{ATAT}, default is ‘corrdump’
+\sphinxAtStartPar
+Command of \sphinxcode{\sphinxupquote{corrdump}} in \sphinxcode{\sphinxupquote{ATAT}}, default is ‘corrdump’
 
 \item[{\sphinxstylestrong{compare\_crystal\_cmd}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 Command of program which is used to determine whether two crystal
 structures are identical using symmetry analysis.
 
@@ -1050,73 +256,87 @@ structures are identical using symmetry analysis.
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{COMPARE\_CRYSTAL}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 This string restore a command used to determine whether two
 configurations are identical in symmetry.
 
 \item[{\sphinxstylestrong{CORRDUMP}}] \leavevmode{[}str{]}
-This string restore the command of \sphinxtitleref{corrdump} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+This string restore the command of \sphinxtitleref{corrdump} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{clster\_info}}] \leavevmode{[}str{]}
-Filename of cluster information, default is \sphinxcode{clusters.out}
-in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+Filename of cluster information, default is \sphinxcode{\sphinxupquote{clusters.out}}
+in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{eci\_out}}] \leavevmode{[}str{]}
-File name of \sphinxcode{eci.out} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+File name of \sphinxcode{\sphinxupquote{eci.out}} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{lat\_in}}] \leavevmode{[}str{]}
-File name of \sphinxtitleref{lat.in} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+File name of \sphinxtitleref{lat.in} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{per\_atom\_energy}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 A dict restore element type and their responding energy defined in
-\sphinxcode{atoms.out} file in \sphinxcode{ATAT}
+\sphinxcode{\sphinxupquote{atoms.out}} file in \sphinxcode{\sphinxupquote{ATAT}}
 
 \item[{\sphinxstylestrong{site}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The site in which different can occupy.
 
 \item[{\sphinxstylestrong{work\_path}}] \leavevmode{[}str{]}
-The directory of \sphinxcode{MMAPS} or \sphinxcode{MAPS} running.
+\sphinxAtStartPar
+The directory of \sphinxcode{\sphinxupquote{MMAPS}} or \sphinxcode{\sphinxupquote{MAPS}} running.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{COMPARE\_CRYSTAL (pygace.ce.CE attribute)}
+\index{COMPARE\_CRYSTAL (pygace.ce.CE attribute)@\spxentry{COMPARE\_CRYSTAL}\spxextra{pygace.ce.CE attribute}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.COMPARE_CRYSTAL}}\pysigline{\sphinxbfcode{COMPARE\_CRYSTAL}\sphinxbfcode{ = None}}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.COMPARE_CRYSTAL}}\pysigline{\sphinxbfcode{\sphinxupquote{COMPARE\_CRYSTAL}}\sphinxbfcode{\sphinxupquote{ = None}}}
 \end{fulllineitems}
 
-\index{CORRDUMP (pygace.ce.CE attribute)}
+\index{CORRDUMP (pygace.ce.CE attribute)@\spxentry{CORRDUMP}\spxextra{pygace.ce.CE attribute}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.CORRDUMP}}\pysigline{\sphinxbfcode{CORRDUMP}\sphinxbfcode{ = '/home/yxcheng/usr/local/atat/bin/corrdump'}}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.CORRDUMP}}\pysigline{\sphinxbfcode{\sphinxupquote{CORRDUMP}}\sphinxbfcode{\sphinxupquote{ = \textquotesingle{}/Users/yxcheng/softwares/atat/corrdump\textquotesingle{}}}}
 \end{fulllineitems}
 
-\index{compare\_crystal() (pygace.ce.CE static method)}
+\index{compare\_crystal() (pygace.ce.CE static method)@\spxentry{compare\_crystal()}\spxextra{pygace.ce.CE static method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.compare_crystal}}\pysiglinewithargsret{\sphinxbfcode{static }\sphinxbfcode{compare\_crystal}}{\emph{str1}, \emph{str2}, \emph{compare\_crystal\_cmd=None}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.compare_crystal}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{compare\_crystal}}}{\emph{\DUrole{n}{str1}}, \emph{\DUrole{n}{str2}}, \emph{\DUrole{n}{compare\_crystal\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{o}{**}\DUrole{n}{kwargs}}}{}
+\sphinxAtStartPar
 To determine whether structures are identical based crystal symmetry
-analysis. The program used in this package is based on \sphinxcode{XXX} library
+analysis. The program used in this package is based on \sphinxcode{\sphinxupquote{XXX}} library
 which developed by XXX.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{str1}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The first string used to represent elements .
 
 \item[{\sphinxstylestrong{str2}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The second string used to represent elements.
 
 \item[{\sphinxstylestrong{compare\_crystal\_cmd}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The program developed to determine whether two
 crystal structures are identical, default \sphinxtitleref{None}.
 
 \item[{\sphinxstylestrong{kwargs}}] \leavevmode{[}dict arguments{]}
+\sphinxAtStartPar
 Other arguments used in \sphinxtitleref{compare\_crystal\_cmd}.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{bool}}] \leavevmode
+\item[{bool}] \leavevmode
+\sphinxAtStartPar
 True for yes and False for no.
 
 \end{description}
@@ -1125,21 +345,24 @@ True for yes and False for no.
 
 \end{fulllineitems}
 
-\index{corrdump() (pygace.ce.CE method)}
+\index{corrdump() (pygace.ce.CE method)@\spxentry{corrdump()}\spxextra{pygace.ce.CE method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.corrdump}}\pysiglinewithargsret{\sphinxbfcode{corrdump}}{\emph{cmd}}{}
-Obtain energy predicted by \sphinxcode{corrdump} command in \sphinxcode{ATAT}.
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.corrdump}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{corrdump}}}{\emph{\DUrole{n}{cmd}}}{}
+\sphinxAtStartPar
+Obtain energy predicted by \sphinxcode{\sphinxupquote{corrdump}} command in \sphinxcode{\sphinxupquote{ATAT}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{cmd}}] \leavevmode{[}str{]}
-Shell command which call system \sphinxcode{corrdump} command of \sphinxcode{ATAT}.
+\sphinxAtStartPar
+Shell command which call system \sphinxcode{\sphinxupquote{corrdump}} command of \sphinxcode{\sphinxupquote{ATAT}}.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
-Energy predicted by \sphinxcode{corrdump} command.
+\item[{float}] \leavevmode
+\sphinxAtStartPar
+Energy predicted by \sphinxcode{\sphinxupquote{corrdump}} command.
 
 \end{description}
 
@@ -1147,60 +370,70 @@ Energy predicted by \sphinxcode{corrdump} command.
 
 \end{fulllineitems}
 
-\index{fit() (pygace.ce.CE method)}
+\index{fit() (pygace.ce.CE method)@\spxentry{fit()}\spxextra{pygace.ce.CE method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.fit}}\pysiglinewithargsret{\sphinxbfcode{fit}}{\emph{dirname='./.tmp\_atat\_ce\_dir'}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.fit}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fit}}}{\emph{\DUrole{n}{dirname}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}./.tmp\_atat\_ce\_dir\textquotesingle{}}}}{}
+\sphinxAtStartPar
 Obtain all information of a directory in which a correct calculation of
 CE fitting has been performed.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{dirname}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 Which directory of the CE running.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{get\_total\_energy() (pygace.ce.CE method)}
+\index{get\_total\_energy() (pygace.ce.CE method)@\spxentry{get\_total\_energy()}\spxextra{pygace.ce.CE method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.get_total_energy}}\pysiglinewithargsret{\sphinxbfcode{get\_total\_energy}}{\emph{x}, \emph{is\_corrdump=False}, \emph{is\_ref=False}, \emph{site\_repeat=-1}, \emph{sum\_corr=0.0}, \emph{delete\_file=True}}{}
-Calculate absolute energy of a crystal structure like first-principles
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.get_total_energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_total\_energy}}}{\emph{\DUrole{n}{x}}, \emph{\DUrole{n}{is\_corrdump}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{is\_ref}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{site\_repeat}\DUrole{o}{=}\DUrole{default_value}{\sphinxhyphen{} 1}}, \emph{\DUrole{n}{sum\_corr}\DUrole{o}{=}\DUrole{default_value}{0.0}}, \emph{\DUrole{n}{delete\_file}\DUrole{o}{=}\DUrole{default_value}{True}}}{}
+\sphinxAtStartPar
+Calculate absolute energy of a crystal structure like first\sphinxhyphen{}principles
 calculation software package computed.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{x}}] \leavevmode{[}str{]}
-String for filename of lattice crystal, default \sphinxcode{str.out}.
+\sphinxAtStartPar
+String for filename of lattice crystal, default \sphinxcode{\sphinxupquote{str.out}}.
 
 \item[{\sphinxstylestrong{is\_corrdump}}] \leavevmode{[}bool{]}
-Determine whether function use energy computed by \sphinxcode{corrdump}
+\sphinxAtStartPar
+Determine whether function use energy computed by \sphinxcode{\sphinxupquote{corrdump}}
 command to replace absolute energy, default \sphinxtitleref{False}.
 
 \item[{\sphinxstylestrong{is\_ref}}] \leavevmode{[}bool{]}
+\sphinxAtStartPar
 Determine whether function use relative energy provided by users.
 
 \item[{\sphinxstylestrong{site\_repeat}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 This variable should be used seriously when a lattice structure
 cannot map parent lattice.
 
 \item[{\sphinxstylestrong{sum\_corr}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 If \sphinxtitleref{is\_ref} is \sphinxtitleref{True} this value will be input as energy predicted
-by \sphinxcode{corrdump} command.
+by \sphinxcode{\sphinxupquote{corrdump}} command.
 
 \item[{\sphinxstylestrong{delete\_file :}}] \leavevmode
+\sphinxAtStartPar
 Whether to delete tmp file generated by program.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float :}}] \leavevmode
+\item[{float :}] \leavevmode
+\sphinxAtStartPar
 Total energy or corrdump energy.
 
 \end{description}
@@ -1209,60 +442,68 @@ Total energy or corrdump energy.
 
 \end{fulllineitems}
 
-\index{make\_template() (pygace.ce.CE method)}
+\index{make\_template() (pygace.ce.CE method)@\spxentry{make\_template()}\spxextra{pygace.ce.CE method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.make_template}}\pysiglinewithargsret{\sphinxbfcode{make\_template}}{\emph{scale}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.make_template}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{make\_template}}}{\emph{\DUrole{n}{scale}}}{}~
 \end{fulllineitems}
 
-\index{mmaps() (pygace.ce.CE static method)}
+\index{mmaps() (pygace.ce.CE static method)@\spxentry{mmaps()}\spxextra{pygace.ce.CE static method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.mmaps}}\pysiglinewithargsret{\sphinxbfcode{static }\sphinxbfcode{mmaps}}{\emph{dirname}, \emph{maps\_args='-d'}}{}
-Call \sphinxcode{MMAPS} command in system.
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.mmaps}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{mmaps}}}{\emph{\DUrole{n}{dirname}}, \emph{\DUrole{n}{maps\_args}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}\sphinxhyphen{}d\textquotesingle{}}}}{}
+\sphinxAtStartPar
+Call \sphinxcode{\sphinxupquote{MMAPS}} command in system.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{dirname}}] \leavevmode{[}str{]}
-Directory name of \sphinxcode{MMAPS} command running. Usually, it contains a
-\sphinxcode{lat.in} file, \sphinxcode{vasp.wrap} or other wrap file for different
-first-principles calculation.
+\sphinxAtStartPar
+Directory name of \sphinxcode{\sphinxupquote{MMAPS}} command running. Usually, it contains a
+\sphinxcode{\sphinxupquote{lat.in}} file, \sphinxcode{\sphinxupquote{vasp.wrap}} or other wrap file for different
+first\sphinxhyphen{}principles calculation.
 
 \item[{\sphinxstylestrong{cal}}] \leavevmode{[}bool{]}
+\sphinxAtStartPar
 Determine whether to run a CE fitting. If \sphinxtitleref{False}, the function
 will return when clusters information is obtained, and vice versa
 CE fitting is running until users stop it.
 
 \item[{\sphinxstylestrong{args}}] \leavevmode{[}position arg{]}
-Position arguments for \sphinxcode{MMAPS} command.
+\sphinxAtStartPar
+Position arguments for \sphinxcode{\sphinxupquote{MMAPS}} command.
 
 \item[{\sphinxstylestrong{kwargs}}] \leavevmode{[}dict arg{]}
-Dict arguments for \sphinxcode{MMAPS} command.
+\sphinxAtStartPar
+Dict arguments for \sphinxcode{\sphinxupquote{MMAPS}} command.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{predict() (pygace.ce.CE method)}
+\index{predict() (pygace.ce.CE method)@\spxentry{predict()}\spxextra{pygace.ce.CE method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ce.CE.predict}}\pysiglinewithargsret{\sphinxbfcode{predict}}{\emph{x}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ce.CE.predict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{predict}}}{\emph{\DUrole{n}{x}}}{}
+\sphinxAtStartPar
 Predict energy by given file name of structure.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{x}}] \leavevmode{[}str{]}
-‘x’ is a name of lattice structure, such as \sphinxcode{str.out} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+‘x’ is a name of lattice structure, such as \sphinxcode{\sphinxupquote{str.out}} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{str}}] \leavevmode
-Energy predicted by corrdump command in \sphinxcode{ATAT}
+\item[{str}] \leavevmode
+\sphinxAtStartPar
+Energy predicted by corrdump command in \sphinxcode{\sphinxupquote{ATAT}}
 
 \end{description}
 
@@ -1276,60 +517,70 @@ Energy predicted by corrdump command in \sphinxcode{ATAT}
 
 
 \subsection{pygace.config module}
-\label{\detokenize{pygace:pygace-config-module}}\label{\detokenize{pygace:module-pygace.config}}\index{pygace.config (module)}
+\label{\detokenize{pygace:module-pygace.config}}\label{\detokenize{pygace:pygace-config-module}}\index{module@\spxentry{module}!pygace.config@\spxentry{pygace.config}}\index{pygace.config@\spxentry{pygace.config}!module@\spxentry{module}}
+\sphinxAtStartPar
 The module contains config file for pygace running.
 
 
 \subsection{pygace.ga module}
-\label{\detokenize{pygace:module-pygace.ga}}\label{\detokenize{pygace:pygace-ga-module}}\index{pygace.ga (module)}
+\label{\detokenize{pygace:module-pygace.ga}}\label{\detokenize{pygace:pygace-ga-module}}\index{module@\spxentry{module}!pygace.ga@\spxentry{pygace.ga}}\index{pygace.ga@\spxentry{pygace.ga}!module@\spxentry{module}}
+\sphinxAtStartPar
 The module contains genetic algorithms and relevant operator used in GA, e.g.,
 crossover operator, mutation operator.
-\index{Cromosome (class in pygace.ga)}
+\index{Cromosome (class in pygace.ga)@\spxentry{Cromosome}\spxextra{class in pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.ga.}\sphinxbfcode{Cromosome}}{\emph{gene\_length=64}, \emph{fitness=0.0}}{}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{Cromosome}}}{\emph{\DUrole{n}{gene\_length}\DUrole{o}{=}\DUrole{default_value}{64}}, \emph{\DUrole{n}{fitness}\DUrole{o}{=}\DUrole{default_value}{0.0}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
+\sphinxAtStartPar
 A wrapper class for individual in GA.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{gene\_length}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The length of gene.
 
 \item[{\sphinxstylestrong{fitness}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 The fitness value of gene
 
 \end{description}
 
 \end{description}\end{quote}
-\index{generate\_cromosome() (pygace.ga.Cromosome method)}
+\index{generate\_cromosome() (pygace.ga.Cromosome method)@\spxentry{generate\_cromosome()}\spxextra{pygace.ga.Cromosome method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.generate_cromosome}}\pysiglinewithargsret{\sphinxbfcode{generate\_cromosome}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.generate_cromosome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{generate\_cromosome}}}{}{}
+\sphinxAtStartPar
 Greate a random cromosome
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{get\_gene() (pygace.ga.Cromosome method)}
+\index{get\_gene() (pygace.ga.Cromosome method)@\spxentry{get\_gene()}\spxextra{pygace.ga.Cromosome method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.get_gene}}\pysiglinewithargsret{\sphinxbfcode{get\_gene}}{\emph{index}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.get_gene}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_gene}}}{\emph{\DUrole{n}{index}}}{}
+\sphinxAtStartPar
 Obtain gene in the position of \sphinxtitleref{index}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{index}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The index of position.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{int}}] \leavevmode
+\item[{int}] \leavevmode
+\sphinxAtStartPar
 The gene
 
 \end{description}
@@ -1338,37 +589,42 @@ The gene
 
 \end{fulllineitems}
 
-\index{set\_gene() (pygace.ga.Cromosome method)}
+\index{set\_gene() (pygace.ga.Cromosome method)@\spxentry{set\_gene()}\spxextra{pygace.ga.Cromosome method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.set_gene}}\pysiglinewithargsret{\sphinxbfcode{set\_gene}}{\emph{index}, \emph{value}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.set_gene}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_gene}}}{\emph{\DUrole{n}{index}}, \emph{\DUrole{n}{value}}}{}
+\sphinxAtStartPar
 Set gene in position of \sphinxtitleref{index}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{index}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The index of position.
 
 \item[{\sphinxstylestrong{value}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 The value of gene.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{size() (pygace.ga.Cromosome method)}
+\index{size() (pygace.ga.Cromosome method)@\spxentry{size()}\spxextra{pygace.ga.Cromosome method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.size}}\pysiglinewithargsret{\sphinxbfcode{size}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.size}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{size}}}{}{}
+\sphinxAtStartPar
 Return the length of cromosome.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{int}}] \leavevmode
+\item[{int}] \leavevmode
+\sphinxAtStartPar
 The length of cromosome
 
 \end{description}
@@ -1377,126 +633,151 @@ The length of cromosome
 
 \end{fulllineitems}
 
-\index{valid\_type (pygace.ga.Cromosome attribute)}
+\index{valid\_type (pygace.ga.Cromosome attribute)@\spxentry{valid\_type}\spxextra{pygace.ga.Cromosome attribute}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.valid_type}}\pysigline{\sphinxbfcode{valid\_type}\sphinxbfcode{ = {[}'Vac', 'Replace'{]}}}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Cromosome.valid_type}}\pysigline{\sphinxbfcode{\sphinxupquote{valid\_type}}\sphinxbfcode{\sphinxupquote{ = {[}\textquotesingle{}Vac\textquotesingle{}, \textquotesingle{}Replace\textquotesingle{}{]}}}}
 \end{fulllineitems}
 
 
 \end{fulllineitems}
 
-\index{Individual (class in pygace.ga)}
+\index{Individual (class in pygace.ga)@\spxentry{Individual}\spxextra{class in pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.Individual}}\pysigline{\sphinxbfcode{class }\sphinxcode{pygace.ga.}\sphinxbfcode{Individual}}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.ga.Individual}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{Individual}}}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
+\sphinxAtStartPar
 Individual object contain several Cromosome objects.
 
 \end{fulllineitems}
 
-\index{cycle\_crossover() (in module pygace.ga)}
+\index{cycle\_crossover() (in module pygace.ga)@\spxentry{cycle\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.cycle_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{cycle\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.cycle_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{cycle\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
 Cycle crossover (CX).
 
+\sphinxAtStartPar
 CX algorithm:
 \begin{itemize}
 \item {} 
-parent1: \sphinxcode{{[}\textbar{}1 \textbar{}2 3 \textbar{}4 \textbar{}5 6 7 8 \textbar{}9{]}}
+\sphinxAtStartPar
+parent1: \sphinxcode{\sphinxupquote{{[}|1 |2 3 |4 |5 6 7 8 |9{]}}}
 
 \item {} 
-parent2: \sphinxcode{{[}\textbar{}5 \textbar{}4 6 \textbar{}9 \textbar{}2 3 7 8 \textbar{}1{]}}
+\sphinxAtStartPar
+parent2: \sphinxcode{\sphinxupquote{{[}|5 |4 6 |9 |2 3 7 8 |1{]}}}
 
 \item {} 
-child1: \sphinxcode{{[}\textbar{}1 \textbar{}2 6 \textbar{}4 \textbar{}5 3 7 8 \textbar{}9{]}}
+\sphinxAtStartPar
+child1: \sphinxcode{\sphinxupquote{{[}|1 |2 6 |4 |5 3 7 8 |9{]}}}
 
 \item {} 
-child2: \sphinxcode{{[}\textbar{}5 \textbar{}4 3 \textbar{}9 \textbar{}2 6 7 8 \textbar{}1{]}}
+\sphinxAtStartPar
+child2: \sphinxcode{\sphinxupquote{{[}|5 |4 3 |9 |2 6 7 8 |1{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover is not used in this algorithm.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two cromosomes
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details can bee seen Ref. %
 \begin{footnote}[1]\sphinxAtStartFootnote
 Oliver, I.; Smith, D.; Holland, J. A study of permutation crossover
 operators on the traveling salesman problem. Proceedings of the 2nd
 International Conference on Genetic Algorithms, J.J. Grefenstette (ed.).
-Hillsdale, New Jersey, 1987; pp 224-230.
+Hillsdale, New Jersey, 1987; pp 224\sphinxhyphen{}230.
 %
 \end{footnote}.
 
 \end{fulllineitems}
 
-\index{gaceCrossover() (in module pygace.ga)}
+\index{gaceCrossover() (in module pygace.ga)@\spxentry{gaceCrossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.gaceCrossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{gaceCrossover}}{\emph{indiv1}, \emph{indiv2}, \emph{crossover\_type=1}, \emph{cross\_num=8}}{}
-Executes a crossover specified by crossover type \sphinxtitleref{crossover\_type{}`and the
-number of crossover {}`cross\_num} on the input \sphinxtitleref{sequence} individuals.
+\phantomsection\label{\detokenize{pygace:pygace.ga.gaceCrossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{gaceCrossover}}}{\emph{\DUrole{n}{indiv1}}, \emph{\DUrole{n}{indiv2}}, \emph{\DUrole{n}{crossover\_type}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{cross\_num}\DUrole{o}{=}\DUrole{default_value}{8}}}{}
+\sphinxAtStartPar
+Executes a crossover specified by crossover type \sphinxtitleref{crossover\_type\textasciigrave{}and the
+number of crossover \textasciigrave{}cross\_num} on the input \sphinxtitleref{sequence} individuals.
 The two individuals are modified in place and both keep their original
 length.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{indiv1}}] \leavevmode{[}Cromosome object{]}
+\sphinxAtStartPar
 The first individual participating in the crossover.
 
 \item[{\sphinxstylestrong{indiv2}}] \leavevmode{[}Cromosome object{]}
+\sphinxAtStartPar
 The second individual participating in the crossover.
 
 \item[{\sphinxstylestrong{crossover\_type}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The type of crossover method:
 \begin{itemize}
 \item {} 
-\sphinxcode{1}: Partially-mapped crossover (PMX)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{1}}: Partially\sphinxhyphen{}mapped crossover (PMX)
 
 \item {} 
-\sphinxcode{2}: Order Crossover (OX1)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{2}}: Order Crossover (OX1)
 
 \item {} 
-\sphinxcode{3}: Position based crossover (POS)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{3}}: Position based crossover (POS)
 
 \item {} 
-\sphinxcode{4}: Order based Crossover (OX2)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{4}}: Order based Crossover (OX2)
 
 \item {} 
-\sphinxcode{5}: Cycle crossover (CX)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{5}}: Cycle crossover (CX)
 
 \item {} 
-\sphinxcode{6}: Subtour exchange crossover (SXX)
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{6}}: Subtour exchange crossover (SXX)
 
 \end{itemize}
 
 \item[{\sphinxstylestrong{cross\_num}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover which determine the number exchange in each
 crossover operation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two individuals.
 
 \end{description}
@@ -1505,45 +786,56 @@ A tuple of two individuals.
 
 \end{fulllineitems}
 
-\index{gaceGA() (in module pygace.ga)}
+\index{gaceGA() (in module pygace.ga)@\spxentry{gaceGA()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.gaceGA}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{gaceGA}}{\emph{population}, \emph{toolbox}, \emph{cxpb}, \emph{ngen}, \emph{stats=None}, \emph{halloffame=None}, \emph{verbose=True}, \emph{checkpoint=None}, \emph{freq=10}}{}
-Genetic algorithm (GA) used in \sphinxcode{pygace}. Users can define their algorithms
-based on \sphinxcode{DEAP} package or other GA framework.
+\phantomsection\label{\detokenize{pygace:pygace.ga.gaceGA}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{gaceGA}}}{\emph{\DUrole{n}{population}}, \emph{\DUrole{n}{toolbox}}, \emph{\DUrole{n}{cxpb}}, \emph{\DUrole{n}{ngen}}, \emph{\DUrole{n}{stats}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{halloffame}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{verbose}\DUrole{o}{=}\DUrole{default_value}{True}}, \emph{\DUrole{n}{checkpoint}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{freq}\DUrole{o}{=}\DUrole{default_value}{10}}}{}
+\sphinxAtStartPar
+Genetic algorithm (GA) used in \sphinxcode{\sphinxupquote{pygace}}. Users can define their algorithms
+based on \sphinxcode{\sphinxupquote{DEAP}} package or other GA framework.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{population}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 A list represent population consists of all individual.
 
 \item[{\sphinxstylestrong{toolbox}}] \leavevmode{[}toolbox object{]}
-\sphinxcode{DEAP} toolbox object
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{DEAP}} toolbox object
 
 \item[{\sphinxstylestrong{cxpb}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 The probability of crossover happens.
 
 \item[{\sphinxstylestrong{ngen}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of generations.
 
 \item[{\sphinxstylestrong{stats :}}] \leavevmode
+\sphinxAtStartPar
 The random state of simulation.
 
 \item[{\sphinxstylestrong{halloffame}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 Restored individual.
 
 \item[{\sphinxstylestrong{verbose}}] \leavevmode{[}bool{]}
+\sphinxAtStartPar
 Whether to show more message of running.
 
 \item[{\sphinxstylestrong{checkpoint}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The filename of checkpoint file.
 
 \item[{\sphinxstylestrong{freq}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number that determine how many step to write a checkpoint.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of population and log file.
 
 \end{description}
@@ -1552,10 +844,11 @@ A tuple of population and log file.
 
 \end{fulllineitems}
 
-\index{gaceMutShuffleIndexes() (in module pygace.ga)}
+\index{gaceMutShuffleIndexes() (in module pygace.ga)@\spxentry{gaceMutShuffleIndexes()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.gaceMutShuffleIndexes}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{gaceMutShuffleIndexes}}{\emph{individual}, \emph{indpb}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.gaceMutShuffleIndexes}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{gaceMutShuffleIndexes}}}{\emph{\DUrole{n}{individual}}, \emph{\DUrole{n}{indpb}}}{}
+\sphinxAtStartPar
 Shuffle the attributes of the input individual and return the mutant.
 The \sphinxtitleref{individual} is expected to be a \sphinxtitleref{sequence}. The \sphinxtitleref{indpb} argument
 is the probability of each attribute to be moved. Usually this mutation is
@@ -1563,16 +856,19 @@ applied on vector of indices.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{individual}}] \leavevmode{[}Individual object{]}
+\sphinxAtStartPar
 Individual to be mutated.
 
 \item[{\sphinxstylestrong{indpb}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 Independent probability for each attribute to be exchanged to another
 position.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of one individual.
 
 \end{description}
@@ -1581,27 +877,32 @@ A tuple of one individual.
 
 \end{fulllineitems}
 
-\index{gaceVarAnd() (in module pygace.ga)}
+\index{gaceVarAnd() (in module pygace.ga)@\spxentry{gaceVarAnd()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.gaceVarAnd}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{gaceVarAnd}}{\emph{population}, \emph{toolbox}, \emph{cxpb}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.gaceVarAnd}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{gaceVarAnd}}}{\emph{\DUrole{n}{population}}, \emph{\DUrole{n}{toolbox}}, \emph{\DUrole{n}{cxpb}}}{}
+\sphinxAtStartPar
 Execute crossover and mutation operation in genetic algorithm running
 process.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{population}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 The population of all individual.
 
 \item[{\sphinxstylestrong{toolbox}}] \leavevmode{[}Toolbox object{]}
-The \sphinxtitleref{Toolbox} object defined in \sphinxcode{DEAP}.
+\sphinxAtStartPar
+The \sphinxtitleref{Toolbox} object defined in \sphinxcode{\sphinxupquote{DEAP}}.
 
 \item[{\sphinxstylestrong{cxpb}}] \leavevmode{[}float{]}
+\sphinxAtStartPar
 The probability or crossover.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
+\item[{list}] \leavevmode
+\sphinxAtStartPar
 The new generation.
 
 \end{description}
@@ -1610,272 +911,327 @@ The new generation.
 
 \end{fulllineitems}
 
-\index{order\_based\_crossover() (in module pygace.ga)}
+\index{order\_based\_crossover() (in module pygace.ga)@\spxentry{order\_based\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.order_based_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{order\_based\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.order_based_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{order\_based\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
 Order based Crossover (OX2) operator selects at random several positions
 in a parent tour, and the order of the cities in the selected positions
 of this parent is imposed on the other parent.
 
+\sphinxAtStartPar
 OX2 algorithm example:
 \begin{itemize}
 \item {} 
-parent1 \sphinxcode{{[}1 \textbar{}2 3 4 \textbar{}5 \textbar{}6 7 8 \textbar{}9{]}}
+\sphinxAtStartPar
+parent1 \sphinxcode{\sphinxupquote{{[}1 |2 3 4 |5 |6 7 8 |9{]}}}
 
 \item {} 
-parent2 \sphinxcode{{[}5 \textbar{}4 6 3 \textbar{}1 \textbar{}9 2 7 \textbar{}8{]}}
+\sphinxAtStartPar
+parent2 \sphinxcode{\sphinxupquote{{[}5 |4 6 3 |1 |9 2 7 |8{]}}}
 
 \item {} 
-child1 \sphinxcode{{[}2 \textbar{}4 5 \textbar{}3 \textbar{}1 6 9 \textbar{}7 \textbar{}8{]}}
+\sphinxAtStartPar
+child1 \sphinxcode{\sphinxupquote{{[}2 |4 5 |3 |1 6 9 |7 |8{]}}}
 
 \item {} 
-child2 \sphinxcode{{[}4 \textbar{}2 \textbar{}3 1 \textbar{}5 \textbar{}6 \textbar{}7 9 8{]}}
+\sphinxAtStartPar
+child2 \sphinxcode{\sphinxupquote{{[}4 |2 |3 1 |5 |6 |7 9 8{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover which determine the number exchange in each
 crossover operation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two cromosomes
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details about OX2 can be seen Ref. %
 \begin{footnote}[2]\sphinxAtStartFootnote
-Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
+Syswerda, G. Handbook of Genetic Algorithms 1991, 332\sphinxhyphen{}349.
 %
 \end{footnote}.
 
 \end{fulllineitems}
 
-\index{order\_crossover() (in module pygace.ga)}
+\index{order\_crossover() (in module pygace.ga)@\spxentry{order\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.order_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{order\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.order_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{order\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
 Order crossover (OX1) operator was proposed by Davis (1985). The OX1 exploits
 a property of the path representation, that the order of cities (not their
 positions) are important. It constructs an offspring by choosing a subtour
 of one parent and preserving the relative order of cities of the other
 parent.
 
+\sphinxAtStartPar
 order crossover algorithm example:
 \begin{itemize}
 \item {} 
-parent1: \sphinxcode{{[}1 2 \textbar{}3 4 5 6\textbar{} 7 8 9{]}}
+\sphinxAtStartPar
+parent1: \sphinxcode{\sphinxupquote{{[}1 2 |3 4 5 6| 7 8 9{]}}}
 
 \item {} 
-parent2: \sphinxcode{{[}5 7 \textbar{}4 9 1 3\textbar{} 6 2 8{]}}
+\sphinxAtStartPar
+parent2: \sphinxcode{\sphinxupquote{{[}5 7 |4 9 1 3| 6 2 8{]}}}
 
 \item {} 
-child1: \sphinxcode{{[}7 9 \textbar{}3 4 5 6\textbar{} 1 2 8{]}}
+\sphinxAtStartPar
+child1: \sphinxcode{\sphinxupquote{{[}7 9 |3 4 5 6| 1 2 8{]}}}
 
 \item {} 
-child2: \sphinxcode{{[}2 5 \textbar{}4 9 1 3\textbar{} 6 7 8{]}}
+\sphinxAtStartPar
+child2: \sphinxcode{\sphinxupquote{{[}2 5 |4 9 1 3| 6 7 8{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover which determine the number exchange in each
 crossover operation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two cromosomes
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details about OX1 can be seen Ref. %
 \begin{footnote}[3]\sphinxAtStartFootnote
 Davis, L. Applying Adaptive Algorithms to Epistatic Domains. Proceedings
-of the 9th International Joint Conference on Artificial Intelligence -
-Volume 1. San Francisco, CA, USA, 1985; pp 162-164.
+of the 9th International Joint Conference on Artificial Intelligence \sphinxhyphen{}
+Volume 1. San Francisco, CA, USA, 1985; pp 162\sphinxhyphen{}164.
 %
 \end{footnote}.
 
 \end{fulllineitems}
 
-\index{partial\_mapped\_crossover() (in module pygace.ga)}
+\index{partial\_mapped\_crossover() (in module pygace.ga)@\spxentry{partial\_mapped\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.partial_mapped_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{partial\_mapped\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
-Partially-mapped crossover (PMX) operator was suggested by Goldberg and
+\phantomsection\label{\detokenize{pygace:pygace.ga.partial_mapped_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{partial\_mapped\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
+Partially\sphinxhyphen{}mapped crossover (PMX) operator was suggested by Goldberg and
 Lingle (1985). It passes on ordering and value information from the
 parent tours to the offspring tours. A portion of one parents’s string
 is mapped onto a portion of the other parent’s string and the remaining
 informatin is exchanged..
 
+\sphinxAtStartPar
 The algorithm example:
 \begin{itemize}
 \item {} 
-parent1: \sphinxcode{{[}1,2,\textbar{}3,4,5,6\textbar{},7,8,9{]}}
+\sphinxAtStartPar
+parent1: \sphinxcode{\sphinxupquote{{[}1,2,|3,4,5,6|,7,8,9{]}}}
 
 \item {} 
-parent2: \sphinxcode{{[}5,4,\textbar{}6,9,2,1\textbar{},7,8,3{]}}
+\sphinxAtStartPar
+parent2: \sphinxcode{\sphinxupquote{{[}5,4,|6,9,2,1|,7,8,3{]}}}
 
 \item {} 
-child1: \sphinxcode{{[}3,5,\textbar{}6,9,2,1\textbar{},7,8,4{]}}
+\sphinxAtStartPar
+child1: \sphinxcode{\sphinxupquote{{[}3,5,|6,9,2,1|,7,8,4{]}}}
 
 \item {} 
-child2: \sphinxcode{{[}2,9,\textbar{}3,4,5,6\textbar{},7,8,1{]}}
+\sphinxAtStartPar
+child2: \sphinxcode{\sphinxupquote{{[}2,9,|3,4,5,6|,7,8,1{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first individual participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second individual participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover which determine the number exchange in each
 crossover operation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two individuals
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details about PMX can be seen in Ref. %
 \begin{footnote}[4]\sphinxAtStartFootnote
 Goldberg, D.; Lingle, R.; Alleles, L. the Travelling Salesman Problem.
 Proceedings of the 1st International Conference on Genetic Algorithms and
-their Applications, J.J. Grefenstette (ed.). Carneige-Mellon University,
+their Applications, J.J. Grefenstette (ed.). Carneige\sphinxhyphen{}Mellon University,
 Pittsburgh, 1985.
 %
 \end{footnote}.
 
 \end{fulllineitems}
 
-\index{position\_based\_crossover() (in module pygace.ga)}
+\index{position\_based\_crossover() (in module pygace.ga)@\spxentry{position\_based\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.position_based_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{position\_based\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
-Position-based crossover (PBC)
+\phantomsection\label{\detokenize{pygace:pygace.ga.position_based_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{position\_based\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
+Position\sphinxhyphen{}based crossover (PBC)
 
+\sphinxAtStartPar
 PBC algorithm:
 \begin{itemize}
 \item {} 
-parent1: \sphinxcode{{[}1 \textbar{}2 3 4 \textbar{}5 \textbar{}6 7 8 \textbar{}9{]}}
+\sphinxAtStartPar
+parent1: \sphinxcode{\sphinxupquote{{[}1 |2 3 4 |5 |6 7 8 |9{]}}}
 
 \item {} 
-parent2: \sphinxcode{{[}5 \textbar{}4 6 4 \textbar{}1 \textbar{}9 2 7 \textbar{}8{]}}
+\sphinxAtStartPar
+parent2: \sphinxcode{\sphinxupquote{{[}5 |4 6 4 |1 |9 2 7 |8{]}}}
 
 \item {} 
-child1: \sphinxcode{{[}4 \textbar{}2 3 1 \textbar{}5 \textbar{}6 7 8 \textbar{}9{]}}
+\sphinxAtStartPar
+child1: \sphinxcode{\sphinxupquote{{[}4 |2 3 1 |5 |6 7 8 |9{]}}}
 
 \item {} 
-child2: \sphinxcode{{[}2 \textbar{}4 3 5 \textbar{}1 \textbar{}9 6 7 \textbar{}8{]}}
+\sphinxAtStartPar
+child2: \sphinxcode{\sphinxupquote{{[}2 |4 3 5 |1 |9 6 7 |8{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover which determine the number exchange in each
 crossover operation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two cromosomes
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details can be seen Ref. %
 \begin{footnote}[5]\sphinxAtStartFootnote
-Syswerda, G. Handbook of Genetic Algorithms 1991, 332-349.
+Syswerda, G. Handbook of Genetic Algorithms 1991, 332\sphinxhyphen{}349.
 %
 \end{footnote}.
 
 \end{fulllineitems}
 
-\index{subtour\_exchange\_crossover() (in module pygace.ga)}
+\index{subtour\_exchange\_crossover() (in module pygace.ga)@\spxentry{subtour\_exchange\_crossover()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.subtour_exchange_crossover}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{subtour\_exchange\_crossover}}{\emph{ind1}, \emph{ind2}, \emph{cross\_number}}{}
+\phantomsection\label{\detokenize{pygace:pygace.ga.subtour_exchange_crossover}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{subtour\_exchange\_crossover}}}{\emph{\DUrole{n}{ind1}}, \emph{\DUrole{n}{ind2}}, \emph{\DUrole{n}{cross\_number}}}{}
+\sphinxAtStartPar
 Subtour exchange crossover (SXX).
 
+\sphinxAtStartPar
 SXX algorithm:
 \begin{itemize}
 \item {} 
-parent1: \sphinxcode{{[}1 2 3 \textbar{}4 5 6 7\textbar{} 8 9{]}}
+\sphinxAtStartPar
+parent1: \sphinxcode{\sphinxupquote{{[}1 2 3 |4 5 6 7| 8 9{]}}}
 
 \item {} 
-parent2: \sphinxcode{{[}3 \textbar{}4 9 \textbar{}7 8 \textbar{}5 2 1 \textbar{}6{]}}
+\sphinxAtStartPar
+parent2: \sphinxcode{\sphinxupquote{{[}3 |4 9 |7 8 |5 2 1 |6{]}}}
 
 \item {} 
-child1: \sphinxcode{{[}1 2 3 \textbar{}4 7 5 6\textbar{} 8 9{]}}
+\sphinxAtStartPar
+child1: \sphinxcode{\sphinxupquote{{[}1 2 3 |4 7 5 6| 8 9{]}}}
 
 \item {} 
-child2: \sphinxcode{{[}3 \textbar{}4 9 \textbar{}5 8 \textbar{}6 2 1 \textbar{}7{]}}
+\sphinxAtStartPar
+child2: \sphinxcode{\sphinxupquote{{[}3 |4 9 |5 8 |6 2 1 |7{]}}}
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ind1}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The first cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{ind2}}] \leavevmode{[}iteration object{]}
+\sphinxAtStartPar
 The second cromosome participating in the crossover.
 
 \item[{\sphinxstylestrong{cross\_number}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of crossover is not used in this algorithm.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{tuple}}] \leavevmode
+\item[{tuple}] \leavevmode
+\sphinxAtStartPar
 A tuple of two cromosomes
 
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 More details about SXX can be seen Ref. %
 \begin{footnote}[6]\sphinxAtStartFootnote
 Yamamura, M.; Ono, T.; Kobayashi, S. Japanese Society for Artificial
@@ -1885,152 +1241,175 @@ Intelligence.
 
 \end{fulllineitems}
 
-\index{transfer\_from() (in module pygace.ga)}
+\index{transfer\_from() (in module pygace.ga)@\spxentry{transfer\_from()}\spxextra{in module pygace.ga}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.ga.transfer_from}}\pysiglinewithargsret{\sphinxcode{pygace.ga.}\sphinxbfcode{transfer\_from}}{\emph{ind}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.ga.transfer_from}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.ga.}}\sphinxbfcode{\sphinxupquote{transfer\_from}}}{\emph{\DUrole{n}{ind}}}{}~
 \end{fulllineitems}
 
 
 
 \subsection{pygace.gace module}
-\label{\detokenize{pygace:module-pygace.gace}}\label{\detokenize{pygace:pygace-gace-module}}\index{pygace.gace (module)}
+\label{\detokenize{pygace:module-pygace.gace}}\label{\detokenize{pygace:pygace-gace-module}}\index{module@\spxentry{module}!pygace.gace@\spxentry{pygace.gace}}\index{pygace.gace@\spxentry{pygace.gace}!module@\spxentry{module}}
+\sphinxAtStartPar
 GACE framework module
 
+\sphinxAtStartPar
 This module provide abstract GACE object used to be implemented by users in
 their application, and it defines several interface which are called in
-concreate application.
-\index{AbstractApp (class in pygace.gace)}
+the application.
+\index{AbstractApp (class in pygace.gace)@\spxentry{AbstractApp}\spxextra{class in pygace.gace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.gace.}\sphinxbfcode{AbstractApp}}{\emph{ce\_site=None}, \emph{ce\_dirname='./data/iter1'}, \emph{params\_config\_dict=None}}{}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.gace.}}\sphinxbfcode{\sphinxupquote{AbstractApp}}}{\emph{\DUrole{n}{ce\_site}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{ce\_dirname}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}./data/iter1\textquotesingle{}}}, \emph{\DUrole{n}{params\_config\_dict}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
-Abstract application object for \sphinxcode{GACE} framework.
+\sphinxAtStartPar
+Abstract application object for \sphinxcode{\sphinxupquote{GACE}} framework.
 
+\sphinxAtStartPar
 AbstractApp initial process needs input parameters of CE simulation
 and informatin of output directory. Also, the parameters for DFT
-calculation should also be included in \sphinxcode{params\_config\_dict} for
+calculation should also be included in \sphinxcode{\sphinxupquote{params\_config\_dict}} for
 user custom.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ce\_site}}] \leavevmode{[}int{]}
-The concept of site used in \sphinxcode{MAPS} or \sphinxcode{MMAPS} in \sphinxcode{ATAT}
+\sphinxAtStartPar
+The concept of site used in \sphinxcode{\sphinxupquote{MAPS}} or \sphinxcode{\sphinxupquote{MMAPS}} in \sphinxcode{\sphinxupquote{ATAT}}
 program.
 
 \item[{\sphinxstylestrong{ce\_dirname}}] \leavevmode{[}:obj: str, optional{]}\begin{description}
 \item[{A path of directory which contains information after running}] \leavevmode
-\sphinxcode{MMAPS} or \sphinxcode{MAPS}.
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{MMAPS}} or \sphinxcode{\sphinxupquote{MAPS}}.
 
 \end{description}
 
 \item[{\sphinxstylestrong{params\_config\_dict}}] \leavevmode{[}dict, optional{]}
+\sphinxAtStartPar
 A dict used to update DEFAULT\_DICT of AbstractApp object.
 
 \end{description}
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ce}}] \leavevmode{[}CE{]}
+\sphinxAtStartPar
 CE object defined in \sphinxtitleref{ce.CE}.
 
 \item[{\sphinxstylestrong{params\_config\_dict}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 Parameters used in to construct CE object and other parameters used
 in GACE simulation. User can custom this dict for their own needs.
 
 \item[{\sphinxstylestrong{energy\_database\_fname}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 Filename of file that restore energies for different configurations
-to accelerate energy-calculation of a energy-unknown configuration.
+to accelerate energy\sphinxhyphen{}calculation of a energy\sphinxhyphen{}unknown configuration.
 
 \item[{\sphinxstylestrong{toolbox}}] \leavevmode{[}ToolBox{]}
+\sphinxAtStartPar
 The ToolBox object defined in \sphinxtitleref{deap.tools}.
 
 \item[{\sphinxstylestrong{DEFAULT\_SETUP}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 Class attribute which restores revelant parameters used in GA and
 CE simulation process. See also \sphinxtitleref{params\_config\_dict} for custom.
 
 \item[{\sphinxstylestrong{ENERGY\_DICAT}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 A dict in which key is list of num representing a configuration and
 value is the fitness value of the configuration, e.g., total energy or
 formation energy of point defects.
 
 \item[{\sphinxstylestrong{PREVIOUS\_COUNT}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 A parameter used to restore the execution step of previous simulation
 in order to run from previous stop step.
 
 \item[{\sphinxstylestrong{TYPES\_ENERGY\_DICT}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 A dict restores different elements and their responding number index
 in order to convert a element to a number in GA simulation, e.g.,
 \{‘Hf’:1, ‘O’:2, ‘Vac’:3\}.
 
 \item[{\sphinxstylestrong{TEMPLATE\_FILE\_STR}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 A string to restore the template of \sphinxtitleref{lat.in} which is a main
-input file in \sphinxcode{ATAT}.
+input file in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{DEFAULT\_SETUP (pygace.gace.AbstractApp attribute)}
+\index{DEFAULT\_SETUP (pygace.gace.AbstractApp attribute)@\spxentry{DEFAULT\_SETUP}\spxextra{pygace.gace.AbstractApp attribute}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.DEFAULT_SETUP}}\pysigline{\sphinxbfcode{DEFAULT\_SETUP}\sphinxbfcode{ = \{'TMP\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/tmp\_dir', 'TEMPLATE\_FILE': './data/lat\_in.template', 'TEST\_RES\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/res\_dir', 'NB\_DEFECT': None, 'DFT\_CAL\_DIR': './dft\_dirs', 'PICKLE\_DIR': '/home/yxcheng/PycharmProjects/pygace/doc/pickle\_bakup'\}}}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.DEFAULT_SETUP}}\pysigline{\sphinxbfcode{\sphinxupquote{DEFAULT\_SETUP}}\sphinxbfcode{\sphinxupquote{ = \{\textquotesingle{}DFT\_CAL\_DIR\textquotesingle{}: \textquotesingle{}./dft\_dirs\textquotesingle{}, \textquotesingle{}NB\_DEFECT\textquotesingle{}: None, \textquotesingle{}PICKLE\_DIR\textquotesingle{}: \textquotesingle{}/Users/yxcheng/PycharmProjects/pygace/doc/pickle\_bakup\textquotesingle{}, \textquotesingle{}TEMPLATE\_FILE\textquotesingle{}: \textquotesingle{}./data/lat\_in.template\textquotesingle{}, \textquotesingle{}TEST\_RES\_DIR\textquotesingle{}: \textquotesingle{}/Users/yxcheng/PycharmProjects/pygace/doc/res\_dir\textquotesingle{}, \textquotesingle{}TMP\_DIR\textquotesingle{}: \textquotesingle{}/Users/yxcheng/PycharmProjects/pygace/doc/tmp\_dir\textquotesingle{}\}}}}
 \end{fulllineitems}
 
-\index{evalEnergy() (pygace.gace.AbstractApp method)}
+\index{evalEnergy() (pygace.gace.AbstractApp method)@\spxentry{evalEnergy()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{evalEnergy}}{\emph{individual}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{evalEnergy}}}{\emph{\DUrole{n}{individual}}}{}~
 \end{fulllineitems}
 
-\index{get\_ce() (pygace.gace.AbstractApp method)}
+\index{get\_ce() (pygace.gace.AbstractApp method)@\spxentry{get\_ce()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.get_ce}}\pysiglinewithargsret{\sphinxbfcode{get\_ce}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.get_ce}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_ce}}}{}{}
+\sphinxAtStartPar
 obtain inner ce object
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{CE object}}] \leavevmode
+\item[{CE object}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{get\_energy\_info\_from\_database() (pygace.gace.AbstractApp method)}
+\index{get\_energy\_info\_from\_database() (pygace.gace.AbstractApp method)@\spxentry{get\_energy\_info\_from\_database()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.get_energy_info_from_database}}\pysiglinewithargsret{\sphinxbfcode{get\_energy\_info\_from\_database}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.get_energy_info_from_database}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_energy\_info\_from\_database}}}{}{}
+\sphinxAtStartPar
 Initial energy database
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{ind\_to\_elis() (pygace.gace.AbstractApp method)}
+\index{ind\_to\_elis() (pygace.gace.AbstractApp method)@\spxentry{ind\_to\_elis()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{ind\_to\_elis}}{\emph{individual}}{}
-Convert a object used in GA to a object used in \sphinxcode{ATAT}.
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{ind\_to\_elis}}}{\emph{\DUrole{n}{individual}}}{}
+\sphinxAtStartPar
+Convert a object used in GA to a object used in \sphinxcode{\sphinxupquote{ATAT}}.
 
+\sphinxAtStartPar
 This method is used to convert a list which contains number
 to a list containing chemistry element, e.g., {[}2,2,1,3{]} to
 {[}‘Hf’, ‘Hf’, ‘O’, ‘Vac’{]}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{individual: list}}] \leavevmode
-Convert a list of \sphinxcode{int} to a list of chemistry element.
+\sphinxAtStartPar
+Convert a list of \sphinxcode{\sphinxupquote{int}} to a list of chemistry element.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \item[{Raises}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{NotImplementedError}}] \leavevmode
+\item[{NotImplementedError}] \leavevmode
+\sphinxAtStartPar
 This method must be implemented in subclass.
 
 \end{description}
@@ -2039,14 +1418,16 @@ This method must be implemented in subclass.
 
 \end{fulllineitems}
 
-\index{initial() (pygace.gace.AbstractApp method)}
+\index{initial() (pygace.gace.AbstractApp method)@\spxentry{initial()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.initial}}\pysiglinewithargsret{\sphinxbfcode{initial}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.initial}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{initial}}}{}{}
+\sphinxAtStartPar
 Initialization for GA simulation.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{toolbox}}] \leavevmode{[}Toolbox{]}
+\sphinxAtStartPar
 A Toolbox object contains responding parameters used in GA.
 
 \end{description}
@@ -2055,30 +1436,33 @@ A Toolbox object contains responding parameters used in GA.
 
 \end{fulllineitems}
 
-\index{run() (pygace.gace.AbstractApp method)}
+\index{run() (pygace.gace.AbstractApp method)@\spxentry{run()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{\emph{iter\_idx=1}, \emph{target\_epoch=0}}{}~\begin{quote}\begin{description}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{\emph{\DUrole{n}{iter\_idx}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{target\_epoch}\DUrole{o}{=}\DUrole{default_value}{0}}}{}~\begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-The index of GA-to-CE iteration, in which a DFT calculation is
-usually executed for update \sphinxcode{eci.out} file in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+The index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration, in which a DFT calculation is
+usually executed for update \sphinxcode{\sphinxupquote{eci.out}} file in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{target\_epoch}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The repeat times of identical simulation of GA, for which the
 results of GA simulation is relevant with random number, thus
-a different GA simulation maybe select a different ground-state
+a different GA simulation maybe select a different ground\sphinxhyphen{}state
 configuration. This is useful especially in complex system with
-substantial \sphinxcode{sites} to substitute for different configurations.
+substantial \sphinxcode{\sphinxupquote{sites}} to substitute for different configurations.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \item[{Raises}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{NotImplementedError}}] \leavevmode
+\item[{NotImplementedError}] \leavevmode
+\sphinxAtStartPar
 If this method is not implemented, this type error would be raised.
 
 \end{description}
@@ -2087,41 +1471,47 @@ If this method is not implemented, this type error would be raised.
 
 \end{fulllineitems}
 
-\index{set\_dir() (pygace.gace.AbstractApp method)}
+\index{set\_dir() (pygace.gace.AbstractApp method)@\spxentry{set\_dir()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.set_dir}}\pysiglinewithargsret{\sphinxbfcode{set\_dir}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.set_dir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_dir}}}{}{}
+\sphinxAtStartPar
 Initial directory.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{transver\_to\_struct() (pygace.gace.AbstractApp method)}
+\index{transver\_to\_struct() (pygace.gace.AbstractApp method)@\spxentry{transver\_to\_struct()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.transver_to_struct}}\pysiglinewithargsret{\sphinxbfcode{transver\_to\_struct}}{\emph{element\_lis}}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.transver_to_struct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{transver\_to\_struct}}}{\emph{\DUrole{n}{element\_lis}}}{}
+\sphinxAtStartPar
 Convert element list to \sphinxtitleref{ATAT} \sphinxtitleref{str.out} file
 
-The chemistry symbol in \sphinxcode{element\_lis} would be substituted in
-\sphinxcode{str.out} file in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+The chemistry symbol in \sphinxcode{\sphinxupquote{element\_lis}} would be substituted in
+\sphinxcode{\sphinxupquote{str.out}} file in \sphinxcode{\sphinxupquote{ATAT}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{element\_lis}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 a list of chemistry symbol, e.g. {[}‘Hf’, ‘Hf’, ‘O’{]}
 
 \item[{\sphinxstylestrong{test\_param1}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 the first test parameter
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{str}}] \leavevmode
-filename of \sphinxcode{ATAT} structure file, default \sphinxtitleref{str.out}
+\item[{str}] \leavevmode
+\sphinxAtStartPar
+filename of \sphinxcode{\sphinxupquote{ATAT}} structure file, default \sphinxtitleref{str.out}
 
 \end{description}
 
@@ -2129,27 +1519,30 @@ filename of \sphinxcode{ATAT} structure file, default \sphinxtitleref{str.out}
 
 \end{fulllineitems}
 
-\index{update\_ce() (pygace.gace.AbstractApp method)}
+\index{update\_ce() (pygace.gace.AbstractApp method)@\spxentry{update\_ce()}\spxextra{pygace.gace.AbstractApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.update_ce}}\pysiglinewithargsret{\sphinxbfcode{update\_ce}}{\emph{site=1}, \emph{dirname=None}}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractApp.update_ce}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_ce}}}{\emph{\DUrole{n}{site}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{dirname}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Update inner CE object.
 
-The parameters should contained the \sphinxcode{site} information in \sphinxcode{MMAPS}
+\sphinxAtStartPar
+The parameters should contained the \sphinxcode{\sphinxupquote{site}} information in \sphinxcode{\sphinxupquote{MMAPS}}
 and a path of directory containing output file after a CE fitting.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{site: :obj: {}`int{}`, optional}}] \leavevmode
-The number of \sphinxcode{site} in a crystal structure, which does not
+\item[{\sphinxstylestrong{site: :obj: \textasciigrave{}int\textasciigrave{}, optional}}] \leavevmode
+\sphinxAtStartPar
+The number of \sphinxcode{\sphinxupquote{site}} in a crystal structure, which does not
 contain a specific element instead of a site used to restore
 different type of atoms to simulate alloy configurations in
-\sphinxcode{ATAT}, more detail see \sphinxcode{lat.in} file in \sphinxcode{ATAT}.
+\sphinxcode{\sphinxupquote{ATAT}}, more detail see \sphinxcode{\sphinxupquote{lat.in}} file in \sphinxcode{\sphinxupquote{ATAT}}.
 
-\item[{\sphinxstylestrong{dirname: :obj: {}`str{}`, optional}}] \leavevmode
+\item[{\sphinxstylestrong{dirname: :obj: \textasciigrave{}str\textasciigrave{}, optional}}] \leavevmode
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -2159,28 +1552,34 @@ different type of atoms to simulate alloy configurations in
 
 \end{fulllineitems}
 
-\index{AbstractRunner (class in pygace.gace)}
+\index{AbstractRunner (class in pygace.gace)@\spxentry{AbstractRunner}\spxextra{class in pygace.gace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.gace.}\sphinxbfcode{AbstractRunner}}{\emph{app=None}, \emph{iter\_idx=None}}{}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.gace.}}\sphinxbfcode{\sphinxupquote{AbstractRunner}}}{\emph{\DUrole{n}{app}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{iter\_idx}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
+\sphinxAtStartPar
 Abstract Runner for running a GACE simulation.
 
+\sphinxAtStartPar
 This object is used to execute a GACE simulation, user only need to
 implement several interfaces to custom their application.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}subclass of AbstractApp{]}
+\sphinxAtStartPar
 A subclass object of AbstractApp, default is \sphinxtitleref{None}.
 
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration, default is \sphinxtitleref{None}.
+\sphinxAtStartPar
+Index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration, default is \sphinxtitleref{None}.
 
 \end{description}
 
 \item[{Raises}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{NotImplementedError}}] \leavevmode
+\item[{NotImplementedError}] \leavevmode
+\sphinxAtStartPar
 If \sphinxtitleref{run()} or \sphinxtitleref{print\_gs()} method is not implemented by subclass of
 \sphinxtitleref{AbstractRunner}, this type of error would be raised.
 
@@ -2188,40 +1587,44 @@ If \sphinxtitleref{run()} or \sphinxtitleref{print\_gs()} method is not implemen
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
+\sphinxAtStartPar
 A subclass object of AbstractApp.
 
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
+\sphinxAtStartPar
+Index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{app (pygace.gace.AbstractRunner attribute)}
+\index{app (pygace.gace.AbstractRunner property)@\spxentry{app}\spxextra{pygace.gace.AbstractRunner property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.app}}\pysigline{\sphinxbfcode{app}}~
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.app}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{app}}}~
 \end{fulllineitems}
 
-\index{iter\_idx (pygace.gace.AbstractRunner attribute)}
+\index{iter\_idx (pygace.gace.AbstractRunner property)@\spxentry{iter\_idx}\spxextra{pygace.gace.AbstractRunner property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.iter_idx}}\pysigline{\sphinxbfcode{iter\_idx}}~
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.iter_idx}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{iter\_idx}}}~
 \end{fulllineitems}
 
-\index{print\_gs() (pygace.gace.AbstractRunner method)}
+\index{print\_gs() (pygace.gace.AbstractRunner method)@\spxentry{print\_gs()}\spxextra{pygace.gace.AbstractRunner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{print\_gs}}{}{}
-Function used to check ground-state configurations, to obtain their
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{print\_gs}}}{}{}
+\sphinxAtStartPar
+Function used to check ground\sphinxhyphen{}state configurations, to obtain their
 formation energy predicted by CE, and to determine whether a DFT
-calculation is needed to executed for next GA-to-CE iteration.
+calculation is needed to executed for next GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \item[{Raises}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{NotImplementedError}}] \leavevmode
+\item[{NotImplementedError}] \leavevmode
+\sphinxAtStartPar
 if this function is not implemented in their subclass, this type
 error would be raised.
 
@@ -2231,18 +1634,20 @@ error would be raised.
 
 \end{fulllineitems}
 
-\index{run() (pygace.gace.AbstractRunner method)}
+\index{run() (pygace.gace.AbstractRunner method)@\spxentry{run()}\spxextra{pygace.gace.AbstractRunner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.gace.AbstractRunner.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{}{}
+\sphinxAtStartPar
 Main runction for running GACE simulation.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \item[{Raises}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{NotImplementedError}}] \leavevmode
+\item[{NotImplementedError}] \leavevmode
+\sphinxAtStartPar
 if this function is not implemented in their subclass, this type
 error would be raised.
 
@@ -2258,55 +1663,68 @@ error would be raised.
 
 
 \subsection{pygace.general\_gace module}
-\label{\detokenize{pygace:pygace-general-gace-module}}\label{\detokenize{pygace:module-pygace.general_gace}}\index{pygace.general\_gace (module)}
-A GA-to-CE example of oxygen-vacancy-containing HfO2 system given in
+\label{\detokenize{pygace:module-pygace.general_gace}}\label{\detokenize{pygace:pygace-general-gace-module}}\index{module@\spxentry{module}!pygace.general\_gace@\spxentry{pygace.general\_gace}}\index{pygace.general\_gace@\spxentry{pygace.general\_gace}!module@\spxentry{module}}
+\sphinxAtStartPar
+A GA\sphinxhyphen{}to\sphinxhyphen{}CE example of oxygen\sphinxhyphen{}vacancy\sphinxhyphen{}containing HfO2 system given in
 this module.
-\index{GeneralApp (class in pygace.general\_gace)}
+\index{GeneralApp (class in pygace.general\_gace)@\spxentry{GeneralApp}\spxextra{class in pygace.general\_gace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.general\_gace.}\sphinxbfcode{GeneralApp}}{\emph{ele\_type\_list}, \emph{defect\_concentrations}, \emph{ce\_dirname='./data/iter1'}, \emph{params\_config\_dict=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractApp}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractApp}}}}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.general\_gace.}}\sphinxbfcode{\sphinxupquote{GeneralApp}}}{\emph{\DUrole{n}{ele\_type\_list}}, \emph{\DUrole{n}{defect\_concentrations}}, \emph{\DUrole{n}{ce\_dirname}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}./data/iter1\textquotesingle{}}}, \emph{\DUrole{n}{params\_config\_dict}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractApp}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygace.gace.AbstractApp}}}}}
 
+\sphinxAtStartPar
 An app of general system which is implemented from AbstractApp object
 
+\sphinxAtStartPar
 This object is used to execute a GACE simulation, user only need to
 implement several interfaces to custom their application.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ce\_site: int}}] \leavevmode
+\sphinxAtStartPar
 the concept of site used in ATAT program.
 
 \item[{\sphinxstylestrong{ce\_dirname: str}}] \leavevmode
+\sphinxAtStartPar
 The name of a directory which contain information of MMAPS or MAPS
 running
 
 \item[{\sphinxstylestrong{ele\_1st: str}}] \leavevmode
-The first type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+The first type of element in the \sphinxcode{\sphinxupquote{site}} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{ele\_2nd: str}}] \leavevmode
-The second type of element in the \sphinxcode{site} in \sphinxcode{ATAT}.
+\sphinxAtStartPar
+The second type of element in the \sphinxcode{\sphinxupquote{site}} in \sphinxcode{\sphinxupquote{ATAT}}.
 
 \item[{\sphinxstylestrong{params\_config\_dict: dirt}}] \leavevmode
+\sphinxAtStartPar
 Parameter dict used to custom GACE AbstractApp.
 
 \end{description}
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
+\sphinxAtStartPar
 A subclass object of AbstractApp.
 
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
+\sphinxAtStartPar
+Index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{evalEnergy() (pygace.general\_gace.GeneralApp method)}
+\index{evalEnergy() (pygace.general\_gace.GeneralApp method)@\spxentry{evalEnergy()}\spxextra{pygace.general\_gace.GeneralApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{evalEnergy}}{\emph{individual}}{}
-Evaluation function for the ground-state searching problem.
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.evalEnergy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{evalEnergy}}}{\emph{\DUrole{n}{individual}}}{}
+\sphinxAtStartPar
+Evaluation function for the ground\sphinxhyphen{}state searching problem.
 
+\sphinxAtStartPar
 The problem is to determine a configuration of n vacancies
 on a crystalline structures such that the energy of crystalline
 structures can obtain minimum value.
@@ -2316,7 +1734,8 @@ structures can obtain minimum value.
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
+\item[{float}] \leavevmode
+\sphinxAtStartPar
 Fittness value
 
 \end{description}
@@ -2325,10 +1744,11 @@ Fittness value
 
 \end{fulllineitems}
 
-\index{ind\_to\_elis() (pygace.general\_gace.GeneralApp method)}
+\index{ind\_to\_elis() (pygace.general\_gace.GeneralApp method)@\spxentry{ind\_to\_elis()}\spxextra{pygace.general\_gace.GeneralApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{ind\_to\_elis}}{\emph{individual}}{}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.ind_to_elis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{ind\_to\_elis}}}{\emph{\DUrole{n}{individual}}}{}
+\sphinxAtStartPar
 Convert individual (number list) to element list
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
@@ -2336,7 +1756,8 @@ Convert individual (number list) to element list
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{list}}] \leavevmode
+\item[{list}] \leavevmode
+\sphinxAtStartPar
 A list of element symbol string.
 
 \end{description}
@@ -2345,96 +1766,114 @@ A list of element symbol string.
 
 \end{fulllineitems}
 
-\index{run() (pygace.general\_gace.GeneralApp method)}
+\index{run() (pygace.general\_gace.GeneralApp method)@\spxentry{run()}\spxextra{pygace.general\_gace.GeneralApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{\emph{iter\_idx=1}, \emph{default\_epoch=4}, \emph{target\_epoch=4}, \emph{cross\_method=1}, \emph{cross\_num=8}, \emph{cp\_fname\_prefix='ground\_states\_iter'}, \emph{task\_prefix='general-app'}, \emph{gs\_selection=1}}{}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{\emph{\DUrole{n}{iter\_idx}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{default\_epoch}\DUrole{o}{=}\DUrole{default_value}{4}}, \emph{\DUrole{n}{target\_epoch}\DUrole{o}{=}\DUrole{default_value}{4}}, \emph{\DUrole{n}{cross\_method}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{cross\_num}\DUrole{o}{=}\DUrole{default_value}{8}}, \emph{\DUrole{n}{cp\_fname\_prefix}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}ground\_states\_iter\textquotesingle{}}}, \emph{\DUrole{n}{task\_prefix}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}general\sphinxhyphen{}app\textquotesingle{}}}, \emph{\DUrole{n}{gs\_selection}\DUrole{o}{=}\DUrole{default_value}{1}}}{}
+\sphinxAtStartPar
 Main function to run a GACE simulation which will be called by
 \sphinxtitleref{AbstractRunner}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Determine which iteration the ECI is used in.
 
 \item[{\sphinxstylestrong{target\_epoch}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Iteration in GA simulation.
 
 \item[{\sphinxstylestrong{default\_epoch}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Default epoch setting for GA.
 
 \item[{\sphinxstylestrong{target\_epoch}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Target epoch for GA.
 
 \item[{\sphinxstylestrong{cross\_method}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Crossover operator type.
 
 \item[{\sphinxstylestrong{cross\_num :}}] \leavevmode
+\sphinxAtStartPar
 The exchange number used in crossover operator.
 
 \item[{\sphinxstylestrong{cp\_fname\_prefix}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The prefix of checkpoint file name.
 
 \item[{\sphinxstylestrong{task\_prefix}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The prefix of task filename of a single simulation.
 
 \item[{\sphinxstylestrong{gs\_selection}}] \leavevmode{[}int{]}
-Ground-state structures selected from \sphinxtitleref{target\_epoch} GA simulation.
+\sphinxAtStartPar
+Ground\sphinxhyphen{}state structures selected from \sphinxtitleref{target\_epoch} GA simulation.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{update\_defect\_concentration() (pygace.general\_gace.GeneralApp method)}
+\index{update\_defect\_concentration() (pygace.general\_gace.GeneralApp method)@\spxentry{update\_defect\_concentration()}\spxextra{pygace.general\_gace.GeneralApp method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.update_defect_concentration}}\pysiglinewithargsret{\sphinxbfcode{update\_defect\_concentration}}{\emph{c=None}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralApp.update_defect_concentration}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_defect\_concentration}}}{\emph{\DUrole{n}{c}\DUrole{o}{=}\DUrole{default_value}{None}}}{}~
 \end{fulllineitems}
 
 
 \end{fulllineitems}
 
-\index{GeneralEleIndv (class in pygace.general\_gace)}
+\index{GeneralEleIndv (class in pygace.general\_gace)@\spxentry{GeneralEleIndv}\spxextra{class in pygace.general\_gace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.general\_gace.}\sphinxbfcode{GeneralEleIndv}}{\emph{ele\_lis}, \emph{app=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.utility.EleIndv}]{\sphinxcrossref{\sphinxcode{pygace.utility.EleIndv}}}}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.general\_gace.}}\sphinxbfcode{\sphinxupquote{GeneralEleIndv}}}{\emph{\DUrole{n}{ele\_lis}}, \emph{\DUrole{n}{app}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: {\hyperref[\detokenize{pygace:pygace.utility.EleIndv}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygace.utility.EleIndv}}}}}
 
+\sphinxAtStartPar
 A class that use list chemistry element to represent individual.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ele\_lis}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 A list of chemistry element.
 
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
-An application of GACE which is used to obtain ground-state
+\sphinxAtStartPar
+An application of GACE which is used to obtain ground\sphinxhyphen{}state
 structures based generic algorithm and cluster expansion method.
 
 \end{description}
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app: AbstractApp}}] \leavevmode
+\sphinxAtStartPar
 An application handling GACE running process.
 
 \item[{\sphinxstylestrong{ele\_lis: list}}] \leavevmode
+\sphinxAtStartPar
 A list of chemistry element string.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{ce\_energy (pygace.general\_gace.GeneralEleIndv attribute)}
+\index{ce\_energy (pygace.general\_gace.GeneralEleIndv property)@\spxentry{ce\_energy}\spxextra{pygace.general\_gace.GeneralEleIndv property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.ce_energy}}\pysigline{\sphinxbfcode{ce\_energy}}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.ce_energy}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{ce\_energy}}}
+\sphinxAtStartPar
 Return CE energy
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
+\item[{float}] \leavevmode
+\sphinxAtStartPar
 Energy predicted by CE method.
 
 \end{description}
@@ -2443,16 +1882,18 @@ Energy predicted by CE method.
 
 \end{fulllineitems}
 
-\index{ce\_energy\_corrdump (pygace.general\_gace.GeneralEleIndv attribute)}
+\index{ce\_energy\_corrdump (pygace.general\_gace.GeneralEleIndv property)@\spxentry{ce\_energy\_corrdump}\spxextra{pygace.general\_gace.GeneralEleIndv property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.ce_energy_corrdump}}\pysigline{\sphinxbfcode{ce\_energy\_corrdump}}
-Return relative energy defined in \sphinxcode{ATAT} and computed by \sphinxcode{corrdump}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.ce_energy_corrdump}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{ce\_energy\_corrdump}}}
+\sphinxAtStartPar
+Return relative energy defined in \sphinxcode{\sphinxupquote{ATAT}} and computed by \sphinxcode{\sphinxupquote{corrdump}}
 program.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
-Relative energy generated by \sphinxcode{corrdump} program.
+\item[{float}] \leavevmode
+\sphinxAtStartPar
+Relative energy generated by \sphinxcode{\sphinxupquote{corrdump}} program.
 
 \end{description}
 
@@ -2460,89 +1901,102 @@ Relative energy generated by \sphinxcode{corrdump} program.
 
 \end{fulllineitems}
 
-\index{dft\_energy() (pygace.general\_gace.GeneralEleIndv method)}
+\index{dft\_energy() (pygace.general\_gace.GeneralEleIndv method)@\spxentry{dft\_energy()}\spxextra{pygace.general\_gace.GeneralEleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.dft_energy}}\pysiglinewithargsret{\sphinxbfcode{dft\_energy}}{\emph{iters=None}, \emph{vasp\_cmd=None}, \emph{update\_eci=True}}{}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.dft_energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dft\_energy}}}{\emph{\DUrole{n}{iters}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{vasp\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{update\_eci}\DUrole{o}{=}\DUrole{default_value}{True}}}{}
+\sphinxAtStartPar
 Return DFT energy
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{iters}}] \leavevmode{[}int{]}
-index of iteration of GA-to-CE
+\sphinxAtStartPar
+index of iteration of GA\sphinxhyphen{}to\sphinxhyphen{}CE
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None or float}}] \leavevmode
+\item[{None or float}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{run\_fake\_vasp() (pygace.general\_gace.GeneralEleIndv method)}
+\index{run\_fake\_vasp() (pygace.general\_gace.GeneralEleIndv method)@\spxentry{run\_fake\_vasp()}\spxextra{pygace.general\_gace.GeneralEleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.run_fake_vasp}}\pysiglinewithargsret{\sphinxbfcode{run\_fake\_vasp}}{}{}~
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.run_fake_vasp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run\_fake\_vasp}}}{}{}~
 \end{fulllineitems}
 
-\index{run\_vasp() (pygace.general\_gace.GeneralEleIndv method)}
+\index{run\_vasp() (pygace.general\_gace.GeneralEleIndv method)@\spxentry{run\_vasp()}\spxextra{pygace.general\_gace.GeneralEleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.run_vasp}}\pysiglinewithargsret{\sphinxbfcode{run\_vasp}}{\emph{vasp\_cmd}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.GeneralEleIndv.run_vasp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run\_vasp}}}{\emph{\DUrole{n}{vasp\_cmd}}}{}~
 \end{fulllineitems}
 
 
 \end{fulllineitems}
 
-\index{Runner (class in pygace.general\_gace)}
+\index{Runner (class in pygace.general\_gace)@\spxentry{Runner}\spxextra{class in pygace.general\_gace}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.general\_gace.}\sphinxbfcode{Runner}}{\emph{app=None}, \emph{iter\_idx=None}}{}
-Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractRunner}]{\sphinxcrossref{\sphinxcode{pygace.gace.AbstractRunner}}}}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.general\_gace.}}\sphinxbfcode{\sphinxupquote{Runner}}}{\emph{\DUrole{n}{app}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{iter\_idx}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: {\hyperref[\detokenize{pygace:pygace.gace.AbstractRunner}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pygace.gace.AbstractRunner}}}}}
 
+\sphinxAtStartPar
 A runner for running a GACE simulation.
 
+\sphinxAtStartPar
 This object is used to execute a GACE simulation in HfO2 system.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}subclass of GeneralApp{]}
+\sphinxAtStartPar
 A subclass object of GeneralApp, default is \sphinxtitleref{None}.
 
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration, default is \sphinxtitleref{None}.
+\sphinxAtStartPar
+Index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration, default is \sphinxtitleref{None}.
 
 \end{description}
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}GeneralApp{]}
+\sphinxAtStartPar
 A subclass object of GeneralApp.
 
 \item[{\sphinxstylestrong{iter\_idx}}] \leavevmode{[}int{]}
-Index of GA-to-CE iteration.
+\sphinxAtStartPar
+Index of GA\sphinxhyphen{}to\sphinxhyphen{}CE iteration.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{compare\_gs() (pygace.general\_gace.Runner method)}
+\index{compare\_gs() (pygace.general\_gace.Runner method)@\spxentry{compare\_gs()}\spxextra{pygace.general\_gace.Runner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.compare_gs}}\pysiglinewithargsret{\sphinxbfcode{compare\_gs}}{\emph{new\_gs}, \emph{old\_gs}}{}
-Determine whether current and previous ground-state are identical.
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.compare_gs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{compare\_gs}}}{\emph{\DUrole{n}{new\_gs}}, \emph{\DUrole{n}{old\_gs}}}{}
+\sphinxAtStartPar
+Determine whether current and previous ground\sphinxhyphen{}state are identical.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{new\_gs}}] \leavevmode{[}str{]}
-Ground-state configuration predicted by current iteration.
+\sphinxAtStartPar
+Ground\sphinxhyphen{}state configuration predicted by current iteration.
 
 \item[{\sphinxstylestrong{old\_gs :}}] \leavevmode
-Ground-state configuration predicted by previous iteration.
+\sphinxAtStartPar
+Ground\sphinxhyphen{}state configuration predicted by previous iteration.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{bool}}] \leavevmode
-\item[{\sphinxstylestrong{Raises:}}] \leavevmode
-\item[{\sphinxstylestrong{RuntimeError}}] \leavevmode
+\item[{bool}] \leavevmode
+\item[{Raises:}] \leavevmode
+\item[{RuntimeError}] \leavevmode
+\sphinxAtStartPar
 when the number of point defect (oxygen vacancy here) is not equal
 in two iteration.
 
@@ -2552,50 +2006,55 @@ in two iteration.
 
 \end{fulllineitems}
 
-\index{print\_gs() (pygace.general\_gace.Runner method)}
+\index{print\_gs() (pygace.general\_gace.Runner method)@\spxentry{print\_gs()}\spxextra{pygace.general\_gace.Runner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{print\_gs}}{\emph{vasp\_cmd=None}}{}
-Function used to extract ground-state information from pickle file
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.print_gs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{print\_gs}}}{\emph{\DUrole{n}{vasp\_cmd}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Function used to extract ground\sphinxhyphen{}state information from pickle file
 saved during GACE running.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{run() (pygace.general\_gace.Runner method)}
+\index{run() (pygace.general\_gace.Runner method)@\spxentry{run()}\spxextra{pygace.general\_gace.Runner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.run}}\pysiglinewithargsret{\sphinxbfcode{run}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.run}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run}}}{}{}
+\sphinxAtStartPar
 Main function to run.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{str2energy() (pygace.general\_gace.Runner method)}
+\index{str2energy() (pygace.general\_gace.Runner method)@\spxentry{str2energy()}\spxextra{pygace.general\_gace.Runner method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.str2energy}}\pysiglinewithargsret{\sphinxbfcode{str2energy}}{\emph{string}}{}
+\phantomsection\label{\detokenize{pygace:pygace.general_gace.Runner.str2energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{str2energy}}}{\emph{\DUrole{n}{string}}}{}
+\sphinxAtStartPar
 Obtain energy from string consists of numbers joined by ‘\_’, e.g.,
-\sphinxcode{'1\_2\_3\_19\_'}, in which the number is the position index in lattice
+\sphinxcode{\sphinxupquote{\textquotesingle{}1\_2\_3\_19\_\textquotesingle{}}}, in which the number is the position index in lattice
 structure template file.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{string}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The string consists by index of point defect.
 
 \item[{\sphinxstylestrong{Returns}}] \leavevmode
-\item[{\sphinxstylestrong{——-}}] \leavevmode
+\item[{\sphinxstylestrong{——\sphinxhyphen{}}}] \leavevmode
 \item[{\sphinxstylestrong{float}}] \leavevmode
+\sphinxAtStartPar
 CE energy.
 
 \end{description}
@@ -2610,56 +2069,65 @@ CE energy.
 
 
 \subsection{pygace.parse module}
-\label{\detokenize{pygace:module-pygace.parse}}\label{\detokenize{pygace:pygace-parse-module}}\index{pygace.parse (module)}\index{GaceMcsqs (class in pygace.parse)}
+\label{\detokenize{pygace:module-pygace.parse}}\label{\detokenize{pygace:pygace-parse-module}}\index{module@\spxentry{module}!pygace.parse@\spxentry{pygace.parse}}\index{pygace.parse@\spxentry{pygace.parse}!module@\spxentry{module}}\index{GaceMcsqs (class in pygace.parse)@\spxentry{GaceMcsqs}\spxextra{class in pygace.parse}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.parse.}\sphinxbfcode{GaceMcsqs}}{\emph{structure}}{}~\index{nb\_occu\_sites (pygace.parse.GaceMcsqs attribute)}
+\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.parse.}}\sphinxbfcode{\sphinxupquote{GaceMcsqs}}}{\emph{\DUrole{n}{structure}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
+\index{nb\_occu\_sites (pygace.parse.GaceMcsqs property)@\spxentry{nb\_occu\_sites}\spxextra{pygace.parse.GaceMcsqs property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.nb_occu_sites}}\pysigline{\sphinxbfcode{nb\_occu\_sites}}~
+\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.nb_occu_sites}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{nb\_occu\_sites}}}~
 \end{fulllineitems}
 
-\index{structure\_from\_string() (pygace.parse.GaceMcsqs static method)}
+\index{structure\_from\_string() (pygace.parse.GaceMcsqs static method)@\spxentry{structure\_from\_string()}\spxextra{pygace.parse.GaceMcsqs static method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.structure_from_string}}\pysiglinewithargsret{\sphinxbfcode{static }\sphinxbfcode{structure\_from\_string}}{\emph{data}}{}
+\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.structure_from_string}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{static }}\sphinxbfcode{\sphinxupquote{structure\_from\_string}}}{\emph{\DUrole{n}{data}}}{}
+\sphinxAtStartPar
 Parses a rndstr.in or lat.in file into pymatgen’s
 Structure format.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{data} \textendash{} contents of a rndstr.in or lat.in file
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} \textendash{} contents of a rndstr.in or lat.in file
 
 \item[{Returns}] \leavevmode
+\sphinxAtStartPar
 Structure object
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{to\_string() (pygace.parse.GaceMcsqs method)}
+\index{to\_string() (pygace.parse.GaceMcsqs method)@\spxentry{to\_string()}\spxextra{pygace.parse.GaceMcsqs method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.to_string}}\pysiglinewithargsret{\sphinxbfcode{to\_string}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.to_string}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{to\_string}}}{}{}
+\sphinxAtStartPar
 Returns a structure in mcsqs rndstr.in format.
 :return (str):
 
 \end{fulllineitems}
 
-\index{to\_template() (pygace.parse.GaceMcsqs method)}
+\index{to\_template() (pygace.parse.GaceMcsqs method)@\spxentry{to\_template()}\spxextra{pygace.parse.GaceMcsqs method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.to_template}}\pysiglinewithargsret{\sphinxbfcode{to\_template}}{\emph{ele\_dict=None}}{}
+\phantomsection\label{\detokenize{pygace:pygace.parse.GaceMcsqs.to_template}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{to\_template}}}{\emph{\DUrole{n}{ele\_dict}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Returns a structure in lat.in format template.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ele\_dict}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 A dict used to convert element type in ATAT to
 element type in pymatgen.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{str}}] \leavevmode
+\item[{str}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -2672,44 +2140,53 @@ element type in pymatgen.
 
 
 \subsection{pygace.utility module}
-\label{\detokenize{pygace:module-pygace.utility}}\label{\detokenize{pygace:pygace-utility-module}}\index{pygace.utility (module)}
+\label{\detokenize{pygace:module-pygace.utility}}\label{\detokenize{pygace:pygace-utility-module}}\index{module@\spxentry{module}!pygace.utility@\spxentry{pygace.utility}}\index{pygace.utility@\spxentry{pygace.utility}!module@\spxentry{module}}
+\sphinxAtStartPar
 There are some general helper function defined in this module.
-\index{EleIndv (class in pygace.utility)}
+\index{EleIndv (class in pygace.utility)@\spxentry{EleIndv}\spxextra{class in pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv}}\pysiglinewithargsret{\sphinxbfcode{class }\sphinxcode{pygace.utility.}\sphinxbfcode{EleIndv}}{\emph{ele\_lis}, \emph{app=None}}{}
-Bases: \sphinxcode{object}
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{EleIndv}}}{\emph{\DUrole{n}{ele\_lis}}, \emph{\DUrole{n}{app}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
 
+\sphinxAtStartPar
 A class that use list chemistry element to represent individual.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{ele\_lis}}] \leavevmode{[}list{]}
+\sphinxAtStartPar
 A list of chemistry element.
 
 \item[{\sphinxstylestrong{app}}] \leavevmode{[}AbstractApp{]}
-An application of GACE which is used to obtain ground-state
+\sphinxAtStartPar
+An application of GACE which is used to obtain ground\sphinxhyphen{}state
 structures based generic algorithm and cluster expansion method.
 
 \end{description}
 
 \item[{Attributes}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{app: AbstractApp}}] \leavevmode
+\sphinxAtStartPar
 An application handling GACE running process.
 
 \item[{\sphinxstylestrong{ele\_lis: list}}] \leavevmode
+\sphinxAtStartPar
 A list of chemistry element string.
 
 \end{description}
 
 \end{description}\end{quote}
-\index{ce\_energy (pygace.utility.EleIndv attribute)}
+\index{ce\_energy (pygace.utility.EleIndv property)@\spxentry{ce\_energy}\spxextra{pygace.utility.EleIndv property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_energy}}\pysigline{\sphinxbfcode{ce\_energy}}
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_energy}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{ce\_energy}}}
+\sphinxAtStartPar
 The absolute energy predicted by CE.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
+\item[{float}] \leavevmode
+\sphinxAtStartPar
 CE absolute energy.
 
 \end{description}
@@ -2718,14 +2195,16 @@ CE absolute energy.
 
 \end{fulllineitems}
 
-\index{ce\_energy\_ref (pygace.utility.EleIndv attribute)}
+\index{ce\_energy\_ref (pygace.utility.EleIndv property)@\spxentry{ce\_energy\_ref}\spxextra{pygace.utility.EleIndv property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_energy_ref}}\pysigline{\sphinxbfcode{ce\_energy\_ref}}
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_energy_ref}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{ce\_energy\_ref}}}
+\sphinxAtStartPar
 The relative energy predicted by CE.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float}}] \leavevmode
+\item[{float}] \leavevmode
+\sphinxAtStartPar
 CE relative energy
 
 \end{description}
@@ -2734,29 +2213,32 @@ CE relative energy
 
 \end{fulllineitems}
 
-\index{ce\_object (pygace.utility.EleIndv attribute)}
+\index{ce\_object (pygace.utility.EleIndv property)@\spxentry{ce\_object}\spxextra{pygace.utility.EleIndv property}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_object}}\pysigline{\sphinxbfcode{ce\_object}}~
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.ce_object}}\pysigline{\sphinxbfcode{\sphinxupquote{property }}\sphinxbfcode{\sphinxupquote{ce\_object}}}~
 \end{fulllineitems}
 
-\index{dft\_energy() (pygace.utility.EleIndv method)}
+\index{dft\_energy() (pygace.utility.EleIndv method)@\spxentry{dft\_energy()}\spxextra{pygace.utility.EleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.dft_energy}}\pysiglinewithargsret{\sphinxbfcode{dft\_energy}}{\emph{iters=None}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.dft_energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dft\_energy}}}{\emph{\DUrole{n}{iters}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 The DFT energy of individual represented by element list.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{iters}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 Specific which iteration DFT energy are computed.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{float or None}}] \leavevmode
+\item[{float or None}] \leavevmode
+\sphinxAtStartPar
 If the directory of DFT calculated exists and the calculation has
 been finished the DFT energy will be return, or a new DFT
-calculation directory will be created and first-principles
+calculation directory will be created and first\sphinxhyphen{}principles
 calculation should be performed in this directory.
 
 \end{description}
@@ -2765,136 +2247,156 @@ calculation should be performed in this directory.
 
 \end{fulllineitems}
 
-\index{is\_correct() (pygace.utility.EleIndv method)}
+\index{is\_correct() (pygace.utility.EleIndv method)@\spxentry{is\_correct()}\spxextra{pygace.utility.EleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.is_correct}}\pysiglinewithargsret{\sphinxbfcode{is\_correct}}{}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.is_correct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{is\_correct}}}{}{}
+\sphinxAtStartPar
 Determine whether the dft energy and the ce energy of indv equivalent
 are identical within error.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{bool}}] \leavevmode
+\item[{bool}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{set\_app() (pygace.utility.EleIndv method)}
+\index{set\_app() (pygace.utility.EleIndv method)@\spxentry{set\_app()}\spxextra{pygace.utility.EleIndv method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.set_app}}\pysiglinewithargsret{\sphinxbfcode{set\_app}}{\emph{app}}{}~
+\phantomsection\label{\detokenize{pygace:pygace.utility.EleIndv.set_app}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_app}}}{\emph{\DUrole{n}{app}}}{}~
 \end{fulllineitems}
 
 
 \end{fulllineitems}
 
-\index{compare\_crystal() (in module pygace.utility)}
+\index{compare\_crystal() (in module pygace.utility)@\spxentry{compare\_crystal()}\spxextra{in module pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.compare_crystal}}\pysiglinewithargsret{\sphinxcode{pygace.utility.}\sphinxbfcode{compare\_crystal}}{\emph{str1}, \emph{str2}, \emph{compare\_crystal\_cmd='CompareCrystal '}, \emph{str\_template=None}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.compare_crystal}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{compare\_crystal}}}{\emph{\DUrole{n}{str1}}, \emph{\DUrole{n}{str2}}, \emph{\DUrole{n}{compare\_crystal\_cmd}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}CompareCrystal \textquotesingle{}}}, \emph{\DUrole{n}{str\_template}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{o}{**}\DUrole{n}{kwargs}}}{}
+\sphinxAtStartPar
 To determine whether structures are identical based crystal symmetry
-analysis. The program used in this package is based on \sphinxcode{XtalComp} library
+analysis. The program used in this package is based on \sphinxcode{\sphinxupquote{XtalComp}} library
 which developed by David C. Lonie.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{str1}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The first string used to represent elements .
 
 \item[{\sphinxstylestrong{str2}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The second string used to represent elements.
 
 \item[{\sphinxstylestrong{compare\_crystal\_cmd}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 The program developed to determine whether two
 crystal structures are identical, default \sphinxtitleref{CompareCrystal}.
 
 \item[{\sphinxstylestrong{str\_template}}] \leavevmode{[}str{]}
+\sphinxAtStartPar
 String template for the definition of lattice site.
 
 \item[{\sphinxstylestrong{kwargs}}] \leavevmode{[}dict arguments{]}
+\sphinxAtStartPar
 Other arguments used in \sphinxtitleref{compare\_crystal\_cmd}.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{bool}}] \leavevmode
+\item[{bool}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
-\paragraph{References}
+\subsubsection*{References}
 
+\sphinxAtStartPar
 \sphinxurl{https://github.com/allisonvacanti/XtalComp}
 
 \end{fulllineitems}
 
-\index{copytree() (in module pygace.utility)}
+\index{copytree() (in module pygace.utility)@\spxentry{copytree()}\spxextra{in module pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.copytree}}\pysiglinewithargsret{\sphinxcode{pygace.utility.}\sphinxbfcode{copytree}}{\emph{src}, \emph{dst}, \emph{symlinks=False}, \emph{ignore=None}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.copytree}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{copytree}}}{\emph{\DUrole{n}{src}}, \emph{\DUrole{n}{dst}}, \emph{\DUrole{n}{symlinks}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{ignore}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Recursively copy a directory tree using copy2().
 
+\sphinxAtStartPar
 The destination directory must not already exist.
 If exception(s) occur, an Error is raised with a list of reasons.
 
+\sphinxAtStartPar
 If the optional symlinks flag is true, symbolic links in the
 source tree result in symbolic links in the destination tree; if
 it is false, the contents of the files pointed to by symbolic
 links are copied.
 
+\sphinxAtStartPar
 The optional ignore argument is a callable. If given, it
 is called with the \sphinxtitleref{src} parameter, which is the directory
 being visited by copytree(), and \sphinxtitleref{names} which is the list of
 \sphinxtitleref{src} contents, as returned by os.listdir():
 \begin{quote}
 
-callable(src, names) -\textgreater{} ignored\_names
+\sphinxAtStartPar
+callable(src, names) \sphinxhyphen{}\textgreater{} ignored\_names
 \end{quote}
 
+\sphinxAtStartPar
 Since copytree() is called recursively, the callable will be
 called once for each directory that is copied. It returns a
 list of names relative to the \sphinxtitleref{src} directory that should
 not be copied.
 
+\sphinxAtStartPar
 XXX Consider this example code rather than the ultimate tool.
 
 \end{fulllineitems}
 
-\index{get\_num\_lis() (in module pygace.utility)}
+\index{get\_num\_lis() (in module pygace.utility)@\spxentry{get\_num\_lis()}\spxextra{in module pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.get_num_lis}}\pysiglinewithargsret{\sphinxcode{pygace.utility.}\sphinxbfcode{get\_num\_lis}}{\emph{nb\_Nb}, \emph{nb\_site}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.get_num_lis}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{get\_num\_lis}}}{\emph{\DUrole{n}{nb\_Nb}}, \emph{\DUrole{n}{nb\_site}}}{}
+\sphinxAtStartPar
 Get number list by given the number point defect and site defined in
 lattice file
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{nb\_Nb}}] \leavevmode{[}the number of point defect{]}
 \item[{\sphinxstylestrong{nb\_site}}] \leavevmode{[}int{]}
+\sphinxAtStartPar
 The number of site defined in lattice file
 
 \end{description}
 
 \item[{Yields}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{All combinations.}}] \leavevmode
+\item[{All combinations.}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
 
 \end{fulllineitems}
 
-\index{reverse\_dict() (in module pygace.utility)}
+\index{reverse\_dict() (in module pygace.utility)@\spxentry{reverse\_dict()}\spxextra{in module pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.reverse_dict}}\pysiglinewithargsret{\sphinxcode{pygace.utility.}\sphinxbfcode{reverse\_dict}}{\emph{d}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.reverse_dict}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{reverse\_dict}}}{\emph{\DUrole{n}{d}}}{}
+\sphinxAtStartPar
 Exchange \sphinxtitleref{key} and \sphinxtitleref{value} of given dict
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{d}}] \leavevmode{[}dict{]}
+\sphinxAtStartPar
 A dict needed to be converted.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{Dict}}] \leavevmode
+\item[{Dict}] \leavevmode
+\sphinxAtStartPar
 The new dict in which \sphinxtitleref{key} and \sphinxtitleref{value} are exchanged with respect to
 original dict.
 
@@ -2904,23 +2406,26 @@ original dict.
 
 \end{fulllineitems}
 
-\index{save\_to\_pickle() (in module pygace.utility)}
+\index{save\_to\_pickle() (in module pygace.utility)@\spxentry{save\_to\_pickle()}\spxextra{in module pygace.utility}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pygace:pygace.utility.save_to_pickle}}\pysiglinewithargsret{\sphinxcode{pygace.utility.}\sphinxbfcode{save\_to\_pickle}}{\emph{f}, \emph{python\_obj}}{}
+\phantomsection\label{\detokenize{pygace:pygace.utility.save_to_pickle}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pygace.utility.}}\sphinxbfcode{\sphinxupquote{save\_to\_pickle}}}{\emph{\DUrole{n}{f}}, \emph{\DUrole{n}{python\_obj}}}{}
+\sphinxAtStartPar
 Save python object in pickle file.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{f}}] \leavevmode{[}fileobj{]}
+\sphinxAtStartPar
 File object to restore python object
 
 \item[{\sphinxstylestrong{python\_obj}}] \leavevmode{[}obj{]}
+\sphinxAtStartPar
 Object need to be saved.
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
-\item[{\sphinxstylestrong{None}}] \leavevmode
+\item[{None}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -2930,19 +2435,20 @@ Object need to be saved.
 
 
 \subsection{Module contents}
-\label{\detokenize{pygace:module-pygace}}\label{\detokenize{pygace:module-contents}}\index{pygace (module)}
-Searching the most stable atomic-structure of a solid with point defects
+\label{\detokenize{pygace:module-pygace}}\label{\detokenize{pygace:module-contents}}\index{module@\spxentry{module}!pygace@\spxentry{pygace}}\index{pygace@\spxentry{pygace}!module@\spxentry{module}}
+\sphinxAtStartPar
+Searching the most stable atomic\sphinxhyphen{}structure of a solid with point defects
 (including the extrinsic alloying/doping elements), is one of the central issues in
 materials science. Both adequate sampling of the configuration space and the
 accurate energy evaluation at relatively low cost are demanding for the structure
 prediction. In this work, we have developed a framework combining genetic
-algorithm, cluster expansion (CE) method and first-principles calculations, which
-can effectively locate the ground-state or meta-stable states of the relatively
+algorithm, cluster expansion (CE) method and first\sphinxhyphen{}principles calculations, which
+can effectively locate the ground\sphinxhyphen{}state or meta\sphinxhyphen{}stable states of the relatively
 large/complex systems. We employ this framework to search the stable structures
-of two distinct systems, i.e., oxygen-vacancy-containing HfO(2-x) and the
-Nb-doped SrTi(1-x)NbxO3 , and more stable structures are found compared with
+of two distinct systems, i.e., oxygen\sphinxhyphen{}vacancy\sphinxhyphen{}containing HfO(2\sphinxhyphen{}x) and the
+Nb\sphinxhyphen{}doped SrTi(1\sphinxhyphen{}x)NbxO3 , and more stable structures are found compared with
 the structures available in the literature. The present framework can be applied
-to the ground-state search of extensive alloyed/doped materials, which is
+to the ground\sphinxhyphen{}state search of extensive alloyed/doped materials, which is
 particularly significant for the design of advanced engineering alloys and
 semiconductors.
 
@@ -2950,12 +2456,15 @@ semiconductors.
 \chapter{Indices and tables}
 \label{\detokenize{index:indices-and-tables}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 \DUrole{xref,std,std-ref}{genindex}
 
 \item {} 
+\sphinxAtStartPar
 \DUrole{xref,std,std-ref}{modindex}
 
 \item {} 
+\sphinxAtStartPar
 \DUrole{xref,std,std-ref}{search}
 
 \end{itemize}
@@ -2963,25 +2472,18 @@ semiconductors.
 
 \renewcommand{\indexname}{Python Module Index}
 \begin{sphinxtheindex}
-\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+\let\bigletter\sphinxstyleindexlettergroup
 \bigletter{p}
-\item {\sphinxstyleindexentry{pygace}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace}}
-\item {\sphinxstyleindexentry{pygace.ce}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.ce}}
-\item {\sphinxstyleindexentry{pygace.config}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.config}}
-\item {\sphinxstyleindexentry{pygace.examples}}\sphinxstyleindexpageref{pygace.examples:\detokenize{module-pygace.examples}}
-\item {\sphinxstyleindexentry{pygace.examples.general}}\sphinxstyleindexpageref{pygace.examples.general:\detokenize{module-pygace.examples.general}}
-\item {\sphinxstyleindexentry{pygace.examples.general.test\_general}}\sphinxstyleindexpageref{pygace.examples.general:\detokenize{module-pygace.examples.general.test_general}}
-\item {\sphinxstyleindexentry{pygace.examples.hfo2}}\sphinxstyleindexpageref{pygace.examples.hfo2:\detokenize{module-pygace.examples.hfo2}}
-\item {\sphinxstyleindexentry{pygace.examples.hfo2.hfo2\_gace}}\sphinxstyleindexpageref{pygace.examples.hfo2:\detokenize{module-pygace.examples.hfo2.hfo2_gace}}
-\item {\sphinxstyleindexentry{pygace.examples.sto}}\sphinxstyleindexpageref{pygace.examples.sto:\detokenize{module-pygace.examples.sto}}
-\item {\sphinxstyleindexentry{pygace.examples.sto.sto\_gace}}\sphinxstyleindexpageref{pygace.examples.sto:\detokenize{module-pygace.examples.sto.sto_gace}}
-\item {\sphinxstyleindexentry{pygace.ga}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.ga}}
-\item {\sphinxstyleindexentry{pygace.gace}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.gace}}
-\item {\sphinxstyleindexentry{pygace.general\_gace}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.general_gace}}
-\item {\sphinxstyleindexentry{pygace.parse}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.parse}}
-\item {\sphinxstyleindexentry{pygace.scripts}}\sphinxstyleindexpageref{pygace.scripts:\detokenize{module-pygace.scripts}}
-\item {\sphinxstyleindexentry{pygace.scripts.rungace}}\sphinxstyleindexpageref{pygace.scripts:\detokenize{module-pygace.scripts.rungace}}
-\item {\sphinxstyleindexentry{pygace.utility}}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.utility}}
+\item\relax\sphinxstyleindexentry{pygace}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace}}
+\item\relax\sphinxstyleindexentry{pygace.ce}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.ce}}
+\item\relax\sphinxstyleindexentry{pygace.config}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.config}}
+\item\relax\sphinxstyleindexentry{pygace.ga}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.ga}}
+\item\relax\sphinxstyleindexentry{pygace.gace}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.gace}}
+\item\relax\sphinxstyleindexentry{pygace.general\_gace}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.general_gace}}
+\item\relax\sphinxstyleindexentry{pygace.parse}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.parse}}
+\item\relax\sphinxstyleindexentry{pygace.scripts}\sphinxstyleindexpageref{pygace.scripts:\detokenize{module-pygace.scripts}}
+\item\relax\sphinxstyleindexentry{pygace.scripts.rungace}\sphinxstyleindexpageref{pygace.scripts:\detokenize{module-pygace.scripts.rungace}}
+\item\relax\sphinxstyleindexentry{pygace.utility}\sphinxstyleindexpageref{pygace:\detokenize{module-pygace.utility}}
 \end{sphinxtheindex}
 
 \renewcommand{\indexname}{Index}

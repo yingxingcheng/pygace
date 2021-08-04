@@ -22,12 +22,13 @@ import os, shutil, subprocess
 from shutil import copy2, Error, copystat
 
 __author__ = "Yingxing Cheng"
-__email__ ="yxcheng@buaa.edu.cn"
+__email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
-__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
-def save_to_pickle(f,python_obj):
+
+def save_to_pickle(f, python_obj):
     """
     Save python object in pickle file.
 
@@ -45,6 +46,7 @@ def save_to_pickle(f,python_obj):
     """
     pickle.dump(python_obj, f, pickle.HIGHEST_PROTOCOL)
 
+
 def get_num_lis(nb_Nb, nb_site):
     """
     Get number list by given the number point defect and site defined in
@@ -61,8 +63,9 @@ def get_num_lis(nb_Nb, nb_site):
     All combinations.
 
     """
-    for i in  combinations(range(nb_site),nb_Nb):
-        yield  i
+    for i in combinations(range(nb_site), nb_Nb):
+        yield i
+
 
 def reverse_dict(d):
     """
@@ -86,8 +89,7 @@ def reverse_dict(d):
     return tmp_d
 
 
-def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
-                    str_template=None,**kwargs):
+def compare_crystal(str1, str2, compare_crystal_cmd='CompareCrystal ', str_template=None, **kwargs):
     """
     To determine whether structures are identical based crystal symmetry
     analysis. The program used in this package is based on ``XtalComp`` library
@@ -116,22 +118,21 @@ def compare_crystal(str1,str2,compare_crystal_cmd='CompareCrystal ',
     https://github.com/allisonvacanti/XtalComp
 
     """
-    assert(len(str1)==len(str2))
-    ct = 0.05 if not 'ct' in kwargs.keys() else kwargs['ct']
-    at = 0.25 if not 'at' in kwargs.keys() else kwargs['at']
-    verbos = 'False' if not 'verbos' in kwargs.keys() else kwargs['verbos']
+    assert (len(str1) == len(str2))
+    ct = 0.05 if 'ct' not in kwargs.keys() else kwargs['ct']
+    at = 0.25 if 'at' not in kwargs.keys() else kwargs['at']
+    verbos = 'False' if 'verbos' not in kwargs.keys() else kwargs['verbos']
 
     if str_template is None:
         raise RuntimeError("`str.out` filename is Empty!")
-    args =  compare_crystal_cmd +  ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4} -s {5}'
-    args = args.format(str1,str2,ct,at,verbos,str_template)
-    s = subprocess.Popen(args,shell=True,stdout=subprocess.PIPE)
-    stdout,stderr= s.communicate()
+    args = compare_crystal_cmd + ' -f1 {0} -f2 {1} -c {2} -a {3} --verbos {4} -s {5}'
+    args = args.format(str1, str2, ct, at, verbos, str_template)
+    s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+    stdout, stderr = s.communicate()
     res = str(stdout)
     if 'Not' in res:
         return False
-    else:
-        return True
+    return True
 
 
 class EleIndv(object):
@@ -168,7 +169,7 @@ class EleIndv(object):
             raise RuntimeError
         return self.app.get_ce()
 
-    def set_app(self,app):
+    def set_app(self, app):
         self.app = app
 
     @property
@@ -185,7 +186,7 @@ class EleIndv(object):
             raise RuntimeError
 
         return float(self.ce_object.get_total_energy(
-            self.app.transver_to_struct(self.ele_lis),is_corrdump=False))
+            self.app.transver_to_struct(self.ele_lis), is_corrdump=False))
 
     @property
     def ce_energy_ref(self):
@@ -201,9 +202,9 @@ class EleIndv(object):
             raise RuntimeError
 
         return float(self.ce_object.get_total_energy(
-            self.app.transver_to_struct(self.ele_lis),is_corrdump=True))
+            self.app.transver_to_struct(self.ele_lis), is_corrdump=True))
 
-    def dft_energy(self,iters=None):
+    def dft_energy(self, iters=None):
         """
         The DFT energy of individual represented by element list.
 
@@ -224,19 +225,19 @@ class EleIndv(object):
         str_name = self.app.transver_to_struct(self.ele_lis)
         if iters is None:
             iters = 'INF'
-        idx = [ str(i) for i, ele in enumerate(self.ele_lis)
-                if ele == self.app.params_config_dict['SECOND_ELEMENT'] ]
+        idx = [str(i) for i, ele in enumerate(self.ele_lis)
+               if ele == self.app.params_config_dict['SECOND_ELEMENT']]
         if len(idx) == 0:
-            idx = ['perfect','struct']
-        random_fname =  '_'.join(idx)
+            idx = ['perfect', 'struct']
+        random_fname = '_'.join(idx)
         cal_dir = os.path.join(self.app.params_config_dict['DFT_CAL_DIR'],
-                               'iter'+str(iters),random_fname)
+                               'iter' + str(iters), random_fname)
         if not os.path.exists(cal_dir):
             os.makedirs(cal_dir)
         dist_fname = 'str.out'
-        shutil.copyfile(str_name,os.path.join(cal_dir,dist_fname))
-        shutil.copyfile(os.path.join(self.ce_object.work_path,'vasp.wrap'),
-                        os.path.join(cal_dir,'vasp.wrap'))
+        shutil.copyfile(str_name, os.path.join(cal_dir, dist_fname))
+        shutil.copyfile(os.path.join(self.ce_object.work_path, 'vasp.wrap'),
+                        os.path.join(cal_dir, 'vasp.wrap'))
         # args = 'runstruct_vasp -nr '
         # s = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
         # runstruct_vasp -nr
@@ -323,4 +324,4 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             errors.append((src, dst, str(why)))
     if errors:
-        raise (Error,errors)
+        raise (Error, errors)

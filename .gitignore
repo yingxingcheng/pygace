@@ -1,22 +1,24 @@
 
 *.egg-info
 *.pyc
-pygace/examples/hfo2/pickle_bakup
-pygace/examples/hfo2/corrdump.log 
-pygace/examples/hfo2/tmp_dir
-pygace/examples/hfo2/run.log
-#pygace/examples/hfo2/data/hfo2_iters/*
 *.pkl
-pygace/examples/hfo2/res_dir/*
+pygace/demo/hfo2/pickle_bakup
+pygace/demo/hfo2/corrdump.log
+pygace/demo/hfo2/run.log
+pygace/demo/hfo2/tmp_dir
+pygace/demo/hfo2/res_dir
+pygace/demo/hfo2/pickle_backup
 
-pygace/examples/sto/pickle_bakup
-pygace/examples/sto/corrdump.log 
-pygace/examples/sto/tmp_dir
-pygace/examples/sto/run.log
-pygace/examples/sto/res_dir/*
+pygace/demo/sto/pickle_bakup
+pygace/demo/sto/corrdump.log
+pygace/demo/sto/run.log
+pygace/demo/sto/god_view.dat
+pygace/demo/sto/DFT_task.dat
 
-pygace/examples/bak/*
+pygace/demo/sto/tmp_dir
+pygace/demo/sto/res_dir
+pygace/demo/sto/pickle_backup
+
 save.sh
-
-.idea/*
+.idea/
 pygace/examples/sto/env.cfg

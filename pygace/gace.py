@@ -17,7 +17,7 @@
 
 This module provide abstract GACE object used to be implemented by users in
 their application, and it defines several interface which are called in
-concreate application.
+the application.
 """
 
 from __future__ import print_function, absolute_import, division
@@ -26,13 +26,13 @@ from copy import deepcopy
 import os, uuid, pickle, random
 
 from pygace.ce import CE
-from pygace.ga import  gaceCrossover, gaceMutShuffleIndexes
+from pygace.ga import gaceCrossover, gaceMutShuffleIndexes
 from pygace.config import corrdump_cmd, compare_crystal_cmd
 
 __author__ = "Yingxing Cheng"
-__email__ ="yxcheng@buaa.edu.cn"
+__email__ = "yxcheng@buaa.edu.cn"
 __maintainer__ = "Yingxing Cheng"
-__maintainer_email__ ="yxcheng@buaa.edu.cn"
+__maintainer_email__ = "yxcheng@buaa.edu.cn"
 __version__ = "2018.12.13"
 
 
@@ -87,20 +87,19 @@ class AbstractApp(object):
     """
 
     DEFAULT_SETUP = {
-        'NB_DEFECT' : None,
+        'NB_DEFECT': None,
         'TEMPLATE_FILE': './data/lat_in.template',
         'TMP_DIR': os.path.abspath('tmp_dir'),
         'PICKLE_DIR': os.path.abspath('pickle_bakup'),
         'TEST_RES_DIR': os.path.abspath('res_dir'),
-        'DFT_CAL_DIR':'./dft_dirs',
+        'DFT_CAL_DIR': './dft_dirs',
     }
 
-    def __init__(self,ce_site=None, ce_dirname='./data/iter1',
+    def __init__(self, ce_site=None, ce_dirname='./data/iter1',
                  params_config_dict=None):
 
-        self.ce = CE(site=ce_site,
-                         compare_crystal_cmd=compare_crystal_cmd,
-                         corrdump_cmd=corrdump_cmd)
+        self.ce = CE(site=ce_site, compare_crystal_cmd=compare_crystal_cmd,
+                     corrdump_cmd=corrdump_cmd)
         self.ce.fit(dirname=ce_dirname)
         self.params_config_dict = deepcopy(AbstractApp.DEFAULT_SETUP)
         if params_config_dict:
@@ -172,7 +171,6 @@ class AbstractApp(object):
             self.ENERGY_DICT = {}
 
         self.TYPES_ENERGY_DICT = {}
-
         self.PREVIOUS_COUNT = len(self.ENERGY_DICT)
 
     def transver_to_struct(self, element_lis):
@@ -199,7 +197,7 @@ class AbstractApp(object):
 
         random_fname = str(uuid.uuid1())
         _str_out = os.path.join(self.params_config_dict['TMP_DIR'],
-                                'str_'+ random_fname +'.out')
+                                'str_' + random_fname + '.out')
 
         with open(_str_out, 'w') as f:
             f.write(struct_str)
@@ -230,11 +228,11 @@ class AbstractApp(object):
         raise NotImplementedError
 
     def evalEnergy(self, individual):
-        raise  NotImplementedError
+        raise NotImplementedError
 
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # Standard GA execute
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     def initial(self):
         """Initialization for GA simulation.
 
@@ -249,24 +247,24 @@ class AbstractApp(object):
 
         self.toolbox = base.Toolbox()
         self.toolbox.register("permutation", random.sample,
-                         range(self.params_config_dict['NB_SITES']),
+                              range(self.params_config_dict['NB_SITES']),
                               self.params_config_dict['NB_SITES'])
 
         self.toolbox.register("individual", tools.initIterate,
-                         creator.Individual, self.toolbox.permutation)
+                              creator.Individual, self.toolbox.permutation)
         self.toolbox.register("population", tools.initRepeat,
-                         list, self.toolbox.individual)
+                              list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", lambda indiv: self.evalEnergy(indiv))
         # toolbox.register("mate", tools.cxPartialyMatched)
-        self.toolbox.register("mate", gaceCrossover,select=3,cross_num=8)
+        self.toolbox.register("mate", gaceCrossover, select=3, cross_num=8)
         # toolbox.register("mutate", tools.mutShuffleIndexes, indpb=2.0 / NB_SITES)
         self.toolbox.register("mutate", gaceMutShuffleIndexes, indpb=0.015)
         self.toolbox.register("select", tools.selTournament, tournsize=6)
 
         return self.toolbox
 
-    def run(self,iter_idx=1, target_epoch=0):
+    def run(self, iter_idx=1, target_epoch=0):
         """
 
         Parameters
@@ -293,9 +291,9 @@ class AbstractApp(object):
         """
         raise NotImplementedError
 
-    #---------------------------------------------------------------------------
-    #utility function
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+    # utility function
+    # ---------------------------------------------------------------------------
     def get_ce(self):
         """obtain inner ce object
 
@@ -347,7 +345,7 @@ class AbstractRunner(object):
         return self.__app
 
     @app.setter
-    def app(self,app):
+    def app(self, app):
         self.__app = app
 
     @property
@@ -355,7 +353,7 @@ class AbstractRunner(object):
         return self.__iter_idx
 
     @iter_idx.setter
-    def iter_idx(self,iter_idx):
+    def iter_idx(self, iter_idx):
         self.__iter_idx = iter_idx
 
     # --------------------------------------------------------------------------
