@@ -2,6 +2,13 @@
 *.egg-info
 *.pyc
 *.pkl
+pygace/demo/general/pickle_bakup
+pygace/demo/general/corrdump.log
+pygace/demo/general/run.log
+pygace/demo/general/tmp_dir
+pygace/demo/general/res_dir
+pygace/demo/general/pickle_backup
+
 pygace/demo/hfo2/pickle_bakup
 pygace/demo/hfo2/corrdump.log
 pygace/demo/hfo2/run.log
