@@ -10,7 +10,9 @@ cluster expansion methods.
 2. cd pygace 
    
 For Users
+
 3. pip install 
    
 For developer
+
 3. pip install -e .
