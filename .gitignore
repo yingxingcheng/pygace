@@ -2,29 +2,29 @@
 *.egg-info
 *.pyc
 *.pkl
-pygace/demo/general/pickle_bakup
-pygace/demo/general/corrdump.log
-pygace/demo/general/run.log
-pygace/demo/general/tmp_dir
-pygace/demo/general/res_dir
-pygace/demo/general/pickle_backup
+/demo/general/pickle_bakup
+/demo/general/corrdump.log
+/demo/general/run.log
+/demo/general/tmp_dir
+/demo/general/res_dir
+/demo/general/pickle_backup
 
-pygace/demo/hfo2/pickle_bakup
-pygace/demo/hfo2/corrdump.log
-pygace/demo/hfo2/run.log
-pygace/demo/hfo2/tmp_dir
-pygace/demo/hfo2/res_dir
-pygace/demo/hfo2/pickle_backup
+/demo/hfo2/pickle_bakup
+/demo/hfo2/corrdump.log
+/demo/hfo2/run.log
+/demo/hfo2/tmp_dir
+/demo/hfo2/res_dir
+/demo/hfo2/pickle_backup
 
-pygace/demo/sto/pickle_bakup
-pygace/demo/sto/corrdump.log
-pygace/demo/sto/run.log
-pygace/demo/sto/god_view.dat
-pygace/demo/sto/DFT_task.dat
+/demo/sto/pickle_bakup
+/demo/sto/corrdump.log
+/demo/sto/run.log
+/demo/sto/god_view.dat
+/demo/sto/DFT_task.dat
 
-pygace/demo/sto/tmp_dir
-pygace/demo/sto/res_dir
-pygace/demo/sto/pickle_backup
+/demo/sto/tmp_dir
+/demo/sto/res_dir
+/demo/sto/pickle_backup
 
 save.sh
 .idea/
